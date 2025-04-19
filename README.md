@@ -1,4 +1,4 @@
-# 📘 json-diff-view-plus
+# 📘 virtual-react-json-diff
 
 A high-performance React component for visually comparing large JSON objects. Built on top of [json-diff-kit](https://www.npmjs.com/package/json-diff-kit), this viewer supports:
 
@@ -21,25 +21,25 @@ This component is developed for dealing with thousands of lines of Json Files, a
 
 ## Demo 
 
-To see how it works, demo available here: https://json-diff-view-plus.netlify.app
+To see how it works, demo available here: https://virtual-react-json-diff.netlify.app
 
 ## 📦 Installation
 
 ```bash
-npm install json-diff-view-plus
+npm install virtual-react-json-diff
 # or
-yarn add json-diff-view-plus
+yarn add virtual-react-json-diff
 ``` 
 
 ## Example Screenshot
 
 The theme is fully customizable, all colors can be changed. (And soon new themes will be available)
 
-![ExampleScreenshot](https://raw.githubusercontent.com/utkuakyuz/json-diff-view-plus/main/public/image.png)
+![ExampleScreenshot](https://raw.githubusercontent.com/utkuakyuz/virtual-react-json-diff/main/public/image.png)
 
 ## Usage
 
-To change Diff methods please see DifferOptions. By default json-diff-view-plus uses following configuration
+To change Diff methods please see DifferOptions. By default virtual-react-json-diff uses following configuration
 ```
 new Differ({
   detectCircular: true,
@@ -55,7 +55,7 @@ Simply pass your json objects into Viewer Component. It will find differences an
 
 ```
 import React from "react";
-import { VirtualDiffViewer } from "json-diff-view-plus";
+import { VirtualDiffViewer } from "virtual-react-json-diff";
 
 const oldData = { name: "Alice", age: 25 };
 const newData = { name: "Alice", age: 26, city: "NYC" };

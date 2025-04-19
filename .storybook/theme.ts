@@ -2,8 +2,8 @@ import { create } from "@storybook/theming/create";
 
 export default create({
     base: "light",
-    brandTitle: "Json-diff-view-plus",
-    brandUrl: "https://json-diff-view-plus.netlify.app",
+    brandTitle: "Virtual React Json Diff",
+    brandUrl: "https://virtual-react-json-diff.netlify.app",
     // brandImage: "./image.png",
     brandTarget: "_self",
     gridCellSize: 20,

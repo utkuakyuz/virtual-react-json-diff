@@ -1,5 +1,5 @@
 {
-  "name": "json-diff-view-plus",
+  "name": "virtual-react-json-diff",
   "version": "1.0.1",
   "description": "A React UI component for visually comparing large JSON objects with virtual scrolling, search, and theming — built on top of json-diff-kit.",
   "main": "dist/cjs/index.js",
@@ -16,12 +16,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/utkuakyuz/json-diff-view-plus"
+    "url": "https://github.com/utkuakyuz/virtual-react-json-diff"
   },
   "bugs": {
-    "url": "https://github.com/utkuakyuz/json-diff-view-plus/issues"
+    "url": "https://github.com/utkuakyuz/virtual-react-json-diff/issues"
   },
-  "homepage": "https://json-diff-view-plus.netlify.app",
+  "homepage": "https://virtual-react-json-diff.netlify.app",
   "author": {
     "name": "Utku Akyüz"
   },
