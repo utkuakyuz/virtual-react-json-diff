@@ -5,7 +5,7 @@ import json2 from "./testJsons/json2.json";
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta = {
-    title: "Example/Diff",
+    title: "Example/VirtualDiffViewer",
     component: VirtualDiffViewer,
     parameters: {
         layout: "padded", // veya "padded"
