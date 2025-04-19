@@ -19,6 +19,9 @@ This component is developed for dealing with thousands of lines of Json Files, a
 - **Mini Map** – A minimap of Json Diff, scaled to better see comparison result
 - **Customizable Styles** – Add your own class names and styles easily (checkout JsonDiffCustomTheme.css)
 
+## Demo 
+
+To see how it works, demo available here: https://json-diff-view-plus.netlify.app
 
 ## 📦 Installation
 
@@ -27,11 +30,12 @@ npm install json-diff-view-plus
 # or
 yarn add json-diff-view-plus
 ``` 
+
 ## Example Screenshot
 
 The theme is fully customizable, all colors can be changed. (And soon new themes will be available)
 
-![ExampleScreenshot](/public/image.png)
+![ExampleScreenshot](https://raw.githubusercontent.com/utkuakyuz/json-diff-view-plus/main/public/image.png)
 
 ## Usage
 

@@ -1,6 +1,6 @@
 {
   "name": "json-diff-view-plus",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "description": "A React UI component for visually comparing large JSON objects with virtual scrolling, search, and theming — built on top of json-diff-kit.",
   "main": "dist/cjs/index.js",
   "types": "dist/index.d.ts",
@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/utkuakyuz/json-diff-view-plus/issues"
   },
-  "homepage": "https://github.com/utkuakyuz/json-diff-view-plus#readme",
+  "homepage": "https://json-diff-view-plus.netlify.app",
   "author": {
     "name": "Utku Akyüz"
   },
