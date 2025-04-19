@@ -1,6 +1,6 @@
 {
   "name": "json-diff-view-plus",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A React UI component for visually comparing large JSON objects with virtual scrolling, search, and theming — built on top of json-diff-kit.",
   "main": "dist/cjs/index.js",
   "types": "dist/index.d.ts",
