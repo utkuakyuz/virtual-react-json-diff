@@ -1,0 +1,30 @@
+.sbdocs.sbdocs-content {
+  max-width: none !important;
+  width: 100% !important;
+}
+
+/* Increase the width of the props panel */
+#storybook-panel-root {
+  min-width: 400px !important;
+  max-width: 50% !important;
+}
+
+/* Style for the JSON editor textareas */
+.json-editor-container {
+  margin-bottom: 20px;
+}
+
+.json-editor-container h3 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* Make the controls panel wider */
+#storybook-panel-root .css-1wjen9k {
+  min-width: 400px !important;
+}
+
+/* Style for the value column in the props panel */
+#storybook-panel-root .css-1wjen9k .css-1p3m7a8 {
+  min-width: 300px !important;
+}

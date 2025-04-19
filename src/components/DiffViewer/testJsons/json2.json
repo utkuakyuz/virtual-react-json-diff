@@ -1,0 +1,72 @@
+{
+  "itemCode": "12345",
+  "categoryType": "B",
+  "label": "ItemAlpha4",
+  "typeCode": "F",
+  "isActive": true,
+  "functionCode": "AA",
+  "freqMin": 666,
+  "freqMax": 777,
+  "notes": "",
+  "referenceNo": null,
+  "version": {
+    "version": "0.0.0",
+    "comments": null
+  },
+  "relationSet": [],
+  "configSet": [
+    {
+      "isEnabled": false,
+      "ageFactor": null,
+      "waveformSet": [
+        {
+          "name": "wf",
+          "order": 1,
+          "spacingMax": null,
+          "valueSet": []
+        }
+      ],
+      "freqSet": [],
+      "intervalSet": [],
+      "attributeSet": [
+        {
+          "name": "attr12",
+          "typeCode": "U",
+          "secondarySet": []
+        }
+      ],
+      "commentSet": [],
+      "flagSet": [],
+      "subConfigSet": [
+        {
+          "name": "1 sc1",
+          "order": 1
+        }
+      ],
+      "subConfigSet2": [
+        {
+          "name": "1 sc1",
+          "order": 1
+        }
+      ],
+      "groupSet": [
+        {
+          "order": 13,
+          "pulseType": "A",
+          "attribute": {
+            "name": "attr1",
+            "secondarySet": []
+          },
+          "subConfigs": [
+            {
+              "name": "1 sc134",
+              "order": 1,
+              "validateWave": true,
+              "useComponentPower": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

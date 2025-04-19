@@ -1,0 +1,75 @@
+{
+  "itemCode": "12345",
+  "categoryType": "B",
+  "label": "ItemAlpha4",
+  "type": "F",
+  "isActive": true,
+  "version": {
+    "version": "0.0.0",
+    "comments": null
+  },
+  "alternateRefNoSet": [],
+  "configSet": [
+    {
+      "configCode": "UN",
+      "configName": "Cfg1",
+      "isEnabled": false,
+      "hasOptionA": false,
+      "hasOptionB": false,
+      "hasOptionC": false,
+      "hasFlagX": true,
+      "subAnalysisPeriod": null,
+      "ageFactor": null,
+      "waveformSet": [
+        {
+          "name": "wf",
+          "order": 1,
+          "type": "U",
+          "valueSet": []
+        }
+      ],
+      "freqSet": [],
+      "intervalSet": [],
+      "attributeSet": [
+        {
+          "name": "attr1",
+          "isDigital": false,
+          "order": 1,
+          "code": "U",
+          "secondarySet": []
+        }
+      ],
+      "commentSet": [],
+      "widthSet": [],
+      "flagSet": [],
+      "subConfigSet": [
+        {
+          "name": "1 sc1",
+          "order": 1,
+          "useComponentPower": false
+        }
+      ],
+      "groupSet": [
+        {
+          "order": 1,
+          "name": "GRP",
+          "comment": "",
+          "bandwidth": 111,
+          "pulseType": "A",
+          "attribute": {
+            "name": "attr1",
+            "typeCode": "U",
+            "secondarySet": []
+          },
+          "subConfigs": [
+            {
+              "name": "1 sc1",
+              "order": 1,
+              "useComponentPower": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

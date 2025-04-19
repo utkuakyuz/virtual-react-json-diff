@@ -1,0 +1,76 @@
+{
+  "name": "json-diff-view-plus",
+  "version": "0.0.5",
+  "description": "A React UI component for visually comparing large JSON objects with virtual scrolling, search, and theming — built on top of json-diff-kit.",
+  "main": "dist/cjs/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "bun run rollup",
+    "prepublishOnly": "bun run build",
+    "rollup": "rollup -c --bundleConfigAsCjs",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/utkuakyuz/json-diff-view-plus"
+  },
+  "bugs": {
+    "url": "https://github.com/utkuakyuz/json-diff-view-plus/issues"
+  },
+  "homepage": "https://github.com/utkuakyuz/json-diff-view-plus#readme",
+  "author": {
+    "name": "Utku Akyüz"
+  },
+  "license": "MIT",
+  "type": "module",
+  "keywords": [
+    "react",
+    "json",
+    "diff",
+    "json-diff",
+    "viewer",
+    "json-diff-kit",
+    "virtual-scroll",
+    "theme",
+    "search"
+  ],
+  "devDependencies": {
+    "@fontsource/inter": "^5.1.1",
+    "@rollup/plugin-commonjs": "^25.0.3",
+    "@rollup/plugin-image": "^3.0.3",
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-terser": "^0.4.3",
+    "@rollup/plugin-typescript": "^11.1.2",
+    "@storybook/addon-essentials": "8.6.0-alpha.0",
+    "@storybook/addon-interactions": "8.6.0-alpha.0",
+    "@storybook/addon-onboarding": "8.6.0-alpha.0",
+    "@storybook/addon-styling-webpack": "^1.0.1",
+    "@storybook/blocks": "8.6.0-alpha.0",
+    "@storybook/react": "8.6.0-alpha.0",
+    "@storybook/react-vite": "8.6.0-alpha.0",
+    "@types/node": "^22.14.1",
+    "@types/react": "^18.2.15",
+    "@types/react-window": "^1.8.8",
+    "postcss": "^8.5.1",
+    "prettier": "^2.5.1",
+    "react": "^18.2.0",
+    "rollup": "^3.26.3",
+    "rollup-plugin-dts": "^5.3.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
+    "storybook": "8.6.0-alpha.0",
+    "tslib": "^2.6.0",
+    "typescript": "^5.1.6"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0"
+  },
+  "dependencies": {
+    "json-diff-kit": "^1.0.31",
+    "react-window": "^1.8.11"
+  }
+}
