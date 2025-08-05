@@ -1,4 +1,6 @@
 # 📘 virtual-react-json-diff
+[![NPM version][npm-image]][npm-url]
+[![Downloads][download-badge]][npm-url]
 
 A high-performance React component for visually comparing large JSON objects. Built on top of [json-diff-kit](https://www.npmjs.com/package/json-diff-kit), this viewer supports:
 
@@ -86,9 +88,14 @@ Built on top of the awesome json-diff-kit.
 ## 📄 License
 
 MIT © Utku Akyüz
-🛠️ Contributing
 
----
+## 🛠️ Contributing
 
 Pull requests, suggestions, and issues are welcome!
 Check out the issues or open a PR.
+
+
+[npm-url]: https://npmjs.org/package/virtual-react-json-diff
+[npm-image]: https://img.shields.io/npm/v/virtual-react-json-diff.svg
+
+[download-badge]: https://img.shields.io/npm/dm/virtual-react-json-diff.svg
