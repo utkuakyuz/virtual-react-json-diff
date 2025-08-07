@@ -41,7 +41,7 @@ yarn add virtual-react-json-diff
 
 The theme is fully customizable, all colors can be changed. (And soon new themes will be available)
 
-![ExampleScreenshot](https://raw.githubusercontent.com/utkuakyuz/virtual-react-json-diff/main/public/image.png)
+![ExampleScreenshot](https://raw.githubusercontent.com/utkuakyuz/virtual-react-json-diff/main/public/image-1.0.3.png)
 
 ## Usage
 
