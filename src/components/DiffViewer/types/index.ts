@@ -43,6 +43,7 @@ export interface VirtualizedDiffViewerProps {
     onSearchMatch?: (index: number) => void;
     differOptions?: DifferOptions;
     className?: string;
+    miniMapWidth?: number;
 }
 
 export interface DiffMinimapProps {
@@ -53,4 +54,5 @@ export interface DiffMinimapProps {
     currentScrollTop: number;
     searchResults?: number[];
     currentMatchIndex?: number;
+    miniMapWidth?: number;
 }

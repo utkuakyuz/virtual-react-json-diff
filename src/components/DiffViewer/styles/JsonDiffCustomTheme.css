@@ -5,6 +5,34 @@
   padding-bottom: 12px;
 }
 
+.virtual-json-diff-list-container {
+  --sb-track-color: #232E33;
+  --sb-thumb-color: #4560f8;
+  --sb-size: 6px;
+}
+
+.virtual-json-diff-list-container::-webkit-scrollbar {
+  width: var(--sb-size)
+}
+
+.virtual-json-diff-list-container::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  border-radius: 3px;
+}
+
+.virtual-json-diff-list-container::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 3px;
+  
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  .virtual-json-diff-list-container {
+    scrollbar-color: var(--sb-thumb-color)
+                     var(--sb-track-color);
+  }
+}
+
 
 .diff-viewer-container  {
   button {

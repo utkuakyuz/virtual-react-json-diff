@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useCallback, useMemo } from "react";
 import { DiffMinimapProps, DiffRowOrCollapsed } from "../types";
 
-const MINIMAP_WIDTH = 100;
 const ROW_HEIGHT = 20;
 const SEARCH_HIGHLIGHT_COLOR = "#ffd700";
 const CURRENT_MATCH_COLOR = "#ff4500";
@@ -10,11 +9,18 @@ const ADD_LINE_COLOR = "#4CAF50";
 const REMOVE_LINE_COLOR = "#F44336";
 const MODIFY_LINE_COLOR = "#FFC107";
 
+// const MINIMAP_HOVER_SCROLL_COLOR = "#2196f3cc";
+// const MINIMAP_SCROLL_COLOR = "#2196f380";
+
+const MINIMAP_HOVER_SCROLL_COLOR = "#7B7B7Bcc";
+const MINIMAP_SCROLL_COLOR = "#7B7B7B80";
+
 export const DiffMinimap: React.FC<DiffMinimapProps> = ({
     leftDiff,
     rightDiff,
     height,
     onScroll,
+    miniMapWidth = 20,
     currentScrollTop,
     searchResults = [],
     currentMatchIndex = -1,
@@ -59,6 +65,46 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
         ctx.fillRect(x, y, width, ROW_HEIGHT);
     }, []);
 
+    // Draw the differences -> This will be called in drawScrollBox method
+    const drawDifferencesInMinimap = (ctx: CanvasRenderingContext2D) => {
+        const scale = height / totalLines;
+
+        if (currentMatchIndex >= 0 && searchResults[currentMatchIndex] !== undefined) {
+            const y = searchResults[currentMatchIndex] * scale;
+            const lineHeight = Math.max(1, scale);
+            ctx.fillStyle = CURRENT_MATCH_COLOR;
+            ctx.fillRect(0, y, miniMapWidth, lineHeight);
+        }
+
+        leftDiff.forEach((line, index) => {
+            const y = index * scale;
+            drawLine(ctx, line, y, 0, miniMapWidth / 2);
+        });
+
+        rightDiff.forEach((line, index) => {
+            const y = index * scale;
+            drawLine(ctx, line, y, miniMapWidth / 2, miniMapWidth / 2);
+        });
+
+        searchResults.forEach((index) => {
+            const y = index * scale;
+            const lineHeight = Math.max(1, scale);
+            ctx.fillStyle = SEARCH_HIGHLIGHT_COLOR;
+            ctx.fillRect(0, y, miniMapWidth, lineHeight);
+        });
+    };
+
+    // Draw the scroll box and also differences in minimapo
+    const drawScrollBox = (ctx: CanvasRenderingContext2D, color: string) => {
+        const totalContentHeight = totalLines * ROW_HEIGHT;
+        const viewportTop = (currentScrollTop / totalContentHeight) * height;
+
+        drawDifferencesInMinimap(ctx);
+
+        ctx.fillStyle = color;
+        ctx.fillRect(0, viewportTop, miniMapWidth, viewportHeight);
+    };
+
     const drawMinimap = useCallback(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -68,38 +114,11 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        const totalLines = Math.max(leftDiff.length, rightDiff.length);
-        const scale = height / totalLines;
-
-        leftDiff.forEach((line, index) => {
-            const y = index * scale;
-            drawLine(ctx, line, y, 0, MINIMAP_WIDTH / 2);
-        });
-
-        rightDiff.forEach((line, index) => {
-            const y = index * scale;
-            drawLine(ctx, line, y, MINIMAP_WIDTH / 2, MINIMAP_WIDTH / 2);
-        });
-
-        searchResults.forEach((index) => {
-            const y = index * scale;
-            const lineHeight = Math.max(1, scale);
-            ctx.fillStyle = SEARCH_HIGHLIGHT_COLOR;
-            ctx.fillRect(0, y, MINIMAP_WIDTH, lineHeight);
-        });
-
-        if (currentMatchIndex >= 0 && searchResults[currentMatchIndex] !== undefined) {
-            const y = searchResults[currentMatchIndex] * scale;
-            const lineHeight = Math.max(1, scale);
-            ctx.fillStyle = CURRENT_MATCH_COLOR;
-            ctx.fillRect(0, y, MINIMAP_WIDTH, lineHeight);
+        if (!isDragging.current) {
+            drawScrollBox(ctx, MINIMAP_SCROLL_COLOR);
+        } else {
+            drawScrollBox(ctx, MINIMAP_HOVER_SCROLL_COLOR);
         }
-
-        const totalContentHeight = totalLines * ROW_HEIGHT;
-        const viewportTop = (currentScrollTop / totalContentHeight) * height;
-        ctx.strokeStyle = "#2196F3";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(0, viewportTop, MINIMAP_WIDTH, viewportHeight);
     }, [leftDiff, rightDiff, height, currentScrollTop, searchResults, currentMatchIndex, drawLine, viewportHeight]);
 
     useEffect(() => {
@@ -116,6 +135,13 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
 
             if (height <= 0 || totalLines <= 0) return;
 
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return;
+            drawScrollBox(ctx, "rgba(33, 150, 243, 0.8)");
+
             const viewportCenter = relativeY - viewportHeight / 2;
             const scrollTop = (viewportCenter / height) * totalLines * ROW_HEIGHT;
 
@@ -128,15 +154,33 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
 
     const handleMouseMove = useCallback(
         (e: React.MouseEvent) => {
-            if (!isDragging.current || !containerRef.current) return;
-
+            if (!containerRef.current) return;
             const rect = containerRef.current.getBoundingClientRect();
-            const relativeY = e.clientY - rect.top;
+            const relativeY = e.clientY - rect.top; // e.client y - rect top (120)
+            const viewportCenter = relativeY - viewportHeight / 2; // 0 when mouse is at the center of the drag square
+            const scrollTop = (viewportCenter / height) * totalLines * ROW_HEIGHT;
+
+            const totalContentHeight = totalLines * ROW_HEIGHT;
+            const scrollSquareTop = (currentScrollTop / totalContentHeight) * height;
+
+            const isHovering = relativeY > scrollSquareTop && relativeY < scrollSquareTop + viewportHeight;
+
+            const canvas = canvasRef.current;
+
+            drawMinimap();
+
+            if (canvas) {
+                const ctx = canvas.getContext("2d");
+                if (!ctx) return;
+                if (isHovering) {
+                    // This is active when box is hovered
+                    drawScrollBox(ctx, MINIMAP_HOVER_SCROLL_COLOR);
+                }
+            }
+
+            if (!isDragging.current) return;
 
             if (height <= 0 || totalLines <= 0) return;
-
-            const viewportCenter = relativeY - viewportHeight / 2;
-            const scrollTop = (viewportCenter / height) * totalLines * ROW_HEIGHT;
 
             if (isNaN(scrollTop) || !isFinite(scrollTop)) return;
 
@@ -160,6 +204,18 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
         isDragging.current = false;
     }, []);
 
+    const handleMouseLeave = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        if (isDragging.current) {
+            isDragging.current = false;
+        }
+        drawMinimap(); // resets full state
+    };
+
     useEffect(() => {
         window.addEventListener("mouseup", handleMouseUp);
         return () => window.removeEventListener("mouseup", handleMouseUp);
@@ -169,17 +225,18 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
         <div
             ref={containerRef}
             style={{
-                width: MINIMAP_WIDTH,
+                width: miniMapWidth,
                 height,
                 position: "relative",
                 cursor: "pointer",
             }}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
         >
             <canvas
                 ref={canvasRef}
-                width={MINIMAP_WIDTH}
+                width={miniMapWidth}
                 height={height}
                 style={{
                     width: "100%",
