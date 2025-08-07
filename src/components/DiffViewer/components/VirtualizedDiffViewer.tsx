@@ -69,6 +69,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
     onSearchMatch,
     differOptions,
     className,
+    miniMapWidth,
 }) => {
     const listRef = useRef<List>(null);
     const searchTimeoutRef = useRef<NodeJS.Timeout>();
@@ -310,6 +311,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
                             listRef.current?.scrollTo(scrollTop);
                         }}
                         currentScrollTop={scrollTop}
+                        miniMapWidth={miniMapWidth}
                         searchResults={searchState.results}
                         currentMatchIndex={searchState.currentIndex}
                     />

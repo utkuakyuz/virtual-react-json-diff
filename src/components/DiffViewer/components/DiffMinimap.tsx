@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useCallback, useMemo } from "react";
 import { DiffMinimapProps, DiffRowOrCollapsed } from "../types";
 
-const MINIMAP_WIDTH = 100;
 const ROW_HEIGHT = 20;
 const SEARCH_HIGHLIGHT_COLOR = "#ffd700";
 const CURRENT_MATCH_COLOR = "#ff4500";
@@ -15,6 +14,7 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
     rightDiff,
     height,
     onScroll,
+    miniMapWidth = 20,
     currentScrollTop,
     searchResults = [],
     currentMatchIndex = -1,
@@ -73,33 +73,37 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
 
         leftDiff.forEach((line, index) => {
             const y = index * scale;
-            drawLine(ctx, line, y, 0, MINIMAP_WIDTH / 2);
+            drawLine(ctx, line, y, 0, miniMapWidth / 2);
         });
 
         rightDiff.forEach((line, index) => {
             const y = index * scale;
-            drawLine(ctx, line, y, MINIMAP_WIDTH / 2, MINIMAP_WIDTH / 2);
+            drawLine(ctx, line, y, miniMapWidth / 2, miniMapWidth / 2);
         });
 
         searchResults.forEach((index) => {
             const y = index * scale;
             const lineHeight = Math.max(1, scale);
             ctx.fillStyle = SEARCH_HIGHLIGHT_COLOR;
-            ctx.fillRect(0, y, MINIMAP_WIDTH, lineHeight);
+            ctx.fillRect(0, y, miniMapWidth, lineHeight);
         });
 
         if (currentMatchIndex >= 0 && searchResults[currentMatchIndex] !== undefined) {
             const y = searchResults[currentMatchIndex] * scale;
             const lineHeight = Math.max(1, scale);
             ctx.fillStyle = CURRENT_MATCH_COLOR;
-            ctx.fillRect(0, y, MINIMAP_WIDTH, lineHeight);
+            ctx.fillRect(0, y, miniMapWidth, lineHeight);
         }
 
         const totalContentHeight = totalLines * ROW_HEIGHT;
         const viewportTop = (currentScrollTop / totalContentHeight) * height;
-        ctx.strokeStyle = "#2196F3";
+
+        ctx.strokeStyle = "rgba(33, 150, 243, 0.5)"; // #2196F3
+        ctx.fillStyle = "rgba(33, 150, 243, 0.5)";
+        ctx.fillRect(0, viewportTop, miniMapWidth, viewportHeight);
         ctx.lineWidth = 2;
-        ctx.strokeRect(0, viewportTop, MINIMAP_WIDTH, viewportHeight);
+
+        ctx.strokeRect(0, viewportTop, miniMapWidth, viewportHeight);
     }, [leftDiff, rightDiff, height, currentScrollTop, searchResults, currentMatchIndex, drawLine, viewportHeight]);
 
     useEffect(() => {
@@ -128,15 +132,37 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
 
     const handleMouseMove = useCallback(
         (e: React.MouseEvent) => {
-            if (!isDragging.current || !containerRef.current) return;
-
+            if (!containerRef.current) return;
             const rect = containerRef.current.getBoundingClientRect();
-            const relativeY = e.clientY - rect.top;
+            const relativeY = e.clientY - rect.top; // e.client y - rect top (120)
+            const viewportCenter = relativeY - viewportHeight / 2; // 0 when mouse is at the center of the drag square
+            const scrollTop = (viewportCenter / height) * totalLines * ROW_HEIGHT;
+
+            const totalContentHeight = totalLines * ROW_HEIGHT;
+            const scrollSquareTop = (currentScrollTop / totalContentHeight) * height;
+
+            const isHovering = relativeY > scrollSquareTop && relativeY < scrollSquareTop + viewportHeight;
+
+            const canvas = canvasRef.current;
+
+            if (canvas) {
+                const ctx = canvas.getContext("2d");
+                if (!ctx) return;
+
+                if (isHovering) {
+                    ctx.strokeStyle = "rgba(33, 150, 243, 0.5)"; // #2196F3
+                    ctx.fillStyle = "rgba(33, 150, 243, 0.5)";
+                    ctx.fillRect(0, scrollSquareTop, miniMapWidth, viewportHeight);
+                    ctx.lineWidth = 2;
+                } else {
+                    ctx.fillStyle = "rgba(33, 150, 243, 0.5)";
+                    ctx.fillRect(0, scrollSquareTop, miniMapWidth, viewportHeight);
+                }
+            }
+
+            if (!isDragging.current) return;
 
             if (height <= 0 || totalLines <= 0) return;
-
-            const viewportCenter = relativeY - viewportHeight / 2;
-            const scrollTop = (viewportCenter / height) * totalLines * ROW_HEIGHT;
 
             if (isNaN(scrollTop) || !isFinite(scrollTop)) return;
 
@@ -160,6 +186,20 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
         isDragging.current = false;
     }, []);
 
+    const handleMouseLeave = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        const totalContentHeight = totalLines * ROW_HEIGHT;
+        const viewportTop = (currentScrollTop / totalContentHeight) * height;
+
+        ctx.fillStyle = "rgba(33, 150, 243, 0.5)";
+        ctx.fillRect(0, viewportTop, miniMapWidth, viewportHeight);
+    };
+
     useEffect(() => {
         window.addEventListener("mouseup", handleMouseUp);
         return () => window.removeEventListener("mouseup", handleMouseUp);
@@ -169,17 +209,18 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
         <div
             ref={containerRef}
             style={{
-                width: MINIMAP_WIDTH,
+                width: miniMapWidth,
                 height,
                 position: "relative",
                 cursor: "pointer",
             }}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
         >
             <canvas
                 ref={canvasRef}
-                width={MINIMAP_WIDTH}
+                width={miniMapWidth}
                 height={height}
                 style={{
                     width: "100%",
