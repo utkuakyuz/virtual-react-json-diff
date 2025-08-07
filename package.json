@@ -1,7 +1,7 @@
 {
   "name": "virtual-react-json-diff",
   "version": "1.0.2",
-  "description": "A React UI component for visually comparing large JSON objects with virtual scrolling, search, and theming — built on top of json-diff-kit.",
+  "description": "Fast, virtualized React component for visually comparing large JSON objects. Includes search, theming, and minimap.",
   "main": "dist/cjs/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -31,12 +31,16 @@
     "react",
     "json",
     "diff",
-    "json-diff",
-    "viewer",
-    "json-diff-kit",
-    "virtual-scroll",
-    "theme",
-    "search"
+    "json diff",
+    "json compare",
+    "diff viewer",
+    "react json diff",
+    "json visualizer",
+    "json viewer",
+    "virtual scroll",
+    "large json",
+    "compare json",
+    "react diff viewer"
   ],
   "devDependencies": {
     "@fontsource/inter": "^5.1.1",
