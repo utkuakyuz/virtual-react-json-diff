@@ -1,6 +1,10 @@
 # 📘 virtual-react-json-diff
+
 [![NPM version][npm-image]][npm-url]
 [![Downloads][download-badge]][npm-url]
+![bundle size](https://badgen.net/bundlephobia/minzip/virtual-react-json-diff)
+
+👉 [Try it now](https://virtual-react-json-diff.netlify.app)
 
 A high-performance React component for visually comparing large JSON objects. Built on top of [json-diff-kit](https://www.npmjs.com/package/json-diff-kit), this viewer supports:
 
