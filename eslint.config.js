@@ -12,7 +12,7 @@ export default antfu({
 }, {
   rules: {
     "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
-    "no-unused-vars": "warn",
+    "no-unused-vars": "off",
     "ts/no-redeclare": "off",
     "ts/consistent-type-definitions": ["error", "type"],
     "no-console": ["warn"],
