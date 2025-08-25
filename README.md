@@ -16,7 +16,6 @@ A high-performance React component for visually comparing large JSON objects. Bu
 
 This component is developed for dealing with thousands of lines of Json Files, and seamlessly compare then render them on UI
 
-
 ## 🚀 Features
 
 - **Compare Large JSON Objects** – Handles big files without freezing the UI
@@ -25,7 +24,7 @@ This component is developed for dealing with thousands of lines of Json Files, a
 - **Mini Map** – A minimap of Json Diff, scaled to better see comparison result
 - **Customizable Styles** – Add your own class names and styles easily (checkout JsonDiffCustomTheme.css)
 
-## Demo 
+## Demo
 
 To see how it works, demo available here: https://virtual-react-json-diff.netlify.app
 
@@ -35,7 +34,9 @@ To see how it works, demo available here: https://virtual-react-json-diff.netlif
 npm install virtual-react-json-diff
 # or
 yarn add virtual-react-json-diff
-``` 
+# or
+pnpm add virtual-react-json-diff
+```
 
 ## Example Screenshot
 
@@ -46,6 +47,7 @@ The theme is fully customizable, all colors can be changed. (And soon new themes
 ## Usage
 
 To change Diff methods please see DifferOptions. By default virtual-react-json-diff uses following configuration
+
 ```
 new Differ({
   detectCircular: true,
@@ -79,11 +81,12 @@ export default function App() {
 ```
 
 The component exposes a root container with the class:
+
 ```
 <div class="diff-viewer-container">...</div>
 ```
-You can pass your own class name via the className prop to apply custom themes.
 
+You can pass your own class name via the className prop to apply custom themes.
 
 ## 🙌 Acknowledgements
 
@@ -98,8 +101,6 @@ MIT © Utku Akyüz
 Pull requests, suggestions, and issues are welcome!
 Check out the issues or open a PR.
 
-
 [npm-url]: https://npmjs.org/package/virtual-react-json-diff
 [npm-image]: https://img.shields.io/npm/v/virtual-react-json-diff.svg
-
 [download-badge]: https://img.shields.io/npm/dm/virtual-react-json-diff.svg
