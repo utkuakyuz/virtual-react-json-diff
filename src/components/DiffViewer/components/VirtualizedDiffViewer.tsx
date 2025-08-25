@@ -98,7 +98,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
         preserveKeyOrder: "before",
         ...differOptions,
       }),
-    [],
+    [differOptions],
   );
 
   const diffData = useMemo(() => {
