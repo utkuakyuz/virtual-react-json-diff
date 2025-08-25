@@ -34,6 +34,8 @@ To see how it works, demo available here: https://virtual-react-json-diff.netlif
 npm install virtual-react-json-diff
 # or
 yarn add virtual-react-json-diff
+# or
+pnpm add virtual-react-json-diff
 ```
 
 ## Example Screenshot
