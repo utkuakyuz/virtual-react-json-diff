@@ -78,7 +78,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   miniMapWidth,
 }) => {
   const listRef = useRef<List>(null);
-  const searchTimeoutRef = useRef<NodeJS.Timeout>();
+  const searchTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const [scrollTop, setScrollTop] = useState(0);
 
   const [segments, setSegments] = useState<SegmentItem[]>([]);
