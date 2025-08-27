@@ -55,7 +55,10 @@ export function useSearch(leftView: DiffRowOrCollapsed[], initialTerm?: string, 
     if (listContainer) {
       const handleScroll = () => setTimeout(() => highlightMatches(searchState.term, DIFF_VIEWER_CLASS), 100);
       listContainer.addEventListener("scroll", handleScroll);
-      return () => listContainer.removeEventListener("scroll", handleScroll);
+      return () => {
+        observer.disconnect();
+        listContainer.removeEventListener("scroll", handleScroll);
+      };
     }
 
     return () => observer.disconnect();
