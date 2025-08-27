@@ -2,7 +2,7 @@ import type { DiffResult } from "json-diff-kit";
 import type { ListChildComponentProps, ListOnScrollProps } from "react-window";
 
 import { Differ, Viewer } from "json-diff-kit";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { VariableSizeList as List } from "react-window";
 
 import type { DiffRowOrCollapsed, SearchState, SegmentItem, VirtualizedDiffViewerProps } from "../types";
@@ -80,6 +80,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   const listRef = useRef<List>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const [scrollTop, setScrollTop] = useState(0);
+  const [rowHeights, setRowHeights] = useState<number[]>([]);
 
   const [segments, setSegments] = useState<SegmentItem[]>([]);
   const [searchState, setSearchState] = useState<SearchState>({
@@ -239,12 +240,43 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
     });
   }, []);
 
+  const measureRows = useCallback(() => {
+    const preElements = document.querySelectorAll(".json-diff-viewer pre"); // might be improved
+    const newHeights: number[] = [];
+
+    for (let i = 0; i < preElements.length; i += 2) {
+      const leftWraps = getWrapCount(preElements[i]);
+      const rightWraps = getWrapCount(preElements[i + 1]);
+      newHeights.push(Math.max(leftWraps, rightWraps));
+    }
+
+    setRowHeights(newHeights);
+  }, []);
+
+  useLayoutEffect(() => {
+    measureRows();
+    window.addEventListener("resize", measureRows);
+
+    return () => window.removeEventListener("resize", measureRows);
+  }, [measureRows, leftView]);
+
+  useEffect(() => {
+    listRef.current?.resetAfterIndex(0, true);
+  }, [rowHeights]);
+
   const getItemSize = useCallback(
     (index: number) => {
       const leftLine = leftView[index];
-      return isCollapsed(leftLine) ? COLLAPSED_ROW_HEIGHT : ROW_HEIGHT;
+
+      if (isCollapsed(leftLine)) {
+        return COLLAPSED_ROW_HEIGHT;
+      }
+
+      // Dynamic row height according to wrap count
+      const wraps = rowHeights[index] ?? 1;
+      return wraps * ROW_HEIGHT;
     },
-    [leftView],
+    [leftView, rowHeights],
   );
 
   const hasExpandedSegments = useMemo(() => segments.some(seg => seg.isEqual && seg.isExpanded), [segments]);
@@ -258,6 +290,18 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
     }),
     [leftView, rightView, handleExpand, searchState.term],
   );
+
+  function getWrapCount(el: Element) {
+    const style = window.getComputedStyle(el);
+    const lineHeight = Number.parseFloat(style.lineHeight);
+
+    let lh = lineHeight;
+    if (Number.isNaN(lineHeight)) {
+      lh = Number.parseFloat(style.fontSize) * 1.2; // approximate
+    }
+
+    return Math.round(el.scrollHeight / lh);
+  }
 
   return (
     <div className={`diff-viewer-container${className ? ` ${className}` : ""}`}>
