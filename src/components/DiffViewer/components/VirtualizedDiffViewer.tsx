@@ -297,7 +297,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
 
     let lh = lineHeight;
     if (Number.isNaN(lineHeight)) {
-      lh = Number.parseFloat(style.fontSize) * 1.2; // yaklaşık
+      lh = Number.parseFloat(style.fontSize) * 1.2; // approximate
     }
 
     return Math.round(el.scrollHeight / lh);
