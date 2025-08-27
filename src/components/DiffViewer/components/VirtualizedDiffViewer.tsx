@@ -2,7 +2,7 @@ import type { DiffResult } from "json-diff-kit";
 import type { ListChildComponentProps, ListOnScrollProps } from "react-window";
 
 import { Differ, Viewer } from "json-diff-kit";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { VariableSizeList as List } from "react-window";
 
 import type { DiffRowOrCollapsed, SearchState, SegmentItem, VirtualizedDiffViewerProps } from "../types";
