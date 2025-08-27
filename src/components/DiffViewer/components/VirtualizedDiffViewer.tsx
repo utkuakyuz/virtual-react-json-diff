@@ -1,68 +1,19 @@
-import type { DiffResult } from "json-diff-kit";
-import type { ListChildComponentProps, ListOnScrollProps } from "react-window";
+import type { ListOnScrollProps } from "react-window";
 
-import { Differ, Viewer } from "json-diff-kit";
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Differ } from "json-diff-kit";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VariableSizeList as List } from "react-window";
 
-import type { DiffRowOrCollapsed, SearchState, SegmentItem, VirtualizedDiffViewerProps } from "../types";
+import type { DiffRowOrCollapsed, SegmentItem, VirtualizedDiffViewerProps } from "../types";
 
 import { SearchIcon } from "../../SearchIcon";
-import { highlightMatches, performSearch } from "../utils/diffSearchUtils";
+import "../styles/JsonDiffCustomTheme.css";
+import { useRowHeights } from "../hooks/useRowHeights";
+import { useSearch } from "../hooks/useSearch";
+import { COLLAPSED_ROW_HEIGHT, isCollapsed, ROW_HEIGHT } from "../utils/constants";
 import { buildViewFromSegments, generateSegments } from "../utils/preprocessDiff";
 import { DiffMinimap } from "./DiffMinimap";
-import "../styles/JsonDiffCustomTheme.css";
-
-const ROW_HEIGHT = 20;
-const COLLAPSED_ROW_HEIGHT = 20;
-const SEARCH_DEBOUNCE_MS = 300;
-const DIFF_VIEWER_CLASS = "json-diff-viewer-theme-custom";
-
-function isCollapsed(line: any): line is { type: "collapsed"; segmentIndex: number } {
-  return line && typeof line === "object" && "type" in line && line.type === "collapsed";
-}
-
-function ViewerRow({
-  index,
-  style,
-  data,
-}: ListChildComponentProps<{
-  leftDiff: DiffRowOrCollapsed[];
-  rightDiff: DiffRowOrCollapsed[];
-  onExpand: (segmentIndex: number) => void;
-  searchTerm?: string;
-}>) {
-  const { onExpand, searchTerm } = data;
-  const originalLeftLine = data.leftDiff[index];
-  const originalRightLine = data.rightDiff[index];
-
-  if (isCollapsed(originalLeftLine)) {
-    return (
-      <div className="collapsed-button" style={style}>
-        <button onClick={() => onExpand(originalLeftLine.segmentIndex)} className="text-blue-500 underline">
-          Show Hidden Lines
-        </button>
-      </div>
-    );
-  }
-
-  const leftLine = { ...originalLeftLine } as DiffResult;
-  const rightLine = { ...originalRightLine } as DiffResult;
-
-  return (
-    <div style={style}>
-      <Viewer
-        indent={1}
-        className={`${DIFF_VIEWER_CLASS} ${searchTerm ? "has-search" : ""}`}
-        lineNumbers
-        diff={[[leftLine], [rightLine]]}
-        highlightInlineDiff
-        inlineDiffOptions={{ mode: "word" }}
-        syntaxHighlight={{ theme: "monokai" }}
-      />
-    </div>
-  );
-}
+import ViewerRow from "./ViewerRow";
 
 export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   oldValue,
@@ -78,16 +29,9 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   miniMapWidth,
 }) => {
   const listRef = useRef<List>(null);
-  const searchTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const [scrollTop, setScrollTop] = useState(0);
-  const [rowHeights, setRowHeights] = useState<number[]>([]);
 
   const [segments, setSegments] = useState<SegmentItem[]>([]);
-  const [searchState, setSearchState] = useState<SearchState>({
-    term: "",
-    results: [],
-    currentIndex: 0,
-  });
 
   const differ = useMemo(
     () =>
@@ -112,6 +56,8 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   const [leftView, setLeftView] = useState<DiffRowOrCollapsed[]>([]);
   const [rightView, setRightView] = useState<DiffRowOrCollapsed[]>([]);
 
+  const rowHeights = useRowHeights(leftView);
+
   useEffect(() => {
     const generatedSegments = generateSegments(rawLeftDiff);
     setSegments(generatedSegments);
@@ -128,78 +74,14 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
     listRef.current?.resetAfterIndex(0);
   }, [leftView]);
 
-  const handleSearch = useCallback(
-    (term: string) => {
-      setSearchState(prev => ({ ...prev, term }));
-
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-
-      searchTimeoutRef.current = setTimeout(() => {
-        const results = performSearch(term, leftView);
-        setSearchState(prev => ({ ...prev, results, currentIndex: 0 }));
-      }, SEARCH_DEBOUNCE_MS);
+  const { searchState, handleSearch, navigateMatch } = useSearch(
+    leftView,
+    searchTerm,
+    (idx) => {
+      listRef.current?.scrollToItem(idx, "center");
+      onSearchMatch?.(idx);
     },
-    [leftView],
   );
-
-  const navigateToMatch = useCallback(
-    (direction: "next" | "prev") => {
-      if (searchState.results.length === 0)
-        return;
-
-      const newIndex
-                = direction === "next"
-                  ? (searchState.currentIndex + 1) % searchState.results.length
-                  : (searchState.currentIndex - 1 + searchState.results.length) % searchState.results.length;
-
-      setSearchState(prev => ({ ...prev, currentIndex: newIndex }));
-      const matchIndex = searchState.results[newIndex];
-
-      listRef.current?.scrollToItem(matchIndex, "center");
-      if (onSearchMatch) {
-        onSearchMatch(matchIndex);
-      }
-    },
-    [searchState.results, searchState.currentIndex, onSearchMatch],
-  );
-
-  useEffect(() => {
-    if (searchTerm !== undefined) {
-      handleSearch(searchTerm);
-    }
-  }, [searchTerm, handleSearch]);
-
-  useEffect(() => {
-    highlightMatches(searchState.term, DIFF_VIEWER_CLASS);
-
-    const observer = new MutationObserver(() => highlightMatches(searchState.term, DIFF_VIEWER_CLASS));
-    const config = { childList: true, subtree: true };
-
-    const viewer = document.querySelector(`.${DIFF_VIEWER_CLASS}`);
-    if (viewer) {
-      observer.observe(viewer, config);
-    }
-
-    const listContainer = document.querySelector(".virtual-json-diff-list-container");
-    if (listContainer) {
-      const handleScroll = () => {
-        setTimeout(() => highlightMatches(searchState.term, DIFF_VIEWER_CLASS), 100);
-      };
-
-      listContainer.addEventListener("scroll", handleScroll);
-
-      return () => {
-        observer.disconnect();
-        listContainer.removeEventListener("scroll", handleScroll);
-      };
-    }
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [searchState.term]);
 
   const handleExpand = useCallback((segmentIndex: number) => {
     setSegments((prev) => {
@@ -224,7 +106,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
     });
   }, []);
 
-  const handleHideAll = useCallback(() => {
+  const hideAllSegments = useCallback(() => {
     setSegments((prev) => {
       return prev.map((seg) => {
         if (seg.isEqual && seg.isExpanded) {
@@ -240,26 +122,6 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
     });
   }, []);
 
-  const measureRows = useCallback(() => {
-    const preElements = document.querySelectorAll(".json-diff-viewer pre"); // might be improved
-    const newHeights: number[] = [];
-
-    for (let i = 0; i < preElements.length; i += 2) {
-      const leftWraps = getWrapCount(preElements[i]);
-      const rightWraps = getWrapCount(preElements[i + 1]);
-      newHeights.push(Math.max(leftWraps, rightWraps));
-    }
-
-    setRowHeights(newHeights);
-  }, []);
-
-  useLayoutEffect(() => {
-    measureRows();
-    window.addEventListener("resize", measureRows);
-
-    return () => window.removeEventListener("resize", measureRows);
-  }, [measureRows, leftView]);
-
   useEffect(() => {
     listRef.current?.resetAfterIndex(0, true);
   }, [rowHeights]);
@@ -267,19 +129,17 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   const getItemSize = useCallback(
     (index: number) => {
       const leftLine = leftView[index];
-
-      if (isCollapsed(leftLine)) {
+      if (isCollapsed(leftLine))
         return COLLAPSED_ROW_HEIGHT;
-      }
-
-      // Dynamic row height according to wrap count
-      const wraps = rowHeights[index] ?? 1;
-      return wraps * ROW_HEIGHT;
+      return (rowHeights[index] ?? 1) * ROW_HEIGHT;
     },
     [leftView, rowHeights],
   );
 
-  const hasExpandedSegments = useMemo(() => segments.some(seg => seg.isEqual && seg.isExpanded), [segments]);
+  const hasExpandedSegments = useMemo(
+    () => segments.some(seg => seg.isEqual && seg.isExpanded),
+    [segments],
+  );
 
   const listData = useMemo(
     () => ({
@@ -291,27 +151,14 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
     [leftView, rightView, handleExpand, searchState.term],
   );
 
-  function getWrapCount(el: Element) {
-    const style = window.getComputedStyle(el);
-    const lineHeight = Number.parseFloat(style.lineHeight);
-
-    let lh = lineHeight;
-    if (Number.isNaN(lineHeight)) {
-      lh = Number.parseFloat(style.fontSize) * 1.2; // approximate
-    }
-
-    return Math.round(el.scrollHeight / lh);
-  }
-
   return (
     <div className={`diff-viewer-container${className ? ` ${className}` : ""}`}>
+      {/* Header & Search */}
       <div className="json-diff-header">
         {!hideSearch && (
           <div className="search-container">
             <div className="search-input-container">
-              <span role="img" aria-label="search">
-                <SearchIcon />
-              </span>
+              <span role="img" aria-label="search"><SearchIcon /></span>
               <input
                 type="text"
                 placeholder="Search in JSON..."
@@ -325,25 +172,24 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
                   {searchState.currentIndex + 1}
                   {" "}
                   of
+                  {" "}
                   {searchState.results.length}
                   {" "}
                   matches
                 </span>
-                <button onClick={() => navigateToMatch("prev")}>Previous</button>
-                <button onClick={() => navigateToMatch("next")}>Next</button>
+                <button onClick={() => navigateMatch("prev")}>Previous</button>
+                <button onClick={() => navigateMatch("next")}>Next</button>
               </div>
             )}
           </div>
         )}
         <div className="json-diff-title-container">
-          <div>
-            <span>{leftTitle}</span>
-          </div>
-          <div>
-            <span>{rightTitle}</span>
-          </div>
+          <div><span>{leftTitle}</span></div>
+          <div><span>{rightTitle}</span></div>
         </div>
       </div>
+
+      {/* List & Minimap */}
       <div style={{ display: "flex", gap: "8px" }}>
         <List
           ref={listRef}
@@ -354,30 +200,27 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
           overscanCount={28}
           width="100%"
           itemData={listData}
-          onScroll={({ scrollOffset }: ListOnScrollProps) => {
-            setScrollTop(scrollOffset);
-          }}
+          onScroll={({ scrollOffset }: ListOnScrollProps) => setScrollTop(scrollOffset)}
         >
           {ViewerRow}
         </List>
-        <div>
-          <DiffMinimap
-            leftDiff={leftView}
-            rightDiff={rightView}
-            height={height}
-            onScroll={(scrollTop) => {
-              listRef.current?.scrollTo(scrollTop);
-            }}
-            currentScrollTop={scrollTop}
-            miniMapWidth={miniMapWidth}
-            searchResults={searchState.results}
-            currentMatchIndex={searchState.currentIndex}
-          />
-        </div>
+
+        <DiffMinimap
+          leftDiff={leftView}
+          rightDiff={rightView}
+          height={height}
+          miniMapWidth={miniMapWidth}
+          currentScrollTop={scrollTop}
+          searchResults={searchState.results}
+          currentMatchIndex={searchState.currentIndex}
+          onScroll={scrollTop => listRef.current?.scrollTo(scrollTop)}
+        />
       </div>
+
+      {/* Hide All Expanded Lines Button */}
       {hasExpandedSegments && (
         <div className="hide-all-button">
-          <button onClick={handleHideAll}>Hide All Expanded Lines</button>
+          <button onClick={hideAllSegments}>Hide All Expanded Lines</button>
         </div>
       )}
     </div>
