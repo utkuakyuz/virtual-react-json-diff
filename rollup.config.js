@@ -20,7 +20,7 @@ export default [
         inlineDynamicImports: true,
       },
     ],
-    external: [...Object.keys(packageJson.peerDependencies || {}), "formik"],
+    external: [...Object.keys(packageJson.peerDependencies || {})],
     plugins: [postcss(), image(), typescript(), peerDepsExternal(), resolve(), commonjs(), terser()],
   },
   {

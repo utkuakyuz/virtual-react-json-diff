@@ -1,3 +1,7 @@
+:root {
+  --diff-row-height: 20px;
+}
+
 .diff-viewer-container {
   background-color: #282a36;
   font-size: 12px;
@@ -148,6 +152,7 @@
 .json-diff-viewer.json-diff-viewer-theme-custom tr td {
   max-width: 260px;
   width: 300px !important;
+  vertical-align: unset;
 }
 
 .json-diff-viewer.json-diff-viewer-theme-custom tr td pre {
@@ -157,7 +162,7 @@
   overflow: hidden;
   margin: 0;
   font-size: 12px;
-  line-height: 20px;
+  line-height: var(--diff-row-height);
   white-space: pre-wrap;
   word-break: break-all;
 }
@@ -186,7 +191,6 @@
   padding: 0 4px;
   border-left: 0;
   border-bottom: none;
-  vertical-align: unset;
   max-width: 30px;
 }
 
