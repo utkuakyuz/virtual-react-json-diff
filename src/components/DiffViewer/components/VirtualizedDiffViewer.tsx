@@ -253,7 +253,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
     setRowHeights(newHeights);
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     measureRows();
     window.addEventListener("resize", measureRows);
 
