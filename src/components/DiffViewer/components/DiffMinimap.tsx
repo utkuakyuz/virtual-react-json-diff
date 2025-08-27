@@ -2,17 +2,14 @@ import React, { useCallback, useEffect, useMemo, useRef } from "react";
 
 import type { DiffMinimapProps, DiffRowOrCollapsed } from "../types";
 
-const ROW_HEIGHT = 20;
+import { getRowHeightFromCSS } from "../utils/constants";
+
 const SEARCH_HIGHLIGHT_COLOR = "#ffd700";
 const CURRENT_MATCH_COLOR = "#ff4500";
 const EQUAL_LINE_COLOR = "#363743";
 const ADD_LINE_COLOR = "#4CAF50";
 const REMOVE_LINE_COLOR = "#F44336";
 const MODIFY_LINE_COLOR = "#FFC107";
-
-// const MINIMAP_HOVER_SCROLL_COLOR = "#2196f3cc";
-// const MINIMAP_SCROLL_COLOR = "#2196f380";
-
 const MINIMAP_HOVER_SCROLL_COLOR = "#7B7B7Bcc";
 const MINIMAP_SCROLL_COLOR = "#7B7B7B80";
 
@@ -29,6 +26,8 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
+
+  const ROW_HEIGHT = useMemo(() => getRowHeightFromCSS(), []);
 
   // Memoize expensive calculations
   const { totalLines, viewportHeight } = useMemo(() => {

@@ -1,12 +1,22 @@
 export const DIFF_VIEWER_CLASS = "json-diff-viewer-theme-custom";
 
-function getRowHeightFromCSS(): number {
-  const root = document.documentElement;
-  const value = getComputedStyle(root).getPropertyValue("--diff-row-height");
-  return Number.parseInt(value, 10);
-}
+export const DEFAULT_ROW_HEIGHT = 20; // safe fallback
 
-export const ROW_HEIGHT = getRowHeightFromCSS();
+export function getRowHeightFromCSS(): number {
+  if (typeof document === "undefined") {
+    return DEFAULT_ROW_HEIGHT;
+  }
+
+  try {
+    const root = document.documentElement;
+    const value = getComputedStyle(root).getPropertyValue("--diff-row-height");
+    const parsed = Number.parseInt(value, 10);
+    return Number.isNaN(parsed) ? DEFAULT_ROW_HEIGHT : parsed;
+  }
+  catch {
+    return DEFAULT_ROW_HEIGHT;
+  }
+}
 
 export const COLLAPSED_ROW_HEIGHT = 20;
 

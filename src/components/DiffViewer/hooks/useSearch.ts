@@ -64,5 +64,11 @@ export function useSearch(leftView: DiffRowOrCollapsed[], initialTerm?: string, 
     return () => observer.disconnect();
   }, [searchState.term]);
 
+  useEffect(() => {
+    if (initialTerm !== undefined) {
+      handleSearch(initialTerm);
+    }
+  }, [initialTerm, handleSearch]);
+
   return { searchState, handleSearch, navigateMatch };
 }

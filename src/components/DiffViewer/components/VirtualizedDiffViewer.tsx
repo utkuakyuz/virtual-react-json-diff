@@ -10,7 +10,7 @@ import { SearchIcon } from "../../SearchIcon";
 import "../styles/JsonDiffCustomTheme.css";
 import { useRowHeights } from "../hooks/useRowHeights";
 import { useSearch } from "../hooks/useSearch";
-import { COLLAPSED_ROW_HEIGHT, isCollapsed, ROW_HEIGHT } from "../utils/constants";
+import { COLLAPSED_ROW_HEIGHT, getRowHeightFromCSS, isCollapsed } from "../utils/constants";
 import { buildViewFromSegments, generateSegments } from "../utils/preprocessDiff";
 import { DiffMinimap } from "./DiffMinimap";
 import ViewerRow from "./ViewerRow";
@@ -32,6 +32,8 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   const [scrollTop, setScrollTop] = useState(0);
 
   const [segments, setSegments] = useState<SegmentItem[]>([]);
+
+  const ROW_HEIGHT = useMemo(() => getRowHeightFromCSS(), []);
 
   const differ = useMemo(
     () =>
