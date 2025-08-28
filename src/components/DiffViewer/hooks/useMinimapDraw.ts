@@ -1,4 +1,3 @@
-// useMinimapDraw.js
 import { useCallback, useEffect } from "react";
 
 import type { DiffRowOrCollapsed } from "../types";
