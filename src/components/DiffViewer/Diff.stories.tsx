@@ -43,6 +43,14 @@ const meta: Meta<StoryProps> = {
         category: "Main Configuration",
       },
     },
+    inlineDiffOptions: {
+      description: "CSS class name for the diff viewer container",
+      control: "text",
+      table: {
+        disable: true,
+        category: "Main Configuration",
+      },
+    },
     className: {
       description: "CSS class name for the diff viewer container",
       control: "text",
@@ -56,6 +64,11 @@ const meta: Meta<StoryProps> = {
     rightTitle: {
       description: "Title for the right side of the diff viewer",
       control: "text",
+      table: { category: "Main Configuration" },
+    },
+    miniMapWidth: {
+      description: "Width of Minimap (default 20)",
+      control: "number",
       table: { category: "Main Configuration" },
     },
     hideSearch: {
