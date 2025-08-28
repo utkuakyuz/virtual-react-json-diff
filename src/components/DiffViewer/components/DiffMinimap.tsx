@@ -40,7 +40,7 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
       totalLines,
       viewportHeight,
     };
-  }, [height, leftDiff.length, rightDiff.length, leftDiff]);
+  }, [height, leftDiff.length, rightDiff.length]);
 
   // Memoize the drawLine function since it's used in a loop
   const drawLine = useCallback((ctx: CanvasRenderingContext2D, line: DiffRowOrCollapsed, y: number, x: number, width: number) => {
@@ -129,32 +129,66 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
     drawMinimap();
   }, [drawMinimap]);
 
+  const handleWindowMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDragging.current)
+      return;
+    if (!containerRef.current)
+      return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const relativeY = e.clientY - rect.top;
+    const viewportCenter = relativeY - viewportHeight / 2;
+    const scrollTop = (viewportCenter / height) * totalLines * ROW_HEIGHT;
+
+    if (height <= 0 || totalLines <= 0)
+      return;
+    if (Number.isNaN(scrollTop) || !Number.isFinite(scrollTop))
+      return;
+
+    const maximumBottomLimit = e.clientY + viewportHeight / 2;
+
+    if (maximumBottomLimit > rect.bottom) {
+      const maximumScrollToBottom = rect.bottom - viewportHeight / 2 - rect.top;
+      const forcedScrollTop = (maximumScrollToBottom / height) * totalLines * ROW_HEIGHT;
+
+      if (!Number.isNaN(forcedScrollTop) && Number.isFinite(forcedScrollTop)) {
+        onScroll(Math.max(0, forcedScrollTop - 250));
+      }
+    }
+    else {
+      onScroll(Math.max(0, scrollTop));
+    }
+  }, [height, totalLines, viewportHeight, onScroll]);
+
+  const handleWindowMouseUp = useCallback(() => {
+    isDragging.current = false;
+    window.removeEventListener("mousemove", handleWindowMouseMove);
+    window.removeEventListener("mouseup", handleWindowMouseUp);
+  }, [handleWindowMouseMove]);
+
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       isDragging.current = true;
+      window.addEventListener("mousemove", handleWindowMouseMove);
+      window.addEventListener("mouseup", handleWindowMouseUp);
+
       if (!containerRef.current)
         return;
-
       const rect = containerRef.current.getBoundingClientRect();
       const relativeY = e.clientY - rect.top;
-
-      if (height <= 0 || totalLines <= 0)
-        return;
-
-      const canvas = canvasRef.current;
-      if (!canvas)
-        return;
-
-      const ctx = canvas.getContext("2d");
-      if (!ctx)
-        return;
-      drawScrollBox(ctx, "rgba(33, 150, 243, 0.8)");
 
       const viewportCenter = relativeY - viewportHeight / 2;
       const scrollTop = (viewportCenter / height) * totalLines * ROW_HEIGHT;
 
       if (!Number.isNaN(scrollTop) && Number.isFinite(scrollTop)) {
         onScroll(Math.max(0, scrollTop));
+      }
+
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext("2d");
+        if (ctx)
+          drawScrollBox(ctx, "rgba(33, 150, 243, 0.8)");
       }
     },
     [height, totalLines, viewportHeight, onScroll],
@@ -166,52 +200,25 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
         return;
       const rect = containerRef.current.getBoundingClientRect();
       const relativeY = e.clientY - rect.top; // e.client y - rect top (120)
-      const viewportCenter = relativeY - viewportHeight / 2; // 0 when mouse is at the center of the drag square
-      const scrollTop = (viewportCenter / height) * totalLines * ROW_HEIGHT;
 
       const totalContentHeight = totalLines * ROW_HEIGHT;
       const scrollSquareTop = (currentScrollTop / totalContentHeight) * height;
 
-      const isHovering = relativeY > scrollSquareTop && relativeY < scrollSquareTop + viewportHeight;
-
-      const canvas = canvasRef.current;
+      const isHovering
+      = relativeY > scrollSquareTop && relativeY < scrollSquareTop + viewportHeight;
 
       drawMinimap();
 
+      const canvas = canvasRef.current;
       if (canvas) {
         const ctx = canvas.getContext("2d");
         if (!ctx)
           return;
-        if (isHovering) {
-          // This is active when box is hovered
+        if (isHovering)
           drawScrollBox(ctx, MINIMAP_HOVER_SCROLL_COLOR);
-        }
-      }
-
-      if (!isDragging.current)
-        return;
-
-      if (height <= 0 || totalLines <= 0)
-        return;
-
-      if (Number.isNaN(scrollTop) || !Number.isFinite(scrollTop))
-        return;
-
-      const maximumBottomLimit = e.clientY + viewportHeight / 2;
-
-      if (maximumBottomLimit > rect.bottom) {
-        const maximumScrollToBottom = rect.bottom - viewportHeight / 2 - rect.top;
-        const forcedScrollTop = (maximumScrollToBottom / height) * totalLines * ROW_HEIGHT;
-
-        if (!Number.isNaN(forcedScrollTop) && Number.isFinite(forcedScrollTop)) {
-          onScroll(Math.max(0, forcedScrollTop - 250));
-        }
-      }
-      else {
-        onScroll(Math.max(0, scrollTop));
       }
     },
-    [height, totalLines, viewportHeight, onScroll],
+    [height, totalLines, viewportHeight, currentScrollTop, drawMinimap],
   );
 
   const handleMouseUp = useCallback(() => {
@@ -219,16 +226,6 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
   }, []);
 
   const handleMouseLeave = () => {
-    const canvas = canvasRef.current;
-    if (!canvas)
-      return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx)
-      return;
-
-    if (isDragging.current) {
-      isDragging.current = false;
-    }
     drawMinimap(); // resets full state
   };
 
