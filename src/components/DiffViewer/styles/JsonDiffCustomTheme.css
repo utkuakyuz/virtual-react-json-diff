@@ -35,25 +35,25 @@
   }
 }
 
-.diff-viewer-container {
-  button {
-    border-radius: 4px;
-    border: 1px solid transparent;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    color: white;
-    background-color: #1a1a1a;
-    cursor: pointer;
-    transition: border-color 0.25s;
-  }
-  button:hover {
-    border-color: #649dffab;
-  }
-  button:focus,
-  button:focus-visible {
-    outline: 4px auto -webkit-focus-ring-color;
-  }
+.diff-viewer-container button {
+  border-radius: 4px;
+  border: 1px solid transparent;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  color: white;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+.diff-viewer-container button:hover {
+  border-color: #649dffab;
+}
+
+.diff-viewer-container button:focus,
+diff-viewer-container button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
 }
 
 .json-diff-header {
