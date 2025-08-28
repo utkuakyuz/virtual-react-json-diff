@@ -92,7 +92,7 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
           drawScrollBox(ctx, MINIMAP_HOVER_SCROLL_COLOR);
       }
     },
-    [height, totalLines, viewportHeight, currentScrollTop, drawMinimap],
+    [height, totalLines, viewportHeight, currentScrollTop, drawMinimap, ROW_HEIGHT],
   );
 
   return (

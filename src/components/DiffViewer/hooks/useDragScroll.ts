@@ -1,5 +1,4 @@
-// hooks/useDragScroll.ts
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useState } from "react";
 
 type UseDragScrollParams = {
   height: number;
@@ -12,7 +11,7 @@ type UseDragScrollParams = {
 
 type UseDragScrollReturn = {
   handleMouseDown: (e: React.MouseEvent) => void;
-  isDragging: React.MutableRefObject<boolean>;
+  isDragging: boolean;
 };
 
 export function useDragScroll({
@@ -23,7 +22,7 @@ export function useDragScroll({
   onScroll,
   containerRef,
 }: UseDragScrollParams): UseDragScrollReturn {
-  const isDragging = useRef(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const isValidScroll = useCallback((scrollTop: number): boolean => {
     return !Number.isNaN(scrollTop) && Number.isFinite(scrollTop);
@@ -67,7 +66,7 @@ export function useDragScroll({
 
   // Handle mouse movement during drag
   const handleWindowMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging.current || !containerRef.current)
+    if (!isDragging || !containerRef.current)
       return;
 
     if (height <= 0 || totalLines <= 0)
@@ -84,14 +83,14 @@ export function useDragScroll({
 
   // Handle mouse up - stop dragging and cleanup
   const handleWindowMouseUp = useCallback(() => {
-    isDragging.current = false;
+    setIsDragging(false);
     window.removeEventListener("mousemove", handleWindowMouseMove);
     window.removeEventListener("mouseup", handleWindowMouseUp);
   }, [handleWindowMouseMove]);
 
   // Handle initial mouse down - start dragging
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    isDragging.current = true;
+    setIsDragging(true);
 
     window.addEventListener("mousemove", handleWindowMouseMove);
     window.addEventListener("mouseup", handleWindowMouseUp);
@@ -107,15 +106,6 @@ export function useDragScroll({
     containerRef,
     handleBoundaryScroll,
   ]);
-
-  useEffect(() => {
-    const handleMouseUp = () => {
-      isDragging.current = false;
-    };
-
-    window.addEventListener("mouseup", handleMouseUp);
-    return () => window.removeEventListener("mouseup", handleMouseUp);
-  }, []);
 
   return {
     handleMouseDown,

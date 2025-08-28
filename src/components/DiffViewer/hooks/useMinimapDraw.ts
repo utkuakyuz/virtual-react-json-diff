@@ -20,7 +20,7 @@ type Props = {
   currentScrollTop: number;
   searchResults: number[];
   currentMatchIndex: number;
-  isDragging: React.MutableRefObject<boolean>;
+  isDragging: boolean;
   totalLines: number;
   ROW_HEIGHT: number;
   viewportHeight: number;
@@ -115,13 +115,13 @@ export function useMinimapDraw({
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (!isDragging.current) {
+    if (!isDragging) {
       drawScrollBox(ctx, MINIMAP_SCROLL_COLOR);
     }
     else {
       drawScrollBox(ctx, MINIMAP_HOVER_SCROLL_COLOR);
     }
-  }, [leftDiff, rightDiff, height, currentScrollTop, searchResults, currentMatchIndex, drawLine, viewportHeight]);
+  }, [leftDiff, rightDiff, height, currentScrollTop, searchResults, currentMatchIndex, drawLine, viewportHeight, drawScrollBox, isDragging]);
 
   useEffect(() => {
     drawMinimap();
