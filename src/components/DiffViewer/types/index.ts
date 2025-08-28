@@ -1,4 +1,4 @@
-import type { DifferOptions, DiffResult } from "json-diff-kit";
+import type { DifferOptions, DiffResult, InlineDiffOptions } from "json-diff-kit";
 
 export type DiffRow = {
   originalIndex: number;
@@ -44,6 +44,7 @@ export type VirtualizedDiffViewerProps = {
   differOptions?: DifferOptions;
   className?: string;
   miniMapWidth?: number;
+  inlineDiffOptions?: InlineDiffOptions;
 };
 
 export type DiffMinimapProps = {
