@@ -27,6 +27,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   differOptions,
   className,
   miniMapWidth,
+  inlineDiffOptions,
 }) => {
   const listRef = useRef<List>(null);
   const [scrollTop, setScrollTop] = useState(0);
@@ -149,8 +150,9 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
       rightDiff: rightView,
       onExpand: handleExpand,
       searchTerm: searchState.term,
+      inlineDiffOptions,
     }),
-    [leftView, rightView, handleExpand, searchState.term],
+    [leftView, rightView, handleExpand, searchState.term, inlineDiffOptions],
   );
 
   return (

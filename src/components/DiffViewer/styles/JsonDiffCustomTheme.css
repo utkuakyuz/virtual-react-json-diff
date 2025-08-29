@@ -35,25 +35,25 @@
   }
 }
 
-.diff-viewer-container {
-  button {
-    border-radius: 4px;
-    border: 1px solid transparent;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    color: white;
-    background-color: #1a1a1a;
-    cursor: pointer;
-    transition: border-color 0.25s;
-  }
-  button:hover {
-    border-color: #649dffab;
-  }
-  button:focus,
-  button:focus-visible {
-    outline: 4px auto -webkit-focus-ring-color;
-  }
+.diff-viewer-container button {
+  border-radius: 4px;
+  border: 1px solid transparent;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  color: white;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+.diff-viewer-container button:hover {
+  border-color: #649dffab;
+}
+
+.diff-viewer-container button:focus,
+.diff-viewer-container button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
 }
 
 .json-diff-header {
@@ -145,14 +145,14 @@
   border-radius: 2px;
 }
 
-.json-diff-viewer.json-diff-viewer-theme-custom .line-number {
-  color: #999;
+.json-diff-viewer.json-diff-viewer-theme-custom tr td {
+  vertical-align: unset;
+  padding: 0;
 }
 
-.json-diff-viewer.json-diff-viewer-theme-custom tr td {
-  max-width: 260px;
-  width: 300px !important;
-  vertical-align: unset;
+.json-diff-viewer.json-diff-viewer-theme-custom tr td.line-number {
+  color: #999;
+  padding: 2px;
 }
 
 .json-diff-viewer.json-diff-viewer-theme-custom tr td pre {
@@ -162,8 +162,20 @@
   overflow: hidden;
   margin: 0;
   font-size: 12px;
+  min-width: 300px;
   line-height: var(--diff-row-height);
   white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom tr td pre span.inline-diff-add {
+  background: rgba(0, 0, 0, 0.08);
+  text-decoration: underline;
+  word-break: break-all;
+}
+.json-diff-viewer.json-diff-viewer-theme-custom tr td pre span.inline-diff-remove {
+  background: rgba(0, 0, 0, 0.08);
+  text-decoration: line-through;
   word-break: break-all;
 }
 
@@ -191,7 +203,12 @@
   padding: 0 4px;
   border-left: 0;
   border-bottom: none;
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom tr td.line-number {
   max-width: 30px;
+  min-width: 30px;
+  width: 30px !important;
 }
 
 .json-diff-viewer.json-diff-viewer-theme-custom tr.expand-line td {

@@ -1,4 +1,4 @@
-import type { DiffResult } from "json-diff-kit";
+import type { DiffResult, InlineDiffOptions } from "json-diff-kit";
 import type { ListChildComponentProps } from "react-window";
 
 import { Viewer } from "json-diff-kit";
@@ -16,8 +16,9 @@ function ViewerRow({
   rightDiff: DiffRowOrCollapsed[];
   onExpand: (segmentIndex: number) => void;
   searchTerm?: string;
+  inlineDiffOptions?: InlineDiffOptions;
 }>) {
-  const { onExpand, searchTerm } = data;
+  const { onExpand, searchTerm, inlineDiffOptions } = data;
   const originalLeftLine = data.leftDiff[index];
   const originalRightLine = data.rightDiff[index];
 
@@ -37,12 +38,12 @@ function ViewerRow({
   return (
     <div style={style}>
       <Viewer
-        indent={1}
+        indent={4}
         className={`${DIFF_VIEWER_CLASS} ${searchTerm ? "has-search" : ""}`}
         lineNumbers
         diff={[[leftLine], [rightLine]]}
         highlightInlineDiff
-        inlineDiffOptions={{ mode: "word" }}
+        inlineDiffOptions={{ mode: "char", ...inlineDiffOptions }}
         syntaxHighlight={{ theme: "monokai" }}
       />
     </div>
