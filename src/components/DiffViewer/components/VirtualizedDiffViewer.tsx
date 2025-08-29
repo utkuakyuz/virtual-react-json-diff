@@ -152,7 +152,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
       searchTerm: searchState.term,
       inlineDiffOptions,
     }),
-    [leftView, rightView, handleExpand, searchState.term],
+    [leftView, rightView, handleExpand, searchState.term, inlineDiffOptions],
   );
 
   return (
