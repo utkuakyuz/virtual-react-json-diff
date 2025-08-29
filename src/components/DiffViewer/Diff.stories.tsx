@@ -44,7 +44,7 @@ const meta: Meta<StoryProps> = {
       },
     },
     inlineDiffOptions: {
-      description: "CSS class name for the diff viewer container",
+      description: "Options for inline diff highlighting",
       control: "text",
       table: {
         disable: true,
