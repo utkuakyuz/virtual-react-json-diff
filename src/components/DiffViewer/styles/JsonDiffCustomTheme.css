@@ -78,7 +78,7 @@
 }
 
 .json-diff-header .json-diff-title-container div {
-  flex: 0.47;
+  flex: 0.495;
 }
 
 .json-diff-header .search-input-container {
@@ -162,6 +162,7 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   overflow: hidden;
   margin: 0;
+  padding-left: 4px;
   font-size: 12px;
   min-width: 300px;
   line-height: var(--diff-row-height);
