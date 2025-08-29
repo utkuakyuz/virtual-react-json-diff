@@ -2,6 +2,12 @@
   --diff-row-height: 20px;
 }
 
+.virtual-json-diff-list-container {
+  --sb-track-color: #232e33;
+  --sb-thumb-color: #4560f8;
+  --sb-size: 6px;
+}
+
 .diff-viewer-container {
   background-color: #282a36;
   font-size: 12px;
@@ -9,30 +15,131 @@
   padding-bottom: 12px;
 }
 
-.virtual-json-diff-list-container {
-  --sb-track-color: #232e33;
-  --sb-thumb-color: #4560f8;
-  --sb-size: 6px;
+.json-diff-viewer-virtual pre {
+  overflow-x: auto;
+  white-space: pre;
 }
 
-.virtual-json-diff-list-container::-webkit-scrollbar {
-  width: var(--sb-size);
+.json-diff-viewer.json-diff-viewer-theme-custom {
+  background: #282a36;
+  color: #f8f8f2;
+  width: 100%;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-.virtual-json-diff-list-container::-webkit-scrollbar-track {
-  background: var(--sb-track-color);
-  border-radius: 3px;
+.json-diff-viewer.json-diff-viewer-theme-custom tr td {
+  max-width: min-content;
+  vertical-align: unset;
+  padding: 0;
 }
 
-.virtual-json-diff-list-container::-webkit-scrollbar-thumb {
-  background: var(--sb-thumb-color);
-  border-radius: 3px;
+.json-diff-viewer.json-diff-viewer-theme-custom tr td.line-number {
+  color: #999;
+  padding: 2px;
 }
 
-@supports not selector(::-webkit-scrollbar) {
-  .virtual-json-diff-list-container {
-    scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
-  }
+.json-diff-viewer.json-diff-viewer-theme-custom table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom tr td:nth-child(1),
+.json-diff-viewer.json-diff-viewer-theme-custom tr td:nth-child(3) {
+  width: 30px !important;
+  min-width: 30px;
+  max-width: 30px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom tr td:nth-child(2),
+.json-diff-viewer.json-diff-viewer-theme-custom tr td:nth-child(4) {
+  width: auto;
+  max-width: 300px;
+  overflow-wrap: anywhere;
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom tr td pre {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  overflow: hidden;
+  margin: 0;
+  padding-left: 4px;
+  margin-right: 4px;
+  font-size: 12px;
+  min-width: 300px;
+  line-height: var(--diff-row-height);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* ADD REMOVE MODIFY COLORS */
+.json-diff-viewer.json-diff-viewer-theme-custom tr .line-add {
+  border-left: 1px solid #a5ff99;
+  background: rgba(100, 182, 67, 0.08);
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom tr .line-remove {
+  border-left: 1px solid #ffaa99;
+  background: rgba(160, 128, 100, 0.08);
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom tr .line-modify {
+  border-left: 1px solid #ecff99;
+  background: rgba(182, 180, 67, 0.08);
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom tr .line-number {
+  background: unset;
+  padding: 0 4px;
+  border-left: 0;
+  border-bottom: none;
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom tr.expand-line td {
+  text-align: center;
+}
+
+/* EDITOR COLORS  */
+.json-diff-viewer.json-diff-viewer-theme-custom tr td pre span.inline-diff-add {
+  background: rgba(0, 0, 0, 0.08);
+  text-decoration: underline;
+  word-break: break-all;
+}
+.json-diff-viewer.json-diff-viewer-theme-custom tr td pre span.inline-diff-remove {
+  background: rgba(0, 0, 0, 0.08);
+  text-decoration: line-through;
+  word-break: break-all;
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom tr:hover {
+  background: #53535f54;
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom tr.expand-line button {
+  color: #1e616d;
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom .string {
+  color: #e6db74;
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom .number,
+.json-diff-viewer.json-diff-viewer-theme-custom .boolean,
+.json-diff-viewer.json-diff-viewer-theme-custom .null {
+  color: #ae81ff;
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom .key {
+  color: #66d9ef;
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom .invalid {
+  background: #960050;
+  color: #fff;
 }
 
 .diff-viewer-container button {
@@ -56,6 +163,44 @@
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.collapsed-button {
+  display: flex;
+  background-color: #262626;
+  justify-content: center;
+  align-items: center;
+}
+
+.collapsed-button button {
+  height: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 0px 8px;
+  line-height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #26262600;
+  border-width: 1px;
+  border-color: #434343;
+  cursor: pointer;
+}
+
+.hide-all-button {
+  text-align: right;
+  margin-top: 10px;
+}
+
+.hide-all-button button {
+  height: 28px;
+  padding: 0 8px;
+  line-height: 20px;
+  background: #26262600;
+  color: white;
+  border-width: 1px;
+  border-color: #434343;
+  cursor: pointer;
+}
+
+/* HEADER */
 .json-diff-header {
   background: #2f323e;
   padding: 10px;
@@ -66,11 +211,6 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-.json-diff-header .search-container {
-  margin-bottom: 8px;
-  width: 100%;
-}
-
 .json-diff-header .json-diff-title-container {
   width: 100%;
   display: flex;
@@ -79,6 +219,12 @@
 
 .json-diff-header .json-diff-title-container div {
   flex: 0.495;
+}
+
+/* HEADER SEARCH */
+.json-diff-header .search-container {
+  margin-bottom: 8px;
+  width: 100%;
 }
 
 .json-diff-header .search-input-container {
@@ -120,124 +266,11 @@
   color: white;
 }
 
-.json-diff-viewer-virtual pre {
-  overflow-x: auto;
-  white-space: pre;
-}
-
-.json-diff-viewer-virtual pre::-webkit-scrollbar {
-  display: none;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom {
-  background: #282a36;
-  color: #f8f8f2;
-  width: 100%;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
-
 .json-diff-viewer.json-diff-viewer-theme-custom.has-search tr td pre span.token.search-match {
   background-color: #ffeb3b;
   color: #000;
   padding: 0 2px;
   border-radius: 2px;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr td {
-  max-width: min-content;
-  vertical-align: unset;
-  padding: 0;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr td.line-number {
-  color: #999;
-  padding: 2px;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr td pre {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  overflow: hidden;
-  margin: 0;
-  padding-left: 4px;
-  font-size: 12px;
-  min-width: 300px;
-  line-height: var(--diff-row-height);
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr td pre span.inline-diff-add {
-  background: rgba(0, 0, 0, 0.08);
-  text-decoration: underline;
-  word-break: break-all;
-}
-.json-diff-viewer.json-diff-viewer-theme-custom tr td pre span.inline-diff-remove {
-  background: rgba(0, 0, 0, 0.08);
-  text-decoration: line-through;
-  word-break: break-all;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr:hover {
-  background: #53535f54;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr .line-add {
-  border-left: 1px solid #a5ff99;
-  background: rgba(100, 182, 67, 0.08);
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr .line-remove {
-  border-left: 1px solid #ffaa99;
-  background: rgba(160, 128, 100, 0.08);
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr .line-modify {
-  border-left: 1px solid #ecff99;
-  background: rgba(182, 180, 67, 0.08);
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr .line-number {
-  background: unset;
-  padding: 0 4px;
-  border-left: 0;
-  border-bottom: none;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr td.line-number {
-  max-width: 30px;
-  min-width: 30px;
-  width: 30px !important;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr.expand-line td {
-  text-align: center;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr.expand-line button {
-  color: #1e616d;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom .string {
-  color: #e6db74;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom .number,
-.json-diff-viewer.json-diff-viewer-theme-custom .boolean,
-.json-diff-viewer.json-diff-viewer-theme-custom .null {
-  color: #ae81ff;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom .key {
-  color: #66d9ef;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom .invalid {
-  background: #960050;
-  color: #fff;
 }
 
 .json-diff-viewer.json-diff-viewer-theme-custom .search-highlight {
@@ -252,39 +285,27 @@
   color: #000 !important;
 }
 
-.collapsed-button {
-  display: flex;
-  background-color: #262626;
-  justify-content: center;
-  align-items: center;
+/* WEBKIT SCROLLBAR */
+.json-diff-viewer-virtual pre::-webkit-scrollbar {
+  display: none;
 }
 
-.collapsed-button button {
-  height: 20px;
-  color: rgba(255, 255, 255, 0.7);
-  padding: 0px 8px;
-  line-height: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #26262600;
-  border-width: 1px;
-  border-color: #434343;
-  cursor: pointer;
+.virtual-json-diff-list-container::-webkit-scrollbar {
+  width: var(--sb-size);
 }
 
-.hide-all-button {
-  text-align: right;
-  margin-top: 10px;
+.virtual-json-diff-list-container::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  border-radius: 3px;
 }
 
-.hide-all-button button {
-  height: 28px;
-  padding: 0 8px;
-  line-height: 20px;
-  background: #26262600;
-  color: white;
-  border-width: 1px;
-  border-color: #434343;
-  cursor: pointer;
+.virtual-json-diff-list-container::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 3px;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  .virtual-json-diff-list-container {
+    scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
+  }
 }
