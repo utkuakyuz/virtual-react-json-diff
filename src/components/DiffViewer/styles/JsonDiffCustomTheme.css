@@ -52,7 +52,7 @@
 }
 
 .diff-viewer-container button:focus,
-diff-viewer-container button:focus-visible {
+.diff-viewer-container button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
