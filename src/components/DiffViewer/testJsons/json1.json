@@ -1,71 +1,75 @@
 {
   "itemCode": "12345",
-  "categoryType": "B",
-  "label": "ItemAlpha4",
-  "type": "F",
+  "categoryType": "Electronics",
+  "label": "Smartphone X100",
+  "typeCode": "Phone",
   "isActive": true,
+  "functionCode": "SALE",
+  "priceMax": 899,
+  "notes": "Upgraded 2025 Pro Edition. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed quam nibh, dignissim nec efficitur eu, pharetra et enim.",
+  "referenceNo": "SMX100-REF",
   "version": {
-    "version": "0.0.0",
-    "comments": null
+    "version": "1.0.0",
+    "comments": "Initial release"
   },
-  "alternateRefNoSet": [],
   "configSet": [
     {
-      "configCode": "UN",
-      "configName": "Cfg1",
-      "isEnabled": false,
-      "hasOptionA": false,
-      "hasOptionB": false,
-      "hasOptionC": false,
-      "hasFlagX": true,
-      "subAnalysisPeriod": null,
-      "ageFactor": null,
-      "waveformSet": [
+      "isEnabled": true,
+      "variantSet": [
         {
-          "name": "wf",
+          "name": "Black",
           "order": 1,
-          "type": "U",
+          "stock": 120,
           "valueSet": []
         }
       ],
-      "freqSet": [],
+      "priceSet": [],
+      "name": "Screen Protector",
+      "vieoUrl": "FakeURL",
+      "vieoUri": "FakeURI",
+      "vieoToken": "Fake Token Lorem Ipsum Dolor Sit Amet",
+      "videoMatch": "Fake Match Lorem Ipsum Dolor Sit Amet",
       "intervalSet": [],
       "attributeSet": [
         {
-          "name": "attr1",
-          "isDigital": false,
-          "order": 1,
-          "code": "U",
-          "secondarySet": []
+          "name": "RAM",
+          "typeCode": "Option",
+          "secondarySet": ["8GB", "12GB"]
+        },
+        {
+          "name": "Storage",
+          "typeCode": "Option",
+          "secondarySet": ["128GB", "256GB"]
         }
       ],
       "commentSet": [],
-      "widthSet": [],
       "flagSet": [],
       "subConfigSet": [
         {
-          "name": "1 sc1",
-          "order": 1,
-          "useComponentPower": false
+          "name": "Charger Included",
+          "order": 1
+        }
+      ],
+      "subConfigSet2": [
+        {
+          "name": "Headphones Included",
+          "order": 1
         }
       ],
       "groupSet": [
         {
-          "order": 1,
-          "name": "GRP",
-          "comment": "",
-          "bandwidth": 111,
-          "pulseType": "A",
+          "order": 13,
+          "bundleType": "Starter Pack",
           "attribute": {
-            "name": "attr1",
-            "typeCode": "U",
-            "secondarySet": []
+            "name": "Warranty",
+            "secondarySet": ["1 Year"]
           },
           "subConfigs": [
             {
-              "name": "1 sc1",
+              "name": "Screen Protector",
               "order": 1,
-              "useComponentPower": false
+              "validateStock": true,
+              "useComponentPrice": false
             }
           ]
         }

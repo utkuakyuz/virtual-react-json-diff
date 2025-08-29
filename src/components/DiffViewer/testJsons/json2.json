@@ -1,68 +1,77 @@
 {
   "itemCode": "12345",
-  "categoryType": "B",
-  "label": "ItemAlpha4",
-  "typeCode": "F",
-  "isActive": true,
-  "functionCode": "AA",
-  "freqMin": 666,
-  "freqMax": 777,
-  "notes": "",
-  "referenceNo": null,
+  "label": "Smartphone X200 Pro",
+  "typeCode": "Phone",
+  "isActive": false,
+  "functionCode": "PREORDER",
+  "priceMin": 1099,
+  "priceMax": 1099,
+  "notes": "Upgraded 2025 Pro Edition.",
+  "referenceNo": "SMX200-REF",
   "version": {
-    "version": "0.0.0",
-    "comments": null
+    "version": "2.0.0",
+    "comments": "Added new color and warranty options"
   },
-  "relationSet": [],
   "configSet": [
     {
-      "isEnabled": false,
-      "ageFactor": null,
-      "waveformSet": [
+      "isEnabled": true,
+      "variantSet": [
         {
-          "name": "wf",
+          "name": "Black",
           "order": 1,
-          "spacingMax": null,
+          "stock": 80,
+          "valueSet": []
+        },
+        {
+          "name": "Blue",
+          "order": 2,
+          "stock": 50,
           "valueSet": []
         }
       ],
-      "freqSet": [],
+      "priceSet": [],
+      "name": "Screen Protector",
+      "vieoUrl": "FakeURL",
+      "vieoUri": "FakeURI",
+      "vieoToken": "Fake Token Lorem Ipsum Dolor Sit Amet",
+      "videoMatch": "Fake Match Lorem Ipsum Dolor Sit Amet",
       "intervalSet": [],
       "attributeSet": [
-        {
-          "name": "attr12",
-          "typeCode": "U",
-          "secondarySet": []
-        }
+
       ],
       "commentSet": [],
-      "flagSet": [],
+      "flagSet": ["BestSeller"],
       "subConfigSet": [
         {
-          "name": "1 sc1",
+          "name": "Charger Included",
           "order": 1
-        }
-      ],
-      "subConfigSet2": [
+        },
         {
-          "name": "1 sc1",
-          "order": 1
+          "name": "Wireless Charger",
+          "order": 2
         }
       ],
+      "subConfigSet2": [],
       "groupSet": [
         {
           "order": 13,
-          "pulseType": "A",
+          "bundleType": "Premium Pack",
           "attribute": {
-            "name": "attr1",
-            "secondarySet": []
+            "name": "Warranty",
+            "secondarySet": ["2 Years"]
           },
           "subConfigs": [
             {
-              "name": "1 sc134",
+              "name": "Screen Protector",
               "order": 1,
-              "validateWave": true,
-              "useComponentPower": false
+              "validateStock": true,
+              "useComponentPrice": true
+            },
+            {
+              "name": "Protective Case",
+              "order": 2,
+              "validateStock": true,
+              "useComponentPrice": false
             }
           ]
         }
