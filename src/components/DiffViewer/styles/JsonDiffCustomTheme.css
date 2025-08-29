@@ -146,6 +146,7 @@
 }
 
 .json-diff-viewer.json-diff-viewer-theme-custom tr td {
+  max-width: min-content;
   vertical-align: unset;
   padding: 0;
 }
