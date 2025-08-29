@@ -202,6 +202,7 @@ export const Primary: Story = {
     rightTitle: "Right Title",
     hideSearch: false,
     height: 500,
+    miniMapWidth: 20,
     oldValue: json1,
     newValue: json2,
 
