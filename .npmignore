@@ -1,10 +1,6 @@
 # Demo app
 demo/
 
-# Storybook
-.storybook/
-storybook-static/
-
 # Development files
 *.log
 *.tsbuildinfo
