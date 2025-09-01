@@ -1,6 +1,6 @@
 [build]
-  command = "bun run build-storybook"
-  publish = "storybook-static"
+  command = "cd demo && npm install && npm run build"
+  publish = "demo/dist"
 
 [build.environment]
   NODE_VERSION = "18"

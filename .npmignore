@@ -1,0 +1,36 @@
+# Demo app
+demo/
+
+# Storybook
+.storybook/
+storybook-static/
+
+# Development files
+*.log
+*.tsbuildinfo
+.eslintrc*
+.prettierrc*
+tailwind.config.js
+
+# Build artifacts (except dist)
+build/
+coverage/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Netlify
+netlify.toml
+
+# Lock files (keep only the one for the main package)
+demo/package-lock.json
+demo/bun.lockb
