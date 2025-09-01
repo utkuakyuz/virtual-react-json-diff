@@ -1,6 +1,7 @@
 import type { DifferOptions } from "json-diff-kit";
 
 import "./Sidebar.css";
+import type { Config } from "../types";
 
 type Props = { config: {
   className: string;
@@ -18,7 +19,7 @@ type Props = { config: {
   ignoreCaseForKey: boolean;
   recursiveEqual: boolean;
   preserveKeyOrder: DifferOptions["preserveKeyOrder"];
-}; updateConfig: (key: string, value: any) => void; };
+}; updateConfig: (key: keyof Config, value: Config[keyof Config]) => void; };
 
 function Sidebar(props: Props) {
   const { config, updateConfig } = props;

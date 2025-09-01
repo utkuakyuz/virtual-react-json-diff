@@ -5,16 +5,19 @@ import AceEditor from "react-ace";
 import { VirtualDiffViewer } from "virtual-react-json-diff";
 
 import "./App.css";
+import type { Config } from "./types";
+
 import Sidebar from "./components/Sidebar";
 import oldValue from "./testJsons/json1.json";
-import newValue from "./testJsons/json2.json";
 
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-github_dark";
 import "ace-builds/src-noconflict/ext-language_tools";
 
+import newValue from "./testJsons/json2.json";
+
 export default function App() {
-  const [config, setConfig] = useState({
+  const [config, setConfig] = useState<Config>({
     // Main Configuration
     className: "diff-viewer-container-custom-height",
     leftTitle: "Original JSON",
@@ -35,7 +38,7 @@ export default function App() {
     preserveKeyOrder: undefined as DifferOptions["preserveKeyOrder"],
   });
 
-  const updateConfig = (key: string, value: any) => {
+  const updateConfig = (key: keyof Config, value: (Config)[keyof Config]) => {
     setConfig(prev => ({ ...prev, [key]: value }));
   };
 
