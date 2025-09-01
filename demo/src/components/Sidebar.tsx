@@ -3,23 +3,7 @@ import type { DifferOptions } from "json-diff-kit";
 import "./Sidebar.css";
 import type { Config } from "../types";
 
-type Props = { config: {
-  className: string;
-  leftTitle: string;
-  rightTitle: string;
-  miniMapWidth: number;
-  hideSearch: boolean;
-  height: number;
-  detectCircular: boolean;
-  maxDepth: number;
-  showModifications: boolean;
-  arrayDiffMethod: DifferOptions["arrayDiffMethod"];
-  compareKey: string;
-  ignoreCase: boolean;
-  ignoreCaseForKey: boolean;
-  recursiveEqual: boolean;
-  preserveKeyOrder: DifferOptions["preserveKeyOrder"];
-}; updateConfig: (key: keyof Config, value: Config[keyof Config]) => void; };
+type Props = { config: Config; updateConfig: (key: keyof Config, value: Config[keyof Config]) => void };
 
 function Sidebar(props: Props) {
   const { config, updateConfig } = props;
