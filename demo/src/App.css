@@ -120,21 +120,21 @@ body {
 }
 
 .checkbox-label {
-  display: flex !important;
+  display: flex;
   align-items: center;
   gap: 12px;
   cursor: pointer;
   padding: 4px 0;
-  font-weight: 500 !important;
-  color: #374151 !important;
+  font-weight: 500;
+  color: #374151;
 }
 
 .form-checkbox {
-  width: 18px !important;
+  width: 18px;
   height: 18px;
   accent-color: #3b82f6;
   cursor: pointer;
-  margin: 0 !important;
+  margin: 0;
 }
 
 .form-hint {
@@ -201,7 +201,7 @@ body {
 }
 
 .editor-error {
-  border: 2px solid #dc2626 !important;
+  border: 2px solid #dc2626;
   border-radius: 6px;
 }
 
