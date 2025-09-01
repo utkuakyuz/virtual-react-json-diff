@@ -98,10 +98,10 @@ export default function App() {
         <div>
           <div className="title-holder">
             <h1>Virtual React JSON Diff Demo</h1>
-            <a href="https://www.npmjs.com/package/virtual-react-json-diff" target="blank">
+            <a href="https://www.npmjs.com/package/virtual-react-json-diff" target="_blank" rel="noopener noreferrer">
               <img src="https://img.shields.io/npm/v/virtual-react-json-diff.svg" />
             </a>
-            <a href="https://github.com/utkuakyuz/virtual-react-json-diff" target="blank">
+            <a href="https://github.com/utkuakyuz/virtual-react-json-diff" target="_blank" rel="noopener noreferrer">
               <img className="github-badge" src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" />
             </a>
           </div>
