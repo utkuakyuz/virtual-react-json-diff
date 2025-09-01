@@ -1,0 +1,79 @@
+{
+  "itemCode": "12345",
+  "categoryType": "Electronics",
+  "label": "Smartphone X100",
+  "typeCode": "Phone",
+  "isActive": true,
+  "functionCode": "SALE",
+  "priceMax": 899,
+  "notes": "Upgraded 2025 Pro Edition. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed quam nibh, dignissim nec efficitur eu, pharetra et enim.",
+  "referenceNo": "SMX100-REF",
+  "version": {
+    "version": "1.0.0",
+    "comments": "Initial release"
+  },
+  "configSet": [
+    {
+      "isEnabled": true,
+      "variantSet": [
+        {
+          "name": "Black",
+          "order": 1,
+          "stock": 120,
+          "valueSet": []
+        }
+      ],
+      "priceSet": [],
+      "name": "Screen Protector",
+      "vieoUrl": "FakeURL",
+      "vieoUri": "FakeURI",
+      "vieoToken": "Fake Token Lorem Ipsum Dolor Sit Amet",
+      "videoMatch": "Fake Match Lorem Ipsum Dolor Sit Amet",
+      "intervalSet": [],
+      "attributeSet": [
+        {
+          "name": "RAM",
+          "typeCode": "Option",
+          "secondarySet": ["8GB", "12GB"]
+        },
+        {
+          "name": "Storage",
+          "typeCode": "Option",
+          "secondarySet": ["128GB", "256GB"]
+        }
+      ],
+      "commentSet": [],
+      "flagSet": [],
+      "subConfigSet": [
+        {
+          "name": "Charger Included",
+          "order": 1
+        }
+      ],
+      "subConfigSet2": [
+        {
+          "name": "Headphones Included",
+          "order": 1
+        }
+      ],
+      "groupSet": [
+        {
+          "order": 13,
+          "bundleType": "Starter Pack",
+          "attribute": {
+            "name": "Warranty",
+            "secondarySet": ["1 Year"]
+          },
+          "subConfigs": [
+            {
+              "name": "Screen Protector",
+              "order": 1,
+              "validateStock": true,
+              "useComponentPrice": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

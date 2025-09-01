@@ -39,10 +39,10 @@
     "build": "bun run rollup",
     "prepublishOnly": "bun run build",
     "rollup": "rollup -c --bundleConfigAsCjs",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
     "lint": "eslint",
-    "lint:fix": "eslint --fix"
+    "lint:fix": "eslint --fix",
+    "demo:dev": "cd demo && npm run dev",
+    "demo:build": "cd demo && npm run build"
   },
   "peerDependencies": {
     "react": ">=18.0.0"
@@ -60,13 +60,6 @@
     "@rollup/plugin-node-resolve": "^15.1.0",
     "@rollup/plugin-terser": "^0.4.3",
     "@rollup/plugin-typescript": "^11.1.2",
-    "@storybook/addon-essentials": "8.6.0-alpha.0",
-    "@storybook/addon-interactions": "8.6.0-alpha.0",
-    "@storybook/addon-onboarding": "8.6.0-alpha.0",
-    "@storybook/addon-styling-webpack": "^1.0.1",
-    "@storybook/blocks": "8.6.0-alpha.0",
-    "@storybook/react": "8.6.0-alpha.0",
-    "@storybook/react-vite": "8.6.0-alpha.0",
     "@types/node": "^22.14.1",
     "@types/react": ">=18.0.0",
     "@types/react-window": "^1.8.8",
@@ -82,7 +75,6 @@
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.2",
     "simple-git-hooks": "^2.13.1",
-    "storybook": "8.6.0-alpha.0",
     "tslib": "^2.6.0",
     "typescript": "^5.1.6"
   },

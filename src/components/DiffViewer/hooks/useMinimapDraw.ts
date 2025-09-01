@@ -12,7 +12,7 @@ const MINIMAP_HOVER_SCROLL_COLOR = "#7B7B7Bcc";
 const MINIMAP_SCROLL_COLOR = "#7B7B7B80";
 
 type Props = {
-  canvasRef: React.RefObject<HTMLCanvasElement>;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
   height: number;
   miniMapWidth: number;
   leftDiff: DiffRowOrCollapsed[];
