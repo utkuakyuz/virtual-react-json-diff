@@ -6,7 +6,7 @@ type UseDragScrollParams = {
   viewportHeight: number;
   ROW_HEIGHT: number;
   onScroll: (scrollTop: number) => void;
-  containerRef: React.RefObject<HTMLDivElement>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
 };
 
 type UseDragScrollReturn = {
