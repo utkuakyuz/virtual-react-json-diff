@@ -1,0 +1,81 @@
+{
+  "itemCode": "12345",
+  "label": "Smartphone X200 Pro",
+  "typeCode": "Phone",
+  "isActive": false,
+  "functionCode": "PREORDER",
+  "priceMin": 1099,
+  "priceMax": 1099,
+  "notes": "Upgraded 2025 Pro Edition.",
+  "referenceNo": "SMX200-REF",
+  "version": {
+    "version": "2.0.0",
+    "comments": "Added new color and warranty options"
+  },
+  "configSet": [
+    {
+      "isEnabled": true,
+      "variantSet": [
+        {
+          "name": "Black",
+          "order": 1,
+          "stock": 80,
+          "valueSet": []
+        },
+        {
+          "name": "Blue",
+          "order": 2,
+          "stock": 50,
+          "valueSet": []
+        }
+      ],
+      "priceSet": [],
+      "name": "Screen Protector",
+      "vieoUrl": "FakeURL",
+      "vieoUri": "FakeURI",
+      "vieoToken": "Fake Token Lorem Ipsum Dolor Sit Amet",
+      "videoMatch": "Fake Match Lorem Ipsum Dolor Sit Amet",
+      "intervalSet": [],
+      "attributeSet": [
+
+      ],
+      "commentSet": [],
+      "flagSet": ["BestSeller"],
+      "subConfigSet": [
+        {
+          "name": "Charger Included",
+          "order": 1
+        },
+        {
+          "name": "Wireless Charger",
+          "order": 2
+        }
+      ],
+      "subConfigSet2": [],
+      "groupSet": [
+        {
+          "order": 13,
+          "bundleType": "Premium Pack",
+          "attribute": {
+            "name": "Warranty",
+            "secondarySet": ["2 Years"]
+          },
+          "subConfigs": [
+            {
+              "name": "Screen Protector",
+              "order": 1,
+              "validateStock": true,
+              "useComponentPrice": true
+            },
+            {
+              "name": "Protective Case",
+              "order": 2,
+              "validateStock": true,
+              "useComponentPrice": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
