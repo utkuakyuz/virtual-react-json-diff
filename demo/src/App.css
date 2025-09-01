@@ -16,7 +16,7 @@ body {
 
 .main-content {
   flex: 1;
-  padding: 18px;
+  padding: 18px 32px;
   overflow: auto;
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
@@ -29,8 +29,37 @@ body {
   align-items: center;
 }
 
+.main-content .subtitle-holder {
+  display: flex;
+  justify-content: space-between;
+}
+
+.main-content .title-holder img {
+  vertical-align: middle;
+}
 .main-content .title-holder .github-badge {
   border-radius: 5px;
+  height: 20px;
+}
+
+.hide-editor-button {
+  font-size: 12px;
+  padding: 0.5em 1em;
+  border: transparent;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+  background: dodgerblue;
+  color: white;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.hide-editor-button:hover {
+  background: rgb(2, 0, 36);
+  background: linear-gradient(90deg, rgba(30, 144, 255, 1) 0%, rgba(0, 212, 255, 1) 100%);
+}
+
+.hide-editor-button:active {
+  transform: translate(0em, 0.2em);
 }
 
 .main-content h1 {
@@ -46,6 +75,7 @@ body {
   color: #64748b;
   font-size: 1.1rem;
   line-height: 0.9;
+  margin: 5px 0;
 }
 
 /* Configuration Sections */

@@ -54,6 +54,7 @@ export default function App() {
     ...(config.preserveKeyOrder ? { preserveKeyOrder: config.preserveKeyOrder } : {}),
   };
 
+  const [editorsVisible, setEditorsVisible] = useState(true);
   const [oldJson, setOldJson] = useState(JSON.stringify(oldValue, null, 2));
   const [newJson, setNewJson] = useState(JSON.stringify(newValue, null, 2));
   const [oldJsonError, setOldJsonError] = useState("");
@@ -108,72 +109,81 @@ export default function App() {
               <img className="github-badge" src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" />
             </a>
           </div>
-          <p className="demo-description">
-            Explore the powerful features of VirtualDiffViewer with comprehensive configuration options.
-            Adjust the settings in the sidebar to see how different options affect the diff visualization.
-          </p>
-
-          <div className="json-editor-holder">
-            <div className="json-editor-container">
-              <div className="editor-header">
-                <h3>Original JSON</h3>
-                {oldJsonError && <span className="error-indicator">Invalid JSON</span>}
-              </div>
-              <AceEditor
-                mode="json"
-                theme="github_dark"
-                onChange={setOldJson}
-                value={oldJson}
-                name="old-json-editor"
-                width="100%"
-                height="250px"
-                wrapEnabled
-                setOptions={{
-                  useWorker: false,
-                  showPrintMargin: false,
-                  showGutter: true,
-                  highlightActiveLine: true,
-                }}
-                editorProps={{ $blockScrolling: true }}
-                className={oldJsonError ? "editor-error" : ""}
-              />
-              {oldJsonError && (
-                <div className="error-message">
-                  {oldJsonError}
-                </div>
-              )}
-            </div>
-
-            <div className="json-editor-container">
-              <div className="editor-header">
-                <h3>Updated JSON</h3>
-                {newJsonError && <span className="error-indicator">Invalid JSON</span>}
-              </div>
-              <AceEditor
-                mode="json"
-                theme="github_dark"
-                onChange={setNewJson}
-                value={newJson}
-                name="new-json-editor"
-                width="100%"
-                height="250px"
-                wrapEnabled
-                setOptions={{
-                  useWorker: false,
-                  showPrintMargin: false,
-                  showGutter: true,
-                  highlightActiveLine: true,
-                }}
-                editorProps={{ $blockScrolling: true }}
-                className={newJsonError ? "editor-error" : ""}
-              />
-              {newJsonError && (
-                <div className="error-message">
-                  {newJsonError}
-                </div>
-              )}
-            </div>
+          <div className="subtitle-holder">
+            <p className="demo-description">
+              Explore the features of VirtualDiffViewer with configuration options.
+              Adjust the settings in the sidebar to see different outpus of the diff visualization.
+            </p>
+            <button type="button" className="hide-editor-button" onClick={() => setEditorsVisible(prev => !prev)}>
+              {editorsVisible ? "Hide" : "Show"}
+              {" "}
+              Editors
+            </button>
           </div>
+
+          {editorsVisible && (
+            <div className="json-editor-holder">
+              <div className="json-editor-container">
+                <div className="editor-header">
+                  <h3>Original JSON</h3>
+                  {oldJsonError && <span className="error-indicator">Invalid JSON</span>}
+                </div>
+                <AceEditor
+                  mode="json"
+                  theme="github_dark"
+                  onChange={setOldJson}
+                  value={oldJson}
+                  name="old-json-editor"
+                  width="100%"
+                  height="250px"
+                  wrapEnabled
+                  setOptions={{
+                    useWorker: false,
+                    showPrintMargin: false,
+                    showGutter: true,
+                    highlightActiveLine: true,
+                  }}
+                  editorProps={{ $blockScrolling: true }}
+                  className={oldJsonError ? "editor-error" : ""}
+                />
+                {oldJsonError && (
+                  <div className="error-message">
+                    {oldJsonError}
+                  </div>
+                )}
+              </div>
+
+              <div className="json-editor-container">
+                <div className="editor-header">
+                  <h3>Updated JSON</h3>
+                  {newJsonError && <span className="error-indicator">Invalid JSON</span>}
+                </div>
+                <AceEditor
+                  mode="json"
+                  theme="github_dark"
+                  onChange={setNewJson}
+                  value={newJson}
+                  name="new-json-editor"
+                  width="100%"
+                  height="250px"
+                  wrapEnabled
+                  setOptions={{
+                    useWorker: false,
+                    showPrintMargin: false,
+                    showGutter: true,
+                    highlightActiveLine: true,
+                  }}
+                  editorProps={{ $blockScrolling: true }}
+                  className={newJsonError ? "editor-error" : ""}
+                />
+                {newJsonError && (
+                  <div className="error-message">
+                    {newJsonError}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
         {!isBothJsonValid && (
           <div className="validation-message">
