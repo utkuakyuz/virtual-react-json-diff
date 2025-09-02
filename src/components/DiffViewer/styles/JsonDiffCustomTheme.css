@@ -323,6 +323,7 @@
   left: 0;
   width: 100%;
   display: flex;
+  pointer-events: none;
 }
 
 .diff-viewer-container .minimap-overlay .half {
@@ -334,18 +335,17 @@
 .diff-viewer-container .minimap-overlay .left-map-holder {
   justify-content: flex-end;
   min-width: 334px;
-  margin-right: 10px;
 }
 
 .diff-viewer-container .minimap-overlay .right-map-holder {
   justify-content: flex-end;
 }
 
-.diff-viewer-container .minimap-overlay .item .minimap-wrapper {
+.diff-viewer-container .minimap-overlay .minimap-wrapper {
   opacity: 0.65;
   pointer-events: auto;
 }
 
-.diff-viewer-container .minimap-overlay .item .minimap-wrapper:hover {
+.diff-viewer-container .minimap-overlay .minimap-wrapper:hover {
   opacity: 0.85;
 }
