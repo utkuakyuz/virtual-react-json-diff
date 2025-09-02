@@ -28,6 +28,9 @@ function ViewerRow({
         <button onClick={() => onExpand(originalLeftLine.segmentIndex)} className="text-blue-500 underline">
           Show Hidden Lines
         </button>
+        <button onClick={() => onExpand(originalLeftLine.segmentIndex)} className="text-blue-500 underline">
+          Show Hidden Lines
+        </button>
       </div>
     );
   }
