@@ -151,7 +151,7 @@ export function useMinimapDraw({
       }
       drawScrollBox(ctx, MINIMAP_HOVER_SCROLL_COLOR);
     }
-  }, [leftDiff, rightDiff, height, currentScrollTop, searchResults, currentMatchIndex, drawLine, viewportHeight]);
+  }, [drawScrollBox]);
 
   useEffect(() => {
     drawMinimap();
