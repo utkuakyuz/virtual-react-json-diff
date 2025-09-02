@@ -1,17 +1,31 @@
 import type { DifferOptions } from "json-diff-kit";
 
 import "./Sidebar.css";
+import { useState } from "react";
+
 import type { Config } from "../types";
 
 type Props = { config: Config; updateConfig: (key: keyof Config, value: Config[keyof Config]) => void };
 
 function Sidebar(props: Props) {
   const { config, updateConfig } = props;
+  const [showSidebar, setShowSidebar] = useState(true);
+
+  if (!showSidebar) {
+    return (
+      <div className="sidebar-collapsed" onClick={() => setShowSidebar(true)} title="Show Configuration Sidebar">
+        &#9776;
+      </div>
+    );
+  }
   return (
     <aside className="sidebar">
       <div className="config-section">
         <h2 className="section-title">Main Configuration</h2>
 
+        <div className="sidebar-collapse" onClick={() => setShowSidebar(false)} title="Hide Sidebar">
+          &#9776;
+        </div>
         <div className="form-group">
           <label className="form-label">
             Left Title
