@@ -332,22 +332,19 @@
   align-items: center;
 }
 
-.diff-viewer-container .minimap-overlay .left {
+.diff-viewer-container .minimap-overlay .left-map-holder {
   justify-content: flex-end;
   min-width: 334px;
   margin-right: 10px;
 }
 
-.diff-viewer-container .minimap-overlay .right {
+.diff-viewer-container .minimap-overlay .right-map-holder {
   justify-content: flex-end;
-}
-
-.diff-viewer-container .minimap-overlay .item {
-  pointer-events: auto;
 }
 
 .diff-viewer-container .minimap-overlay .item .minimap-wrapper {
   opacity: 0.65;
+  pointer-events: auto;
 }
 
 .diff-viewer-container .minimap-overlay .item .minimap-wrapper:hover {

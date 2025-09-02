@@ -13,6 +13,7 @@ const MINIMAP_SCROLL_COLOR = "#7B7B7B80";
 
 type Props = {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
   height: number;
   miniMapWidth: number;
   leftDiff: DiffRowOrCollapsed[];
@@ -28,6 +29,7 @@ type Props = {
 
 export function useMinimapDraw({
   canvasRef,
+  containerRef,
   height,
   miniMapWidth,
   leftDiff,
@@ -138,9 +140,15 @@ export function useMinimapDraw({
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (!isDragging.current) {
+      if (containerRef.current) {
+        containerRef.current.style.opacity = "0.65";
+      }
       drawScrollBox(ctx, MINIMAP_SCROLL_COLOR);
     }
     else {
+      if (containerRef.current) {
+        containerRef.current.style.opacity = "0.85";
+      }
       drawScrollBox(ctx, MINIMAP_HOVER_SCROLL_COLOR);
     }
   }, [leftDiff, rightDiff, height, currentScrollTop, searchResults, currentMatchIndex, drawLine, viewportHeight]);

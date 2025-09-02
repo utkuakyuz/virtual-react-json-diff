@@ -47,6 +47,7 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
 
   const { drawMinimap, drawScrollBox } = useMinimapDraw({
     canvasRef,
+    containerRef,
     height,
     miniMapWidth,
     leftDiff,
@@ -98,6 +99,7 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
   return (
     <div
       ref={containerRef}
+      className="minimap-wrapper"
       style={{
         width: miniMapWidth,
         height,
