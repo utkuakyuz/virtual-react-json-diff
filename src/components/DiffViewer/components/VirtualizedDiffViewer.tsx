@@ -156,6 +156,17 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
     [leftView, rightView, handleExpand, searchState.term, inlineDiffOptions],
   );
 
+  const minimapProps = {
+    leftDiff: leftView,
+    rightDiff: rightView,
+    height,
+    miniMapWidth,
+    currentScrollTop: scrollTop,
+    searchResults: searchState.results,
+    currentMatchIndex: searchState.currentIndex,
+    onScroll: (scrollTop: number) => listRef.current?.scrollTo(scrollTop),
+  };
+
   return (
     <div className={`diff-viewer-container${className ? ` ${className}` : ""}`}>
       {/* Header & Search */}
@@ -213,29 +224,12 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
         <div className="minimap-overlay">
           <div className="half left-map-holder">
             {!showSingleMinimap && (
-              <DiffMinimap
-                leftDiff={leftView}
-                rightDiff={rightView}
-                height={height}
-                miniMapWidth={miniMapWidth}
-                currentScrollTop={scrollTop}
-                searchResults={searchState.results}
-                currentMatchIndex={searchState.currentIndex}
-                onScroll={scrollTop => listRef.current?.scrollTo(scrollTop)}
-              />
+              <DiffMinimap {...minimapProps} />
+
             )}
           </div>
           <div className="half right-map-holder">
-            <DiffMinimap
-              leftDiff={leftView}
-              rightDiff={rightView}
-              height={height}
-              miniMapWidth={miniMapWidth}
-              currentScrollTop={scrollTop}
-              searchResults={searchState.results}
-              currentMatchIndex={searchState.currentIndex}
-              onScroll={scrollTop => listRef.current?.scrollTo(scrollTop)}
-            />
+            <DiffMinimap {...minimapProps} />
           </div>
         </div>
       </div>
