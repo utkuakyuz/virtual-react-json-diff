@@ -23,6 +23,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   leftTitle,
   rightTitle,
   hideSearch,
+  showSingleMinimap,
   onSearchMatch,
   differOptions,
   className,
@@ -155,6 +156,17 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
     [leftView, rightView, handleExpand, searchState.term, inlineDiffOptions],
   );
 
+  const minimapProps = {
+    leftDiff: leftView,
+    rightDiff: rightView,
+    height,
+    miniMapWidth,
+    currentScrollTop: scrollTop,
+    searchResults: searchState.results,
+    currentMatchIndex: searchState.currentIndex,
+    onScroll: (scrollTop: number) => listRef.current?.scrollTo(scrollTop),
+  };
+
   return (
     <div className={`diff-viewer-container${className ? ` ${className}` : ""}`}>
       {/* Header & Search */}
@@ -194,7 +206,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
       </div>
 
       {/* List & Minimap */}
-      <div style={{ display: "flex", gap: "8px" }}>
+      <div style={{ display: "flex", gap: "8px", position: "relative" }}>
         <List
           ref={listRef}
           className="virtual-json-diff-list-container"
@@ -209,16 +221,17 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
           {ViewerRow}
         </List>
 
-        <DiffMinimap
-          leftDiff={leftView}
-          rightDiff={rightView}
-          height={height}
-          miniMapWidth={miniMapWidth}
-          currentScrollTop={scrollTop}
-          searchResults={searchState.results}
-          currentMatchIndex={searchState.currentIndex}
-          onScroll={scrollTop => listRef.current?.scrollTo(scrollTop)}
-        />
+        <div className="minimap-overlay">
+          <div className="half left-map-holder">
+            {!showSingleMinimap && (
+              <DiffMinimap {...minimapProps} />
+
+            )}
+          </div>
+          <div className="half right-map-holder">
+            <DiffMinimap {...minimapProps} />
+          </div>
+        </div>
       </div>
 
       {/* Hide All Expanded Lines Button */}

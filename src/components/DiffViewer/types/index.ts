@@ -42,6 +42,7 @@ export type VirtualizedDiffViewerProps = {
   rightTitle?: string;
   onSearchMatch?: (index: number) => void;
   differOptions?: DifferOptions;
+  showSingleMinimap?: boolean;
   className?: string;
   miniMapWidth?: number;
   inlineDiffOptions?: InlineDiffOptions;

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import type { DiffRowOrCollapsed } from "../types";
 
@@ -13,6 +13,7 @@ const MINIMAP_SCROLL_COLOR = "#7B7B7B80";
 
 type Props = {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
   height: number;
   miniMapWidth: number;
   leftDiff: DiffRowOrCollapsed[];
@@ -28,6 +29,7 @@ type Props = {
 
 export function useMinimapDraw({
   canvasRef,
+  containerRef,
   height,
   miniMapWidth,
   leftDiff,
@@ -64,45 +66,67 @@ export function useMinimapDraw({
     ctx.fillRect(x, y, width, ROW_HEIGHT);
   }, [ROW_HEIGHT]);
 
-  // Draw the differences -> This will be called in drawScrollBox method
-  const drawDifferencesInMinimap = useCallback((ctx: CanvasRenderingContext2D) => {
+  const diffCanvas = useMemo(() => {
+    const offscreen = document.createElement("canvas");
+    offscreen.width = miniMapWidth;
+    offscreen.height = height;
+    const ctx = offscreen.getContext("2d");
+    if (!ctx)
+      return null;
+
     const scale = height / totalLines;
 
-    if (currentMatchIndex >= 0 && searchResults[currentMatchIndex] !== undefined) {
-      const y = searchResults[currentMatchIndex] * scale;
-      const lineHeight = Math.max(1, scale);
-      ctx.fillStyle = CURRENT_MATCH_COLOR;
-      ctx.fillRect(0, y, miniMapWidth, lineHeight);
-    }
-
+    // left diff
     leftDiff.forEach((line, index) => {
       const y = index * scale;
       drawLine(ctx, line, y, 0, miniMapWidth / 2);
     });
 
+    // right diff
     rightDiff.forEach((line, index) => {
       const y = index * scale;
       drawLine(ctx, line, y, miniMapWidth / 2, miniMapWidth / 2);
     });
 
+    // search highlights
     searchResults.forEach((index) => {
       const y = index * scale;
       const lineHeight = Math.max(1, scale);
       ctx.fillStyle = SEARCH_HIGHLIGHT_COLOR;
       ctx.fillRect(0, y, miniMapWidth, lineHeight);
     });
-  }, [height, totalLines, currentMatchIndex, searchResults, leftDiff, rightDiff, miniMapWidth, drawLine]);
+
+    return offscreen;
+  }, [leftDiff, rightDiff, searchResults, height, totalLines, miniMapWidth, drawLine]);
 
   // Draw the scroll box and also differences in minimapo
-  const drawScrollBox = useCallback((ctx: CanvasRenderingContext2D, color: string) => {
-    const totalContentHeight = totalLines * ROW_HEIGHT;
-    const viewportTop = (currentScrollTop / totalContentHeight) * height;
+  const drawScrollBox = useCallback(
+    (ctx: CanvasRenderingContext2D, color: string) => {
+      if (!diffCanvas)
+        return;
 
-    drawDifferencesInMinimap(ctx);
+      // Copy pre-rendered diff
+      ctx.clearRect(0, 0, miniMapWidth, height);
+      ctx.drawImage(diffCanvas, 0, 0);
 
-    ctx.fillStyle = color;
-    ctx.fillRect(0, viewportTop, miniMapWidth, viewportHeight);
-  }, [totalLines, ROW_HEIGHT, currentScrollTop, height, drawDifferencesInMinimap, miniMapWidth, viewportHeight]);
+      // Draw scroll box
+      const totalContentHeight = totalLines * ROW_HEIGHT;
+      const viewportTop = (currentScrollTop / totalContentHeight) * height;
+
+      ctx.fillStyle = color;
+      ctx.fillRect(0, viewportTop, miniMapWidth, viewportHeight);
+
+      // Draw current match highlight (optional)
+      if (currentMatchIndex >= 0 && searchResults[currentMatchIndex] !== undefined) {
+        const scale = height / totalLines;
+        const y = searchResults[currentMatchIndex] * scale;
+        const lineHeight = Math.max(1, scale);
+        ctx.fillStyle = CURRENT_MATCH_COLOR;
+        ctx.fillRect(0, y, miniMapWidth, lineHeight);
+      }
+    },
+    [diffCanvas, currentScrollTop, totalLines, ROW_HEIGHT, height, miniMapWidth, viewportHeight, currentMatchIndex, searchResults],
+  );
 
   const drawMinimap = useCallback(() => {
     const canvas = canvasRef.current;
@@ -116,12 +140,18 @@ export function useMinimapDraw({
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (!isDragging.current) {
+      if (containerRef.current) {
+        containerRef.current.style.opacity = "0.65";
+      }
       drawScrollBox(ctx, MINIMAP_SCROLL_COLOR);
     }
     else {
+      if (containerRef.current) {
+        containerRef.current.style.opacity = "0.85";
+      }
       drawScrollBox(ctx, MINIMAP_HOVER_SCROLL_COLOR);
     }
-  }, [leftDiff, rightDiff, height, currentScrollTop, searchResults, currentMatchIndex, drawLine, viewportHeight]);
+  }, [drawScrollBox]);
 
   useEffect(() => {
     drawMinimap();

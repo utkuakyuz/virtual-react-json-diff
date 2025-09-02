@@ -37,12 +37,14 @@
   ],
   "scripts": {
     "build": "bun run rollup",
+    "watch": "bun run rollup --watch",
     "prepublishOnly": "bun run build",
     "rollup": "rollup -c --bundleConfigAsCjs",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "demo:dev": "cd demo && npm run dev",
-    "demo:build": "cd demo && npm run build"
+    "demo:build": "cd demo && npm run build",
+    "dev:watch": "concurrently \"npm run watch\" \"npm run demo:dev\""
   },
   "peerDependencies": {
     "react": ">=18.0.0"
@@ -63,6 +65,7 @@
     "@types/node": "^22.14.1",
     "@types/react": ">=18.0.0",
     "@types/react-window": "^1.8.8",
+    "concurrently": "^8.2.2",
     "eslint": "^9.33.0",
     "eslint-plugin-format": "^1.0.1",
     "eslint-plugin-react-hooks": "^5.2.0",
