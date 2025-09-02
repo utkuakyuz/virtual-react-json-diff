@@ -323,7 +323,6 @@
   left: 0;
   width: 100%;
   display: flex;
-  pointer-events: none;
 }
 
 .diff-viewer-container .minimap-overlay .half {
