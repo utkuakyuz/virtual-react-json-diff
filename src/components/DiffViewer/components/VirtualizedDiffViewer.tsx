@@ -30,6 +30,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   miniMapWidth,
   inlineDiffOptions,
 }) => {
+  const outerRef = useRef<Node>(null);
   const listRef = useRef<List>(null);
   const [scrollTop, setScrollTop] = useState(0);
 
@@ -167,6 +168,33 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
     onScroll: (scrollTop: number) => listRef.current?.scrollTo(scrollTop),
   };
 
+  // Observe DOM changes in the diff viewer and update cells with the "empty-equal-cell" class
+  // whenever new rows are rendered, ensuring virtualized/scroll-loaded cells are handled.
+  useEffect(() => {
+    const container = outerRef.current as HTMLElement | null;
+    if (!container)
+      return;
+
+    const observer = new MutationObserver(() => {
+      const tds = container?.querySelectorAll<HTMLTableCellElement>(
+        ".json-diff-viewer td.line-equal",
+      );
+
+      tds.forEach((td, index) => {
+        td.classList.remove("empty-equal-cell");
+
+        const spans = td.querySelectorAll("pre > span");
+        if (index % 2 === 1 && spans.length === 1 && spans[0].textContent?.trim() === "") {
+          td.classList.add("empty-equal-cell");
+        }
+      });
+    });
+
+    observer.observe(container!, { childList: true, subtree: true });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className={`diff-viewer-container${className ? ` ${className}` : ""}`}>
       {/* Header & Search */}
@@ -208,6 +236,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
       {/* List & Minimap */}
       <div style={{ display: "flex", gap: "8px", position: "relative" }}>
         <List
+          outerRef={outerRef}
           ref={listRef}
           className="virtual-json-diff-list-container"
           height={height}

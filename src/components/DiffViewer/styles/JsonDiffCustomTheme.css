@@ -25,6 +25,7 @@
   background: #282a36;
   color: #f8f8f2;
   width: 100%;
+  border-spacing: 0;
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -93,6 +94,12 @@
 .json-diff-viewer.json-diff-viewer-theme-custom tr .line-modify {
   border-left: 1px solid #ecff99;
   background: rgba(182, 180, 67, 0.08);
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom tr .empty-equal-cell {
+  opacity: 0.4;
+  background: repeating-linear-gradient(-53deg, rgb(69, 69, 70), rgb(69, 69, 70) 1.5px, #282a36 1.5px, #282a36 4px);
+  background-attachment: fixed;
 }
 
 .json-diff-viewer.json-diff-viewer-theme-custom tr .line-number {
