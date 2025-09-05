@@ -2,8 +2,9 @@ import type { DiffResult, InlineDiffOptions } from "json-diff-kit";
 import type { ListChildComponentProps } from "react-window";
 
 import { Viewer } from "json-diff-kit";
+import { useCallback } from "react";
 
-import type { DiffRowOrCollapsed } from "../types";
+import type { CollapsedLine, DiffRowOrCollapsed } from "../types";
 
 import { DIFF_VIEWER_CLASS, isCollapsed } from "../utils/constants";
 
@@ -22,13 +23,19 @@ function ViewerRow({
   const originalLeftLine = data.leftDiff[index];
   const originalRightLine = data.rightDiff[index];
 
+  const handleExpand = useCallback((originalLeftLine: CollapsedLine) => {
+    if (isCollapsed(originalLeftLine)) {
+      onExpand(originalLeftLine.segmentIndex);
+    }
+  }, [onExpand, originalLeftLine]);
+
   if (isCollapsed(originalLeftLine)) {
     return (
       <div className="collapsed-button" style={style}>
-        <button onClick={() => onExpand(originalLeftLine.segmentIndex)} className="text-blue-500 underline">
+        <button onClick={() => handleExpand(originalLeftLine)} className="text-blue-500 underline">
           Show Hidden Lines
         </button>
-        <button onClick={() => onExpand(originalLeftLine.segmentIndex)} className="text-blue-500 underline">
+        <button onClick={() => handleExpand(originalLeftLine)} className="text-blue-500 underline">
           Show Hidden Lines
         </button>
       </div>
