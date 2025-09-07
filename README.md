@@ -3,6 +3,7 @@
 [![NPM version][npm-image]][npm-url]
 [![Downloads][download-badge]][npm-url]
 ![bundle size](https://badgen.net/bundlephobia/minzip/virtual-react-json-diff)
+[![BuyMeACoffee](https://raw.githubusercontent.com/pachadotdev/buymeacoffee-badges/main/bmc-yellow.svg)](https://www.buymeacoffee.com/utkuakyuz)
 
 👉 [Try it now](https://virtual-react-json-diff.netlify.app) (See the New Demo Page Including AceEditor)
 
