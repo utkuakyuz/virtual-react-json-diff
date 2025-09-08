@@ -19,4 +19,5 @@ export type Config = {
   ignoreCaseForKey: boolean;
   recursiveEqual: boolean;
   preserveKeyOrder: DifferOptions["preserveKeyOrder"];
+  inlineDiffMode: "word" | "char";
 };

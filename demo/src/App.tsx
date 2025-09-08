@@ -36,6 +36,7 @@ export default function App() {
     ignoreCaseForKey: false,
     recursiveEqual: false,
     preserveKeyOrder: undefined as DifferOptions["preserveKeyOrder"],
+    inlineDiffMode: "word",
   });
 
   const updateConfig = (key: keyof Config, value: (Config)[keyof Config]) => {
@@ -218,6 +219,7 @@ export default function App() {
             height={config.height}
             miniMapWidth={config.miniMapWidth}
             hideSearch={config.hideSearch}
+            inlineDiffOptions={{ mode: config.inlineDiffMode }}
             oldValue={parsedOldValue}
             newValue={parsedNewValue}
             differOptions={differOptions}
