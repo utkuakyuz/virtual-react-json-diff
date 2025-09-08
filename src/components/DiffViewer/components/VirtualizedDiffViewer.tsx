@@ -27,6 +27,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   className,
   miniMapWidth,
   inlineDiffOptions,
+  overScanCount,
 }) => {
   const outerRef = useRef<Node>(null);
   const listRef = useRef<List>(null);
@@ -121,6 +122,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
           leftDiff={leftView}
           rightDiff={rightView}
           height={height}
+          overScanCount={overScanCount}
           setScrollTop={setScrollTop}
           onExpand={handleExpand}
           className="virtual-json-diff-list-container"

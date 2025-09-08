@@ -46,6 +46,7 @@ export type VirtualizedDiffViewerProps = {
   className?: string;
   miniMapWidth?: number;
   inlineDiffOptions?: InlineDiffOptions;
+  overScanCount?: number;
 };
 
 export type DiffMinimapProps = {

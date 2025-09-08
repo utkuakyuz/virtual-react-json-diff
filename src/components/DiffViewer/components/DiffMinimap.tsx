@@ -4,7 +4,7 @@ import type { DiffMinimapProps } from "../types";
 
 import { useDragScroll } from "../hooks/useDragScroll";
 import { useMinimapDraw } from "../hooks/useMinimapDraw";
-import { getRowHeightFromCSS } from "../utils/constants";
+import { DEFAULT_HEIGHT, DEFAULT_MINIMAP_WIDTH, getRowHeightFromCSS } from "../utils/constants";
 
 const MINIMAP_HOVER_SCROLL_COLOR = "#7B7B7Bcc";
 
@@ -37,7 +37,7 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
   }, [height, leftDiff.length, rightDiff.length]);
 
   const { handleMouseDown, isDragging } = useDragScroll({
-    height: height || 380,
+    height: height || DEFAULT_HEIGHT,
     totalLines,
     viewportHeight,
     ROW_HEIGHT,
@@ -48,8 +48,8 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
   const { drawMinimap, drawScrollBox } = useMinimapDraw({
     canvasRef,
     containerRef,
-    height: height || 380,
-    miniMapWidth: miniMapWidth || 20,
+    height: height || DEFAULT_HEIGHT,
+    miniMapWidth: miniMapWidth || DEFAULT_MINIMAP_WIDTH,
     leftDiff,
     rightDiff,
     currentScrollTop,

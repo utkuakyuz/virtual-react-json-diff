@@ -4,6 +4,10 @@ export const DIFF_VIEWER_CLASS = "json-diff-viewer-theme-custom";
 
 export const DEFAULT_ROW_HEIGHT = 20; // safe fallback
 
+export const DEFAULT_HEIGHT = 380;
+
+export const DEFAULT_MINIMAP_WIDTH = 20;
+
 export function getRowHeightFromCSS(): number {
   if (typeof document === "undefined") {
     return DEFAULT_ROW_HEIGHT;
@@ -31,10 +35,5 @@ export function isCollapsed(line: any): line is { type: "collapsed"; segmentInde
 // Observe DOM changes in the diff viewer and update cells with the "empty-equal-cell" class
 // whenever new rows are rendered, ensuring virtualized/scroll-loaded cells are handled.
 export function equalEmptyLine(cell: DiffRow) {
-  if (cell.type === "equal" && cell.text.trim() === "") {
-    return "empty-equal-cell";
-  }
-  else {
-    return "";
-  }
+  return (cell.type === "equal" && cell.text.trim() === "") ? "empty-equal-cell" : "";
 }

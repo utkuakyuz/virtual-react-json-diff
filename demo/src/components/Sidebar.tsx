@@ -154,6 +154,20 @@ function Sidebar(props: Props) {
 
         <div className="form-group">
           <label className="form-label">
+            Inline Diff Method
+            <select
+              className="form-select"
+              value={config.inlineDiffMode}
+              onChange={e => updateConfig("inlineDiffMode", e.target.value)}
+            >
+              <option value="char">Character</option>
+              <option value="word">Word</option>
+            </select>
+          </label>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">
             Array Diff Method
             <select
               className="form-select"

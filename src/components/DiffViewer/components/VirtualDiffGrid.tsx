@@ -12,16 +12,24 @@ import { useRowHeights } from "../hooks/useRowHeights";
 import { COLLAPSED_ROW_HEIGHT, getRowHeightFromCSS, isCollapsed } from "../utils/constants";
 import RowRendererGrid from "../utils/json-diff/row-renderer-grid";
 
+type ListDataType = {
+  leftDiff: DiffRowOrCollapsed[];
+  rightDiff: DiffRowOrCollapsed[];
+  onExpand: (segmentIndex: number) => void;
+  inlineDiffOptions?: InlineDiffOptions;
+};
+
 type VirtualDiffGridProps = {
   leftDiff: DiffRowOrCollapsed[];
   rightDiff: DiffRowOrCollapsed[];
   outerRef: React.RefObject<Node | null>;
-  listRef: React.RefObject<List<any>>;
+  listRef: React.RefObject<List<ListDataType>>;
   height: number;
   inlineDiffOptions?: InlineDiffOptions;
   className?: string;
   setScrollTop: Dispatch<React.SetStateAction<number>>;
   onExpand: (segmentIndex: number) => void;
+  overScanCount?: number;
 };
 
 const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
@@ -34,6 +42,7 @@ const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
   className,
   setScrollTop,
   onExpand,
+  overScanCount = 10,
 }) => {
   // Virtual List Data
   const listData = useMemo(
@@ -82,7 +91,7 @@ const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
         className="virtual-json-diff-list-container"
         itemCount={Math.max(leftDiff.length, rightDiff.length)}
         itemSize={dynamicRowHeights}
-        overscanCount={28}
+        overscanCount={overScanCount}
         itemData={listData}
         onScroll={({ scrollOffset }: ListOnScrollProps) => setScrollTop(scrollOffset)}
       >

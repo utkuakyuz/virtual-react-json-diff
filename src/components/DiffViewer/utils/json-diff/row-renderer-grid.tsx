@@ -23,17 +23,17 @@ ListChildComponentProps<{
   const { onExpand, inlineDiffOptions, leftDiff, rightDiff } = data;
 
   const leftPart = leftDiff[index];
-  const RightPart = rightDiff[index];
+  const rightPart = rightDiff[index];
 
   // Collapsed special row -> we will render as a grid-row with two expand cells
-  if (isCollapsed(leftPart) || isCollapsed(RightPart)) {
+  if (isCollapsed(leftPart) || isCollapsed(rightPart)) {
     const originalLeftLine = leftDiff[index];
 
     const handleExpand = useCallback((originalLeftLine: CollapsedLine) => {
       if (isCollapsed(originalLeftLine)) {
         onExpand(originalLeftLine.segmentIndex);
       }
-    }, [onExpand, originalLeftLine]);
+    }, [onExpand]);
 
     return (
       <div
@@ -67,12 +67,12 @@ ListChildComponentProps<{
   }
 
   const [lDiff, rDiff]
-    = leftPart.type === "modify" && RightPart.type === "modify"
-      ? getInlineDiff(leftPart.text, RightPart.text, inlineDiffOptions ?? { mode: "char" })
+    = leftPart.type === "modify" && rightPart.type === "modify"
+      ? getInlineDiff(leftPart.text, rightPart.text, inlineDiffOptions ?? { mode: "char" })
       : [[], []];
 
   const lTokens = syntaxHighlightLine(true, leftPart.text, 0);
-  const rTokens = syntaxHighlightLine(true, RightPart.text, 0);
+  const rTokens = syntaxHighlightLine(true, rightPart.text, 0);
 
   const lResult = mergeSegments(lTokens, lDiff);
   const rResult = mergeSegments(rTokens, rDiff);
@@ -119,14 +119,14 @@ ListChildComponentProps<{
         </pre>
       </div>
 
-      <div className={`cell line-${RightPart.type} line-number`} role="cell">
-        {RightPart.lineNumber}
+      <div className={`cell line-${rightPart.type} line-number`} role="cell">
+        {rightPart.lineNumber}
       </div>
 
-      <div className={`cell line-${RightPart.type} ${equalEmptyLine(RightPart)}`} role="cell">
+      <div className={`cell line-${rightPart.type} ${equalEmptyLine(rightPart)}`} role="cell">
         <pre>
-          {RightPart.text && indentChar.repeat(RightPart.level * indentSize)}
-          {renderInlineResult(RightPart.text, rResult, RightPart.comma)}
+          {rightPart.text && indentChar.repeat(rightPart.level * indentSize)}
+          {renderInlineResult(rightPart.text, rResult, rightPart.comma)}
         </pre>
       </div>
     </div>
