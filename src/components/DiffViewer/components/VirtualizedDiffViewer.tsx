@@ -11,7 +11,7 @@ import { expandSegment, hasExpandedSegments, hideAllSegments } from "../utils/js
 import { buildViewFromSegments, generateSegments } from "../utils/preprocessDiff";
 import { DiffMinimap } from "./DiffMinimap";
 import SearchboxHolder from "./SearchboxHolder";
-import VirtualDiffTable from "./VirtualDiffTable";
+import VirtualDiffGrid from "./VirtualDiffGrid";
 
 export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   oldValue,
@@ -115,8 +115,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
 
       {/* List & Minimap */}
       <div style={{ display: "flex", gap: "8px", position: "relative" }}>
-
-        <VirtualDiffTable
+        <VirtualDiffGrid
           outerRef={outerRef}
           listRef={listRef}
           leftDiff={leftView}

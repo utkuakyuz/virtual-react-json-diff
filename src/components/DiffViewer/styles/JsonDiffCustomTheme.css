@@ -16,11 +16,6 @@
   padding-bottom: 12px;
 }
 
-.json-diff-viewer-virtual pre {
-  overflow-x: auto;
-  white-space: pre;
-}
-
 .json-diff-viewer.json-diff-viewer-theme-custom {
   background: #282a36;
   color: #f8f8f2;
@@ -31,106 +26,38 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-.json-diff-viewer.json-diff-viewer-theme-custom tr td {
-  max-width: min-content;
-  vertical-align: unset;
-  padding: 0;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr td.line-number {
-  color: #999;
-  padding: 2px;
-  padding-right: 6px;
-  text-align: right;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom table {
-  table-layout: fixed;
-  width: 100%;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr td:nth-child(1),
-.json-diff-viewer.json-diff-viewer-theme-custom tr td:nth-child(3) {
-  width: 30px !important;
-  min-width: 30px;
-  max-width: 30px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr td:nth-child(2),
-.json-diff-viewer.json-diff-viewer-theme-custom tr td:nth-child(4) {
-  width: auto;
-  width: 50%;
-  overflow-wrap: anywhere;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr td pre {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  overflow: hidden;
-  margin: 0;
-  padding-left: 4px;
-  margin-right: 29px;
-  font-size: 12px;
-  min-width: 300px;
-  line-height: var(--diff-row-height);
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
 /* ADD REMOVE MODIFY COLORS */
-.json-diff-viewer.json-diff-viewer-theme-custom tr .line-add {
+.json-diff-viewer.json-diff-viewer-theme-custom .line-add {
   border-left: 1px solid #a5ff99;
   background: rgba(100, 182, 67, 0.08);
 }
 
-.json-diff-viewer.json-diff-viewer-theme-custom tr .line-remove {
+.json-diff-viewer.json-diff-viewer-theme-custom .line-remove {
   border-left: 1px solid #ffaa99;
   background: rgba(160, 128, 100, 0.08);
 }
 
-.json-diff-viewer.json-diff-viewer-theme-custom tr .line-modify {
+.json-diff-viewer.json-diff-viewer-theme-custom .line-modify {
   border-left: 1px solid #ecff99;
   background: rgba(182, 180, 67, 0.08);
 }
 
-.json-diff-viewer.json-diff-viewer-theme-custom tr .empty-equal-cell {
+.json-diff-viewer.json-diff-viewer-theme-custom .empty-equal-cell {
   opacity: 0.4;
   background: repeating-linear-gradient(-53deg, rgb(69, 69, 70), rgb(69, 69, 70) 1.5px, #282a36 1.5px, #282a36 4px);
   background-attachment: fixed;
 }
 
-.json-diff-viewer.json-diff-viewer-theme-custom tr .line-number {
-  background: unset;
-  padding: 0 4px;
-  border-left: 0;
-  border-bottom: none;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr.expand-line td {
-  text-align: center;
-}
-
 /* EDITOR COLORS  */
-.json-diff-viewer.json-diff-viewer-theme-custom tr td pre span.inline-diff-add {
+.json-diff-viewer.json-diff-viewer-theme-custom .inline-diff-add {
   background: rgba(0, 0, 0, 0.08);
   text-decoration: underline;
   word-break: break-all;
 }
-.json-diff-viewer.json-diff-viewer-theme-custom tr td pre span.inline-diff-remove {
+.json-diff-viewer.json-diff-viewer-theme-custom .inline-diff-remove {
   background: rgba(0, 0, 0, 0.08);
   text-decoration: line-through;
   word-break: break-all;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr:hover {
-  background: #53535f54;
-}
-
-.json-diff-viewer.json-diff-viewer-theme-custom tr.expand-line button {
-  color: #1e616d;
 }
 
 .json-diff-viewer.json-diff-viewer-theme-custom .string {
@@ -171,20 +98,6 @@
 .diff-viewer-container button:focus,
 .diff-viewer-container button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
-}
-
-.collapsed-button {
-  background-color: #262626;
-}
-
-tr.collapsed-button td {
-  max-width: unset !important;
-  width: 50%;
-}
-
-tr.collapsed-button .expand-button-container {
-  display: flex;
-  justify-content: center;
 }
 
 .collapsed-button button {
@@ -336,7 +249,6 @@ tr.collapsed-button .expand-button-container {
 
 .diff-viewer-container .minimap-overlay .left-map-holder {
   justify-content: flex-end;
-  min-width: 334px;
 }
 
 .diff-viewer-container .minimap-overlay .right-map-holder {
@@ -350,4 +262,64 @@ tr.collapsed-button .expand-button-container {
 
 .diff-viewer-container .minimap-overlay .minimap-wrapper:hover {
   opacity: 0.85;
+}
+
+/* row container */
+.json-diff-viewer.json-diff-viewer-theme-custom .grid-row .cell {
+  padding: 0;
+  vertical-align: unset;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* line-number cell styling (mimic old td.line-number) */
+.json-diff-viewer.json-diff-viewer-theme-custom .grid-row .line-number {
+  background: unset;
+  border-left: 0;
+  border-bottom: none;
+  color: #999;
+  padding: 2px;
+  padding-right: 6px;
+  text-align: right;
+  width: 30px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* content cells (2nd and 4th column) */
+.json-diff-viewer.json-diff-viewer-theme-custom .grid-row .cell:nth-child(2),
+.json-diff-viewer.json-diff-viewer-theme-custom .grid-row .cell:nth-child(4) {
+  width: auto;
+  overflow-wrap: anywhere;
+}
+
+/* pre inside the cell */
+.json-diff-viewer.json-diff-viewer-theme-custom .grid-row .cell pre {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  overflow: hidden;
+  margin: 0;
+  padding-left: 4px;
+  margin-right: 29px;
+  font-size: 12px;
+  line-height: var(--diff-row-height);
+  white-space: pre-wrap;
+  word-break: break-all;
+  min-width: 0; /* important for flexbox/grid overflow */
+}
+
+/* collapsed button visuals */
+.json-diff-viewer.json-diff-viewer-theme-custom .grid-row.collapsed-button {
+  background-color: #262626;
+}
+
+.json-diff-viewer.json-diff-viewer-theme-custom .grid-row.collapsed-button .expand-button-container {
+  display: flex;
+  justify-content: center;
+}
+
+/* preserve hover */
+.json-diff-viewer.json-diff-viewer-theme-custom .grid-row:hover {
+  background: #53535f54;
 }

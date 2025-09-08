@@ -34,4 +34,7 @@ export function equalEmptyLine(cell: DiffRow) {
   if (cell.type === "equal" && cell.text.trim() === "") {
     return "empty-equal-cell";
   }
+  else {
+    return "";
+  }
 }
