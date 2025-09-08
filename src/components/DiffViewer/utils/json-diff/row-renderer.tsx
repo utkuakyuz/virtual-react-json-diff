@@ -36,14 +36,25 @@ ListChildComponentProps<{
     }, [onExpand, originalLeftLine]);
 
     return (
-      <div className="collapsed-button" style={style}>
-        <button onClick={() => handleExpand(originalLeftLine as CollapsedLine)} className="text-blue-500 underline">
-          Show Hidden Lines
-        </button>
-        <button onClick={() => handleExpand(originalLeftLine as CollapsedLine)} className="text-blue-500 underline">
-          Show Hidden Lines
-        </button>
-      </div>
+      <tr className="collapsed-button" style={style}>
+        <td></td>
+        <td>
+          <span className="expand-button-container">
+            <button onClick={() => handleExpand(originalLeftLine as CollapsedLine)} className="text-blue-500 underline">
+              Show Hidden Lines
+            </button>
+          </span>
+        </td>
+        <td></td>
+        <td>
+          <span className="expand-button-container">
+            <button onClick={() => handleExpand(originalLeftLine as CollapsedLine)} className="text-blue-500 underline">
+              Show Hidden Lines
+            </button>
+          </span>
+        </td>
+
+      </tr>
     );
   }
 

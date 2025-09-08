@@ -174,10 +174,17 @@
 }
 
 .collapsed-button {
-  display: flex;
   background-color: #262626;
-  justify-content: space-around;
-  align-items: center;
+}
+
+tr.collapsed-button td {
+  max-width: unset !important;
+  width: 50%;
+}
+
+tr.collapsed-button .expand-button-container {
+  display: flex;
+  justify-content: center;
 }
 
 .collapsed-button button {

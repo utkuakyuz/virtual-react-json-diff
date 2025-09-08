@@ -37,7 +37,7 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
   }, [height, leftDiff.length, rightDiff.length]);
 
   const { handleMouseDown, isDragging } = useDragScroll({
-    height,
+    height: height || 380,
     totalLines,
     viewportHeight,
     ROW_HEIGHT,
@@ -48,8 +48,8 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
   const { drawMinimap, drawScrollBox } = useMinimapDraw({
     canvasRef,
     containerRef,
-    height,
-    miniMapWidth,
+    height: height || 380,
+    miniMapWidth: miniMapWidth || 20,
     leftDiff,
     rightDiff,
     currentScrollTop,
