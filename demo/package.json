@@ -14,7 +14,7 @@
     "react-ace": "^14.0.1",
     "react-dom": "^18.0.0",
     "react-json-editor-ajrm": "^2.5.14",
-    "virtual-react-json-diff": "^1.0.12"
+    "virtual-react-json-diff": "^1.0.13"
   },
   "devDependencies": {
     "@types/react-dom": "^19.1.9",
