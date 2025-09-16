@@ -1,3 +1,4 @@
+import type { DiffResult } from "json-diff-kit";
 import type { VariableSizeList as List } from "react-window";
 
 import { Differ } from "json-diff-kit";
@@ -7,6 +8,7 @@ import type { DiffRowOrCollapsed, SegmentItem, VirtualizedDiffViewerProps } from
 
 import "../styles/JsonDiffCustomTheme.css";
 import { useSearch } from "../hooks/useSearch";
+import { fastHash } from "../utils/json-diff/diff-hash";
 import { expandSegment, hasExpandedSegments, hideAllSegments } from "../utils/json-diff/segment-util";
 import { buildViewFromSegments, generateSegments } from "../utils/preprocessDiff";
 import { DiffMinimap } from "./DiffMinimap";
@@ -21,6 +23,8 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   leftTitle,
   rightTitle,
   hideSearch,
+  customDiffer,
+  getDiffData,
   showSingleMinimap,
   onSearchMatch,
   differOptions,
@@ -31,8 +35,10 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
 }) => {
   const outerRef = useRef<Node>(null);
   const listRef = useRef<List>(null);
+  const getDiffDataRef = useRef<typeof getDiffData>();
+  const lastSent = useRef<number>();
 
-  const differ = useMemo(
+  const differ = customDiffer ?? useMemo(
     () =>
       new Differ({
         detectCircular: true,
@@ -100,6 +106,23 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
     setLeftView(leftBuilt);
     setRightView(rightBuilt);
   }, [segments, rawLeftDiff, rawRightDiff]);
+
+  useEffect(() => {
+    getDiffDataRef.current = getDiffData;
+  }, [getDiffData]);
+
+  useEffect(() => {
+    if (!getDiffDataRef.current)
+      return;
+
+    const data: [DiffResult[], DiffResult[]] = [rawLeftDiff, rawRightDiff];
+    const hash = fastHash(data);
+
+    if (lastSent.current !== hash) {
+      lastSent.current = hash;
+      getDiffDataRef.current(data);
+    }
+  }, [rawLeftDiff, rawRightDiff]);
 
   return (
     <div className={`diff-viewer-container${className ? ` ${className}` : ""}`}>
