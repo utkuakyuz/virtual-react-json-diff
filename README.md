@@ -49,9 +49,9 @@ The theme is fully customizable, all colors can be changed. (And soon new themes
 
 Modify DifferOptions and InlineDiffOptions and see the output.
 
-Dual Minimap is defaultly shown, to hide middle minimap, just pass ShowSingleMinimap prop to Viewer.
+Dual Minimap is defaultly shown, to hide middle minimap, just pass `ShowSingleMinimap` prop to Viewer.
 
-To change Diff methods please see DifferOptions. By default virtual-react-json-diff uses following configuration.
+To change Diff methods please see `DifferOptions`. By default `virtual-react-json-diff` uses following configuration.
 
 ```
 new Differ({
@@ -67,7 +67,6 @@ new Differ({
 Simply pass your json objects into Viewer Component. It will find differences and show.
 
 ```
-import React from "react";
 import { VirtualDiffViewer } from "virtual-react-json-diff";
 
 const oldData = { name: "Alice", age: 25 };
@@ -85,6 +84,39 @@ export default function App() {
 }
 ```
 
+---
+
+If you need to see or make some calculations on difference objects, you can get the diff data using `getDifferData` callback prop
+
+```
+import { type DiffResult, VirtualDiffViewer } from "virtual-react-json-diff";
+
+const [differData, setDifferData] = useState<[DiffResult[], DiffResult[]]>();
+
+<VirtualDiffViewer  {...props}  getDiffData={diffData => setDifferData(diffData)}  />
+```
+
+Or if you have a custom Differ or a custom viewer, you can import `Differ` class to create diff objects using your own differ. Moreover you can pass that differ to `VirtualizedDiffViewer`.
+
+p.s. This is not recommended because you can modify all variables in Differ using `differOptions` prop in Viewer.
+
+```
+import { Differ, VirtualDiffViewer } from "virtual-react-json-diff";
+---
+  const differOptions: DifferOptions = {
+    showModifications: config.showModifications,
+    arrayDiffMethod: config.arrayDiffMethod,
+  };
+  const differ = new Differ(differOptions);
+
+---
+
+// Pass it into Viewer with 'customDiffer' prop
+  <VirtualDiffViewer  {...props}  customDiffer={differ} />
+```
+
+---
+
 The component exposes a root container with the class:
 
 ```
@@ -95,21 +127,24 @@ You can pass your own class name via the className prop to apply custom themes.
 
 ## Props
 
-| Prop                | Type                      | Default            | Description                                                            |
-| ------------------- | ------------------------- | ------------------ | ---------------------------------------------------------------------- |
-| `oldValue`          | `object`                  | —                  | The original JSON object to compare (left side).                       |
-| `newValue`          | `object`                  | —                  | The updated JSON object to compare (right side).                       |
-| `height`            | `number`                  | —                  | Height of the diff viewer in pixels.                                   |
-| `hideSearch`        | `boolean`                 | `false`            | Hides the search bar if set to `true`.                                 |
-| `searchTerm`        | `string`                  | `""`               | Initial search keyword to highlight within the diff.                   |
-| `leftTitle`         | `string`                  | —                  | Optional title to display above the left diff panel.                   |
-| `rightTitle`        | `string`                  | —                  | Optional title to display above the right diff panel.                  |
-| `onSearchMatch`     | `(index: number) => void` | —                  | Callback fired when a search match is found. Receives the match index. |
-| `differOptions`     | `DifferOptions`           | `Given Above`      | Advanced options passed to the diffing engine.                         |
-| `showSingleMinimap` | `boolean`                 | `false`            | If `true`, shows only one minimap instead of two.                      |
-| `className`         | `string`                  | —                  | Custom CSS class for styling the viewer container.                     |
-| `miniMapWidth`      | `number`                  | `40`               | Width of each minimap in pixels.                                       |
-| `inlineDiffOptions` | `InlineDiffOptions`       | `{'mode': 'char'}` | Options for fine-tuning inline diff rendering.                         |
+| Prop                | Type                                               | Default            | Description                                                            |
+| ------------------- | -------------------------------------------------- | ------------------ | ---------------------------------------------------------------------- |
+| `oldValue`          | `object`                                           | —                  | The original JSON object to compare (left side).                       |
+| `newValue`          | `object`                                           | —                  | The updated JSON object to compare (right side).                       |
+| `height`            | `number`                                           | —                  | Height of the diff viewer in pixels.                                   |
+| `hideSearch`        | `boolean`                                          | `false`            | Hides the search bar if set to `true`.                                 |
+| `searchTerm`        | `string`                                           | `""`               | Initial search keyword to highlight within the diff.                   |
+| `leftTitle`         | `string`                                           | —                  | Optional title to display above the left diff panel.                   |
+| `rightTitle`        | `string`                                           | —                  | Optional title to display above the right diff panel.                  |
+| `onSearchMatch`     | `(index: number) => void`                          | —                  | Callback fired when a search match is found. Receives the match index. |
+| `differOptions`     | `DifferOptions`                                    | `Given Above`      | Advanced options passed to the diffing engine.                         |
+| `showSingleMinimap` | `boolean`                                          | `false`            | If `true`, shows only one minimap instead of two.                      |
+| `className`         | `string`                                           | —                  | Custom CSS class for styling the viewer container.                     |
+| `overScanCount`     | `number`                                           | `28`               | Number of rendered rows outside of the viewport for virtualization     |
+| `miniMapWidth`      | `number`                                           | `40`               | Width of each minimap in pixels.                                       |
+| `inlineDiffOptions` | `InlineDiffOptions`                                | `{'mode': 'char'}` | Options for fine-tuning inline diff rendering.                         |
+| `getDiffData`       | `(diffData: [DiffResult[], DiffResult[]]) => void` | -                  | Get difference data and make operations                                |
+| `customDiffer`      | `Differ`                                           | -                  | Pass custom differ - not recommended                                   |
 
 ## 🙌 Acknowledgements
 
