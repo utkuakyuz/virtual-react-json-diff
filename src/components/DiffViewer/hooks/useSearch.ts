@@ -2,10 +2,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { DiffRowOrCollapsed, SearchState } from "../types";
 
-import { DIFF_VIEWER_CLASS, SEARCH_DEBOUNCE_MS } from "../utils/constants";
+import { SEARCH_DEBOUNCE_MS } from "../utils/constants";
 import { highlightMatches, performSearch } from "../utils/diffSearchUtils";
 
-export function useSearch(leftView: DiffRowOrCollapsed[], initialTerm?: string, onSearchMatch?: (index: number) => void) {
+export function useSearch(
+  leftView: DiffRowOrCollapsed[],
+  initialTerm?: string,
+  onSearchMatch?: (index: number) => void,
+  viewerRef?: React.RefObject<HTMLDivElement | null>,
+  listContainerRef?: React.RefObject<HTMLDivElement | null>,
+) {
   const [searchState, setSearchState] = useState<SearchState>({
     term: initialTerm ?? "",
     results: [],
@@ -43,17 +49,18 @@ export function useSearch(leftView: DiffRowOrCollapsed[], initialTerm?: string, 
   }, [searchState, onSearchMatch]);
 
   useEffect(() => {
-    highlightMatches(searchState.term, DIFF_VIEWER_CLASS);
+    if (!viewerRef?.current)
+      return;
 
-    const observer = new MutationObserver(() => highlightMatches(searchState.term, DIFF_VIEWER_CLASS));
+    highlightMatches(searchState.term, viewerRef.current);
+
+    const observer = new MutationObserver(() => viewerRef.current && highlightMatches(searchState.term, viewerRef.current));
     const config = { childList: true, subtree: true };
-    const viewer = document.querySelector(`.${DIFF_VIEWER_CLASS}`);
-    if (viewer)
-      observer.observe(viewer, config);
+    observer.observe(viewerRef.current, config);
 
-    const listContainer = document.querySelector(".virtual-json-diff-list-container");
+    const listContainer = listContainerRef?.current;
     if (listContainer) {
-      const handleScroll = () => setTimeout(() => highlightMatches(searchState.term, DIFF_VIEWER_CLASS), 100);
+      const handleScroll = () => setTimeout(() => viewerRef.current && highlightMatches(searchState.term, viewerRef.current), 100);
       listContainer.addEventListener("scroll", handleScroll);
       return () => {
         observer.disconnect();
@@ -62,7 +69,7 @@ export function useSearch(leftView: DiffRowOrCollapsed[], initialTerm?: string, 
     }
 
     return () => observer.disconnect();
-  }, [searchState.term]);
+  }, [searchState.term, viewerRef, listContainerRef]);
 
   useEffect(() => {
     if (initialTerm !== undefined) {

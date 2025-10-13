@@ -14,11 +14,14 @@ function getWrapCount(el: Element) {
   return Math.round(el.scrollHeight / lh);
 }
 
-export function useRowHeights(leftView: DiffRowOrCollapsed[]) {
+export function useRowHeights(leftView: DiffRowOrCollapsed[], viewerRef?: React.RefObject<HTMLDivElement | null>) {
   const [rowHeights, setRowHeights] = useState<number[]>([]);
 
   const measureRows = useCallback(() => {
-    const preElements = document.querySelectorAll(".json-diff-viewer pre");
+    if (!viewerRef?.current)
+      return;
+
+    const preElements = viewerRef.current.querySelectorAll("pre");
     const newHeights: number[] = [];
     for (let i = 0; i < preElements.length; i += 2) {
       const leftWraps = getWrapCount(preElements[i]);
@@ -26,11 +29,11 @@ export function useRowHeights(leftView: DiffRowOrCollapsed[]) {
       newHeights.push(Math.max(leftWraps, rightWraps));
     }
     setRowHeights(newHeights);
-  }, []);
+  }, [viewerRef]);
 
   useLayoutEffect(() => {
     measureRows();
-  }, [leftView]);
+  }, [leftView, measureRows]);
 
   useLayoutEffect(() => {
     window.addEventListener("resize", measureRows);

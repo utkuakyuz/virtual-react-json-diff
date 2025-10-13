@@ -16,16 +16,16 @@ export function performSearch(term: string, leftView: DiffRowOrCollapsed[]): num
   return results;
 }
 
-export function highlightMatches(term: string, className: string = "json-diff-viewer-theme-custom"): void {
+export function highlightMatches(term: string, container: HTMLDivElement): void {
   if (!term) {
-    const elements = document.querySelectorAll(`.${className} span.token.search-match`);
+    const elements = container.querySelectorAll("span.token.search-match");
     elements.forEach(element => element.classList.remove("search-match"));
     return;
   }
 
   const termToUse = term.replaceAll("(", "").replaceAll(")", "");
   const regex = new RegExp(termToUse, "gi");
-  const elements = document.querySelectorAll(`.${className} span.token`);
+  const elements = container.querySelectorAll("span.token");
 
   elements.forEach((element) => {
     const text = element.textContent || "";

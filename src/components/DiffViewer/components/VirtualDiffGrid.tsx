@@ -1,4 +1,3 @@
-// VirtualDiffGrid.tsx
 import type { InlineDiffOptions } from "json-diff-kit";
 import type { Dispatch } from "react";
 import type { ListOnScrollProps } from "react-window";
@@ -22,7 +21,6 @@ type ListDataType = {
 type VirtualDiffGridProps = {
   leftDiff: DiffRowOrCollapsed[];
   rightDiff: DiffRowOrCollapsed[];
-  outerRef: React.RefObject<Node | null>;
   listRef: React.RefObject<List<ListDataType>>;
   height: number;
   inlineDiffOptions?: InlineDiffOptions;
@@ -30,12 +28,13 @@ type VirtualDiffGridProps = {
   setScrollTop: Dispatch<React.SetStateAction<number>>;
   onExpand: (segmentIndex: number) => void;
   overScanCount?: number;
+  viewerRef?: React.RefObject<HTMLDivElement>;
+  listContainerRef?: React.RefObject<HTMLDivElement>;
 };
 
 const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
   leftDiff,
   rightDiff,
-  outerRef,
   listRef,
   height,
   inlineDiffOptions,
@@ -43,6 +42,8 @@ const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
   setScrollTop,
   onExpand,
   overScanCount = 10,
+  viewerRef,
+  listContainerRef,
 }) => {
   // Virtual List Data
   const listData = useMemo(
@@ -65,7 +66,7 @@ const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
 
   // ROW HEIGHT CALCULATION
   const ROW_HEIGHT = useMemo(() => getRowHeightFromCSS(), []);
-  const rowHeights = useRowHeights(leftDiff);
+  const rowHeights = useRowHeights(leftDiff, viewerRef);
   const dynamicRowHeights = useCallback(
     (index: number) => {
       const leftLine = leftDiff[index];
@@ -81,12 +82,12 @@ const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
   }, [rowHeights]);
 
   return (
-    <div className={classes}>
+    <div className={classes} ref={viewerRef}>
       <List
         height={height}
         width="100%"
         style={{ alignItems: "start" }}
-        outerRef={outerRef}
+        outerRef={listContainerRef}
         ref={listRef}
         className="virtual-json-diff-list-container"
         itemCount={Math.max(leftDiff.length, rightDiff.length)}

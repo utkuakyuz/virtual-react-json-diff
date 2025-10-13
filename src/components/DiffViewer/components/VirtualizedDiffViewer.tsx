@@ -33,10 +33,11 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   inlineDiffOptions,
   overScanCount,
 }) => {
-  const outerRef = useRef<Node>(null);
   const listRef = useRef<List>(null);
   const getDiffDataRef = useRef<typeof getDiffData>();
   const lastSent = useRef<number>();
+  const viewerRef = useRef<HTMLDivElement>(null);
+  const listContainerRef = useRef<HTMLDivElement>(null);
 
   const differ = customDiffer ?? useMemo(
     () =>
@@ -75,6 +76,8 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
       listRef.current?.scrollToItem(idx, "center");
       onSearchMatch?.(idx);
     },
+    viewerRef,
+    listContainerRef,
   );
 
   const handleExpand = useCallback(
@@ -140,7 +143,6 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
       {/* List & Minimap */}
       <div style={{ display: "flex", gap: "8px", position: "relative" }}>
         <VirtualDiffGrid
-          outerRef={outerRef}
           listRef={listRef}
           leftDiff={leftView}
           rightDiff={rightView}
@@ -150,6 +152,8 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
           onExpand={handleExpand}
           className="virtual-json-diff-list-container"
           inlineDiffOptions={inlineDiffOptions}
+          viewerRef={viewerRef}
+          listContainerRef={listContainerRef}
         />
 
         <div className="minimap-overlay">
