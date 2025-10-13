@@ -60,7 +60,7 @@ export function useSearch(
 
     const listContainer = listContainerRef?.current;
     if (listContainer) {
-      const handleScroll = () => setTimeout(() => highlightMatches(searchState.term, viewerRef.current!), 100);
+      const handleScroll = () => setTimeout(() => viewerRef.current && highlightMatches(searchState.term, viewerRef.current), 100);
       listContainer.addEventListener("scroll", handleScroll);
       return () => {
         observer.disconnect();
