@@ -54,7 +54,7 @@ export function useSearch(
 
     highlightMatches(searchState.term, viewerRef.current);
 
-    const observer = new MutationObserver(() => highlightMatches(searchState.term, viewerRef.current!));
+    const observer = new MutationObserver(() => viewerRef.current && highlightMatches(searchState.term, viewerRef.current));
     const config = { childList: true, subtree: true };
     observer.observe(viewerRef.current, config);
 
