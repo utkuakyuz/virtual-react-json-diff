@@ -4,14 +4,16 @@ import type { VariableSizeList as List } from "react-window";
 import { Differ } from "json-diff-kit";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import type { DiffRowOrCollapsed, SegmentItem, VirtualizedDiffViewerProps } from "../types";
+import type { DiffRowOrCollapsed, LineCountStats, SegmentItem, VirtualizedDiffViewerProps } from "../types";
 
 import "../styles/JsonDiffCustomTheme.css";
 import { useSearch } from "../hooks/useSearch";
 import { fastHash } from "../utils/json-diff/diff-hash";
 import { expandSegment, hasExpandedSegments, hideAllSegments } from "../utils/json-diff/segment-util";
+import { calculateLineCountStats } from "../utils/lineCountUtils";
 import { buildViewFromSegments, generateSegments } from "../utils/preprocessDiff";
 import { DiffMinimap } from "./DiffMinimap";
+import LineCountDisplay from "./LineCountDisplay";
 import SearchboxHolder from "./SearchboxHolder";
 import VirtualDiffGrid from "./VirtualDiffGrid";
 
@@ -32,6 +34,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   miniMapWidth,
   inlineDiffOptions,
   overScanCount,
+  showLineCount = false,
 }) => {
   const listRef = useRef<List>(null);
   const getDiffDataRef = useRef<typeof getDiffData>();
@@ -57,6 +60,13 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
       return [[], []];
     return differ.diff(oldValue, newValue);
   }, [oldValue, newValue, differ]);
+
+  const lineCountStats = useMemo((): LineCountStats => {
+    if (!diffData || (diffData[0].length === 0 && diffData[1].length === 0)) {
+      return { added: 0, removed: 0, modified: 0, total: 0 };
+    }
+    return calculateLineCountStats(diffData as [DiffResult[], DiffResult[]]);
+  }, [diffData]);
 
   const [scrollTop, setScrollTop] = useState(0);
   const [segments, setSegments] = useState<SegmentItem[]>([]);
@@ -138,6 +148,10 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
           <div><span>{leftTitle}</span></div>
           <div><span>{rightTitle}</span></div>
         </div>
+
+        {showLineCount && (
+          <LineCountDisplay stats={lineCountStats} />
+        )}
       </div>
 
       {/* List & Minimap */}

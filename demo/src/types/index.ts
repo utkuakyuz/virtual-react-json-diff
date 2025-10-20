@@ -8,6 +8,7 @@ export type Config = {
   miniMapWidth: number;
   hideSearch: boolean;
   height: number;
+  showLineCount: boolean;
 
   // Differ Configuration
   detectCircular: boolean;

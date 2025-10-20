@@ -32,6 +32,13 @@ export type SearchState = {
   currentIndex: number;
 };
 
+export type LineCountStats = {
+  added: number;
+  removed: number;
+  modified: number;
+  total: number;
+};
+
 export type VirtualizedDiffViewerProps = {
   oldValue: object;
   newValue: object;
@@ -49,6 +56,7 @@ export type VirtualizedDiffViewerProps = {
   miniMapWidth?: number;
   inlineDiffOptions?: InlineDiffOptions;
   overScanCount?: number;
+  showLineCount?: boolean;
 };
 
 export type DiffMinimapProps = {
