@@ -9,6 +9,10 @@ export type InlineHighlightResult = {
 };
 
 function syntaxHighlightLine(enabled: boolean, text: string, offset: number): InlineHighlightResult[] {
+  if (!text || typeof text !== "string") {
+    return [{ token: "plain", start: offset, end: offset }];
+  }
+
   if (!enabled) {
     return [{ token: "plain", start: offset, end: text.length + offset }];
   }

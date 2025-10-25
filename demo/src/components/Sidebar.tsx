@@ -95,6 +95,32 @@ function Sidebar(props: Props) {
         </div>
 
         <div className="form-group">
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              className="form-checkbox"
+              checked={config.showLineCount}
+              onChange={e => updateConfig("showLineCount", e.target.checked)}
+            />
+            Show Line Count
+          </label>
+          <p className="form-hint">Display statistics for added, removed, and modified lines</p>
+        </div>
+
+        <div className="form-group">
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              className="form-checkbox"
+              checked={config.showObjectCountStats}
+              onChange={e => updateConfig("showObjectCountStats", e.target.checked)}
+            />
+            Show Object Count Stats
+          </label>
+          <p className="form-hint">Display object statistics when using compare-key method</p>
+        </div>
+
+        <div className="form-group">
           <label className="form-label">
             CSS Class Name
             <input
