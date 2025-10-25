@@ -17,35 +17,40 @@ export const LineCountDisplay: React.FC<LineCountDisplayProps> = ({ stats }) => 
 
   return (
     <div className="line-count-display">
-      {stats.added > 0 && (
-        <span className="line-count-item added">
-          +
-          {stats.added}
+      <div className="line-count-item-sub-holder">
+        {stats.added > 0 && (
+          <span className="line-count-item added">
+            +
+            {stats.added}
+            {" "}
+            added
+          </span>
+        )}
+
+        {stats.removed > 0 && (
+          <span className="line-count-item removed">
+            -
+            {stats.removed}
+            {" "}
+            removed
+          </span>
+        )}
+      </div>
+      <div className="line-count-item-sub-holder">
+        {stats.modified > 0 && (
+          <span className="line-count-item modified">
+            ~
+            {stats.modified}
+            {" "}
+            modified
+          </span>
+        )}
+        <span className="line-count-item total">
+          {stats.total}
           {" "}
-          added
+          total changes
         </span>
-      )}
-      {stats.removed > 0 && (
-        <span className="line-count-item removed">
-          -
-          {stats.removed}
-          {" "}
-          removed
-        </span>
-      )}
-      {stats.modified > 0 && (
-        <span className="line-count-item modified">
-          ~
-          {stats.modified}
-          {" "}
-          modified
-        </span>
-      )}
-      <span className="line-count-item total">
-        {stats.total}
-        {" "}
-        total changes
-      </span>
+      </div>
     </div>
   );
 };

@@ -46,10 +46,18 @@
 .line-count-display {
   display: flex;
   gap: 12px;
+  margin-top: 5px;
   align-items: center;
   font-size: 11px;
   color: #f8f8f2;
   margin-left: auto;
+  justify-content: space-between;
+}
+
+.line-count-item-sub-holder {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .line-count-item {

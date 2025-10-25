@@ -148,7 +148,6 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
           <div><span>{leftTitle}</span></div>
           <div><span>{rightTitle}</span></div>
         </div>
-
         {showLineCount && (
           <LineCountDisplay stats={lineCountStats} />
         )}
