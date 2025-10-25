@@ -5,31 +5,26 @@
 ![bundle size](https://badgen.net/bundlephobia/minzip/virtual-react-json-diff)
 [![BuyMeACoffee](https://raw.githubusercontent.com/pachadotdev/buymeacoffee-badges/main/bmc-yellow.svg)](https://www.buymeacoffee.com/utkuakyuz)
 
-👉 [Try it now](https://virtual-react-json-diff.netlify.app) (See the New Demo Page Including AceEditor)
+👉 [Try it now](https://virtual-react-json-diff.netlify.app)
 
-A high-performance React component for visually comparing large JSON objects. Built on top of [json-diff-kit](https://www.npmjs.com/package/json-diff-kit), this viewer supports:
-
-- Virtual scrolling for better performance (especially for large diffs)
-- Custom theming (Soon new themes will be available)
-- Dual Mini Map
-- 🔍 Search functionality
-- ⚛️ Optimized for React (uses `react-window`)
-
-This component is developed for dealing with thousands of lines of Json Files, and seamlessly compare then render them on UI. Json Compare is a concept that has insufficient FE components available. This component brings solution to the issues of current diff viewers. Virtualized scroll gives a smooth experience while dual minimap and search ability simplifies the process of comparing JSON objects.
+A high-performance React component for visually comparing large JSON objects. Built on top of [json-diff-kit](https://www.npmjs.com/package/json-diff-kit), this viewer supports virtual scrolling, search functionality, dual minimap, and customizable theming.
 
 ## Features
 
-- **Compare Large JSON Objects** – Handles big files without freezing the UI
 - **Virtualized Rendering** – Efficient DOM updates using `react-window`
 - **Search Highlighting** – Find matches and scroll directly to them
-- **Mini Map** – Dual scrollable minimap of Json Diff, scaled to better see comparison result
-- **Customizable Styles** – Add your own class names and styles easily (checkout JsonDiffCustomTheme.css)
+- **Dual Mini Map** – Scrollable minimap for better navigation
+- **Line Count Statistics** – Display added, removed, and modified line counts
+- **Object Count Statistics** – Count objects when using compare-key method
+- **Customizable Styles** – Add your own class names and themes
 
 ## Demo
 
-To see how it works, demo available here: https://virtual-react-json-diff.netlify.app
+👉 [Try it now](https://virtual-react-json-diff.netlify.app) - Interactive demo with live examples
 
-## 📦 Installation
+![Example Screenshot](https://raw.githubusercontent.com/utkuakyuz/virtual-react-json-diff/main/public/image-1.0.15.png)
+
+## Installation
 
 ```bash
 npm install virtual-react-json-diff
@@ -39,34 +34,9 @@ yarn add virtual-react-json-diff
 pnpm add virtual-react-json-diff
 ```
 
-## Example Screenshot
-
-The theme is fully customizable, all colors can be changed. (And soon new themes will be available)
-
-![ExampleScreenshot](https://raw.githubusercontent.com/utkuakyuz/virtual-react-json-diff/main/public/image-1.0.11.png)
-
 ## Usage
 
-Modify DifferOptions and InlineDiffOptions and see the output.
-
-Dual Minimap is defaultly shown, to hide middle minimap, just pass `ShowSingleMinimap` prop to Viewer.
-
-To change Diff methods please see `DifferOptions`. By default `virtual-react-json-diff` uses following configuration.
-
-```
-new Differ({
-  detectCircular: true,
-  maxDepth: 20,
-  showModifications: true,
-  arrayDiffMethod: "lcs",
-  preserveKeyOrder: "before",
-  ...differOptions,
-}),
-```
-
-Simply pass your json objects into Viewer Component. It will find differences and show.
-
-```
+```jsx
 import { VirtualDiffViewer } from "virtual-react-json-diff";
 
 const oldData = { name: "Alice", age: 25 };
@@ -78,77 +48,106 @@ export default function App() {
       oldValue={oldData}
       newValue={newData}
       height={600}
-      className="my-custom-diff"
+      showLineCount={true}
+      showObjectCountStats={false}
     />
   );
 }
 ```
 
----
+## Line Count Statistics
 
-If you need to see or make some calculations on difference objects, you can get the diff data using `getDifferData` callback prop
+Enable line-level statistics with `showLineCount={true}`:
 
-```
-import { type DiffResult, VirtualDiffViewer } from "virtual-react-json-diff";
-
-const [differData, setDifferData] = useState<[DiffResult[], DiffResult[]]>();
-
-<VirtualDiffViewer  {...props}  getDiffData={diffData => setDifferData(diffData)}  />
-```
-
-Or if you have a custom Differ or a custom viewer, you can import `Differ` class to create diff objects using your own differ. Moreover you can pass that differ to `VirtualizedDiffViewer`.
-
-p.s. This is not recommended because you can modify all variables in Differ using `differOptions` prop in Viewer.
-
-```
-import { Differ, VirtualDiffViewer } from "virtual-react-json-diff";
----
-  const differOptions: DifferOptions = {
-    showModifications: config.showModifications,
-    arrayDiffMethod: config.arrayDiffMethod,
-  };
-  const differ = new Differ(differOptions);
-
----
-
-// Pass it into Viewer with 'customDiffer' prop
-  <VirtualDiffViewer  {...props}  customDiffer={differ} />
+```jsx
+<VirtualDiffViewer
+  oldValue={oldData}
+  newValue={newData}
+  showLineCount={true}
+/>;
 ```
 
----
+Displays: `+5 added lines, -3 removed lines, ~2 modified lines, 10 total line changes`
 
-The component exposes a root container with the class:
+## Object Count Statistics
 
+Enable object-level counting when using compare-key method:
+
+```jsx
+<VirtualDiffViewer
+  oldValue={oldData}
+  newValue={newData}
+  showObjectCountStats={true}
+  differOptions={{
+    arrayDiffMethod: "compare-key",
+    compareKey: "id"
+  }}
+/>;
 ```
-<div class="diff-viewer-container">...</div>
-```
 
-You can pass your own class name via the className prop to apply custom themes.
+Displays: `+2 added objects, -1 removed objects, ~3 modified objects, 6 total object changes`
+
+**Requirements:** Only works with `arrayDiffMethod: "compare-key"` and requires a valid `compareKey`.
 
 ## Props
 
-| Prop                | Type                                               | Default            | Description                                                            |
-| ------------------- | -------------------------------------------------- | ------------------ | ---------------------------------------------------------------------- |
-| `oldValue`          | `object`                                           | —                  | The original JSON object to compare (left side).                       |
-| `newValue`          | `object`                                           | —                  | The updated JSON object to compare (right side).                       |
-| `height`            | `number`                                           | —                  | Height of the diff viewer in pixels.                                   |
-| `hideSearch`        | `boolean`                                          | `false`            | Hides the search bar if set to `true`.                                 |
-| `searchTerm`        | `string`                                           | `""`               | Initial search keyword to highlight within the diff.                   |
-| `leftTitle`         | `string`                                           | —                  | Optional title to display above the left diff panel.                   |
-| `rightTitle`        | `string`                                           | —                  | Optional title to display above the right diff panel.                  |
-| `onSearchMatch`     | `(index: number) => void`                          | —                  | Callback fired when a search match is found. Receives the match index. |
-| `differOptions`     | `DifferOptions`                                    | `Given Above`      | Advanced options passed to the diffing engine.                         |
-| `showSingleMinimap` | `boolean`                                          | `false`            | If `true`, shows only one minimap instead of two.                      |
-| `className`         | `string`                                           | —                  | Custom CSS class for styling the viewer container.                     |
-| `overScanCount`     | `number`                                           | `28`               | Number of rendered rows outside of the viewport for virtualization     |
-| `miniMapWidth`      | `number`                                           | `40`               | Width of each minimap in pixels.                                       |
-| `inlineDiffOptions` | `InlineDiffOptions`                                | `{'mode': 'char'}` | Options for fine-tuning inline diff rendering.                         |
-| `getDiffData`       | `(diffData: [DiffResult[], DiffResult[]]) => void` | -                  | Get difference data and make operations                                |
-| `customDiffer`      | `Differ`                                           | -                  | Pass custom differ - not recommended                                   |
+| Prop                   | Type                                               | Default            | Description                                                            |
+| ---------------------- | -------------------------------------------------- | ------------------ | ---------------------------------------------------------------------- |
+| `oldValue`             | `object`                                           | —                  | The original JSON object to compare (left side).                       |
+| `newValue`             | `object`                                           | —                  | The updated JSON object to compare (right side).                       |
+| `height`               | `number`                                           | —                  | Height of the diff viewer in pixels.                                   |
+| `hideSearch`           | `boolean`                                          | `false`            | Hides the search bar if set to `true`.                                 |
+| `searchTerm`           | `string`                                           | `""`               | Initial search keyword to highlight within the diff.                   |
+| `leftTitle`            | `string`                                           | —                  | Optional title to display above the left diff panel.                   |
+| `rightTitle`           | `string`                                           | —                  | Optional title to display above the right diff panel.                  |
+| `onSearchMatch`        | `(index: number) => void`                          | —                  | Callback fired when a search match is found. Receives the match index. |
+| `differOptions`        | `DifferOptions`                                    | `Default config`   | Advanced options passed to the diffing engine.                         |
+| `showSingleMinimap`    | `boolean`                                          | `false`            | If `true`, shows only one minimap instead of two.                      |
+| `className`            | `string`                                           | —                  | Custom CSS class for styling the viewer container.                     |
+| `miniMapWidth`         | `number`                                           | `40`               | Width of each minimap in pixels.                                       |
+| `inlineDiffOptions`    | `InlineDiffOptions`                                | `{'mode': 'char'}` | Options for fine-tuning inline diff rendering.                         |
+| `showLineCount`        | `boolean`                                          | `false`            | Display line count statistics (added, removed, modified lines).        |
+| `showObjectCountStats` | `boolean`                                          | `false`            | Display object count statistics when using compare-key method.         |
+| `getDiffData`          | `(diffData: [DiffResult[], DiffResult[]]) => void` | -                  | Get difference data and make operations                                |
+
+## Advanced Usage
+
+### Custom Differ Options
+
+```jsx
+const differOptions = {
+  detectCircular: true,
+  maxDepth: 999,
+  showModifications: true,
+  arrayDiffMethod: "compare-key",
+  compareKey: "userId",
+  ignoreCase: false,
+  recursiveEqual: false,
+};
+
+<VirtualDiffViewer
+  oldValue={oldData}
+  newValue={newData}
+  differOptions={differOptions}
+/>;
+```
+
+### Utility Functions
+
+```jsx
+import { calculateObjectCountStats } from "virtual-react-json-diff";
+
+const stats = calculateObjectCountStats(oldValue, newValue, "userId");
+// Returns: { added: 2, removed: 1, modified: 3, total: 6 }
+```
+
+## Styling
+
+The component exposes a root container with class `diff-viewer-container`. You can pass your own class name via the `className` prop to apply custom themes.
 
 ## 🙌 Acknowledgements
 
-Built on top of the awesome json-diff-kit.
+Built on top of the awesome [json-diff-kit](https://www.npmjs.com/package/json-diff-kit).
 
 ## 📄 License
 
@@ -157,7 +156,6 @@ MIT © Utku Akyüz
 ## 🛠️ Contributing
 
 Pull requests, suggestions, and issues are welcome!
-Check out the issues or open a PR.
 
 [npm-url]: https://npmjs.org/package/virtual-react-json-diff
 [npm-image]: https://img.shields.io/npm/v/virtual-react-json-diff.svg
