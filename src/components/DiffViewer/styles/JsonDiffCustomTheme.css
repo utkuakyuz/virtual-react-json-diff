@@ -97,6 +97,61 @@
   border: 1px solid rgba(248, 248, 242, 0.2);
 }
 
+/* OBJECT COUNT DISPLAY */
+.object-count-display {
+  display: flex;
+  gap: 12px;
+  margin-top: 5px;
+  align-items: center;
+  font-size: 11px;
+  color: #f8f8f2;
+  margin-left: auto;
+  justify-content: space-between;
+}
+
+.object-count-item-sub-holder {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.object-count-item {
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.object-count-item.added {
+  background: rgba(100, 182, 67, 0.2);
+  color: #a5ff99;
+  border: 1px solid rgba(100, 182, 67, 0.3);
+}
+
+.object-count-item.removed {
+  background: rgba(160, 128, 100, 0.2);
+  color: #ffaa99;
+  border: 1px solid rgba(160, 128, 100, 0.3);
+}
+
+.object-count-item.modified {
+  background: rgba(182, 180, 67, 0.2);
+  color: #ecff99;
+  border: 1px solid rgba(182, 180, 67, 0.3);
+}
+
+.object-count-item.total {
+  background: rgba(69, 96, 248, 0.2);
+  color: #4560f8;
+  border: 1px solid rgba(69, 96, 248, 0.3);
+}
+
+.object-count-item.no-changes {
+  background: rgba(248, 248, 242, 0.1);
+  color: #f8f8f2;
+  border: 1px solid rgba(248, 248, 242, 0.2);
+}
+
 .json-diff-viewer.json-diff-viewer-theme-custom .empty-equal-cell {
   opacity: 0.4;
   background: repeating-linear-gradient(-53deg, rgb(69, 69, 70), rgb(69, 69, 70) 1.5px, #282a36 1.5px, #282a36 4px);

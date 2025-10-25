@@ -39,6 +39,13 @@ export type LineCountStats = {
   total: number;
 };
 
+export type ObjectCountStats = {
+  added: number;
+  removed: number;
+  modified: number;
+  total: number;
+};
+
 export type VirtualizedDiffViewerProps = {
   oldValue: object;
   newValue: object;
@@ -57,6 +64,7 @@ export type VirtualizedDiffViewerProps = {
   inlineDiffOptions?: InlineDiffOptions;
   overScanCount?: number;
   showLineCount?: boolean;
+  showObjectCountStats?: boolean;
 };
 
 export type DiffMinimapProps = {

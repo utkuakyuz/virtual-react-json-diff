@@ -26,6 +26,7 @@ export default function App() {
     hideSearch: false,
     height: 380,
     showLineCount: true,
+    showObjectCountStats: false,
 
     // Differ Configuration
     detectCircular: true,
@@ -221,6 +222,7 @@ export default function App() {
             miniMapWidth={config.miniMapWidth}
             hideSearch={config.hideSearch}
             showLineCount={config.showLineCount}
+            showObjectCountStats={config.showObjectCountStats}
             inlineDiffOptions={{ mode: config.inlineDiffMode }}
             oldValue={parsedOldValue}
             newValue={parsedNewValue}

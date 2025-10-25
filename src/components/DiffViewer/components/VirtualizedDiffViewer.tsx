@@ -4,16 +4,18 @@ import type { VariableSizeList as List } from "react-window";
 import { Differ } from "json-diff-kit";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import type { DiffRowOrCollapsed, LineCountStats, SegmentItem, VirtualizedDiffViewerProps } from "../types";
+import type { DiffRowOrCollapsed, LineCountStats, ObjectCountStats, SegmentItem, VirtualizedDiffViewerProps } from "../types";
 
 import "../styles/JsonDiffCustomTheme.css";
 import { useSearch } from "../hooks/useSearch";
 import { fastHash } from "../utils/json-diff/diff-hash";
 import { expandSegment, hasExpandedSegments, hideAllSegments } from "../utils/json-diff/segment-util";
 import { calculateLineCountStats } from "../utils/lineCountUtils";
+import { calculateObjectCountStats } from "../utils/objectCountUtils";
 import { buildViewFromSegments, generateSegments } from "../utils/preprocessDiff";
 import { DiffMinimap } from "./DiffMinimap";
 import LineCountDisplay from "./LineCountDisplay";
+import ObjectCountDisplay from "./ObjectCountDisplay";
 import SearchboxHolder from "./SearchboxHolder";
 import VirtualDiffGrid from "./VirtualDiffGrid";
 
@@ -35,6 +37,7 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   inlineDiffOptions,
   overScanCount,
   showLineCount = false,
+  showObjectCountStats = false,
 }) => {
   const listRef = useRef<List>(null);
   const getDiffDataRef = useRef<typeof getDiffData>();
@@ -67,6 +70,21 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
     }
     return calculateLineCountStats(diffData as [DiffResult[], DiffResult[]]);
   }, [diffData]);
+
+  const objectCountStats = useMemo((): ObjectCountStats => {
+    // Only calculate object counts when using compare-key method
+    if (!differOptions?.arrayDiffMethod || differOptions.arrayDiffMethod !== "compare-key" || !differOptions.compareKey) {
+      return { added: 0, removed: 0, modified: 0, total: 0 };
+    }
+
+    try {
+      return calculateObjectCountStats(oldValue, newValue, differOptions.compareKey);
+    }
+    catch (error) {
+      console.warn("Error calculating object count stats:", error);
+      return { added: 0, removed: 0, modified: 0, total: 0 };
+    }
+  }, [oldValue, newValue, differOptions]);
 
   const [scrollTop, setScrollTop] = useState(0);
   const [segments, setSegments] = useState<SegmentItem[]>([]);
@@ -150,6 +168,9 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
         </div>
         {showLineCount && (
           <LineCountDisplay stats={lineCountStats} />
+        )}
+        {showObjectCountStats && differOptions?.arrayDiffMethod === "compare-key" && differOptions?.compareKey && (
+          <ObjectCountDisplay stats={objectCountStats} />
         )}
       </div>
 
