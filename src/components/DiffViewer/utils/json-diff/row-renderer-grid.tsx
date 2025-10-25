@@ -68,34 +68,41 @@ ListChildComponentProps<{
 
   const [lDiff, rDiff]
     = leftPart.type === "modify" && rightPart.type === "modify"
-      ? getInlineDiff(leftPart.text, rightPart.text, inlineDiffOptions ?? { mode: "char" })
+      ? getInlineDiff(leftPart.text || "", rightPart.text || "", inlineDiffOptions ?? { mode: "char" })
       : [[], []];
 
-  const lTokens = syntaxHighlightLine(true, leftPart.text, 0);
-  const rTokens = syntaxHighlightLine(true, rightPart.text, 0);
+  const lTokens = syntaxHighlightLine(true, leftPart.text || "", 0);
+  const rTokens = syntaxHighlightLine(true, rightPart.text || "", 0);
 
   const lResult = mergeSegments(lTokens, lDiff);
   const rResult = mergeSegments(rTokens, rDiff);
 
-  const renderInlineResult = (text: string, result: typeof lResult, comma?: boolean) => (
-    <>
-      {result.map((item, idx) => {
-        const frag = text.slice(item.start, item.end);
-        const className = [
-          item.type ? `inline-diff-${item.type}` : "",
-          item.token ? `token ${item.token}` : "",
-        ]
-          .filter(Boolean)
-          .join(" ");
-        return (
-          <span key={`${idx}-${item.type}-${frag}`} className={className}>
-            {frag}
-          </span>
-        );
-      })}
-      {comma && <span className="token punctuation">,</span>}
-    </>
-  );
+  const renderInlineResult = (text: string, result: typeof lResult, comma?: boolean) => {
+    // Guard against undefined or null text
+    if (!text || typeof text !== "string") {
+      return <span className="token plain"></span>;
+    }
+
+    return (
+      <>
+        {result.map((item, idx) => {
+          const frag = text.slice(item.start, item.end);
+          const className = [
+            item.type ? `inline-diff-${item.type}` : "",
+            item.token ? `token ${item.token}` : "",
+          ]
+            .filter(Boolean)
+            .join(" ");
+          return (
+            <span key={`${idx}-${item.type}-${frag}`} className={className}>
+              {frag}
+            </span>
+          );
+        })}
+        {comma && <span className="token punctuation">,</span>}
+      </>
+    );
+  };
 
   return (
     <div
@@ -115,7 +122,7 @@ ListChildComponentProps<{
       <div className={`cell line-${leftPart.type} ${equalEmptyLine(leftPart)}`} role="cell">
         <pre>
           {leftPart.text && indentChar.repeat(leftPart.level * indentSize)}
-          {renderInlineResult(leftPart.text, lResult, leftPart.comma)}
+          {renderInlineResult(leftPart.text || "", lResult, leftPart.comma)}
         </pre>
       </div>
 
@@ -126,7 +133,7 @@ ListChildComponentProps<{
       <div className={`cell line-${rightPart.type} ${equalEmptyLine(rightPart)}`} role="cell">
         <pre>
           {rightPart.text && indentChar.repeat(rightPart.level * indentSize)}
-          {renderInlineResult(rightPart.text, rResult, rightPart.comma)}
+          {renderInlineResult(rightPart.text || "", rResult, rightPart.comma)}
         </pre>
       </div>
     </div>
