@@ -138,6 +138,39 @@ function Sidebar(props: Props) {
         <h2 className="section-title">Differ Configuration</h2>
 
         <div className="form-group">
+          <label className="form-label">
+            Array Diff Method
+            <select
+              className="form-select"
+              value={config.arrayDiffMethod}
+              onChange={e => updateConfig("arrayDiffMethod", e.target.value as DifferOptions["arrayDiffMethod"])}
+            >
+              <option value="normal">Normal</option>
+              <option value="lcs">LCS (Longest Common Subsequence)</option>
+              <option value="unorder-normal">Unordered Normal</option>
+              <option value="unorder-lcs">Unordered LCS</option>
+              <option value="compare-key">Compare Key</option>
+            </select>
+          </label>
+        </div>
+
+        {config.arrayDiffMethod === "compare-key" && (
+          <div className="form-group">
+            <label className="form-label">
+              Compare Key
+              <input
+                type="text"
+                className="form-input"
+                value={config.compareKey}
+                onChange={e => updateConfig("compareKey", e.target.value)}
+                placeholder="Key for matching objects"
+              />
+            </label>
+            <p className="form-hint">Key to use for matching objects in arrays</p>
+          </div>
+        )}
+
+        <div className="form-group">
           <label className="checkbox-label">
             <input
               type="checkbox"
@@ -191,39 +224,6 @@ function Sidebar(props: Props) {
             </select>
           </label>
         </div>
-
-        <div className="form-group">
-          <label className="form-label">
-            Array Diff Method
-            <select
-              className="form-select"
-              value={config.arrayDiffMethod}
-              onChange={e => updateConfig("arrayDiffMethod", e.target.value as DifferOptions["arrayDiffMethod"])}
-            >
-              <option value="normal">Normal</option>
-              <option value="lcs">LCS (Longest Common Subsequence)</option>
-              <option value="unorder-normal">Unordered Normal</option>
-              <option value="unorder-lcs">Unordered LCS</option>
-              <option value="compare-key">Compare Key</option>
-            </select>
-          </label>
-        </div>
-
-        {config.arrayDiffMethod === "compare-key" && (
-          <div className="form-group">
-            <label className="form-label">
-              Compare Key
-              <input
-                type="text"
-                className="form-input"
-                value={config.compareKey}
-                onChange={e => updateConfig("compareKey", e.target.value)}
-                placeholder="Key for matching objects"
-              />
-            </label>
-            <p className="form-hint">Key to use for matching objects in arrays</p>
-          </div>
-        )}
 
         <div className="form-group">
           <label className="checkbox-label">

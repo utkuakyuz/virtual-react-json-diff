@@ -1,0 +1,20 @@
+{
+  "userProfiles": [
+    {
+      "oid": "12b56abc-5355-11f0-867d-a6d40d167b95",
+      "userId": "517bdfb2-e5b0-4c09-8cd9-00c37c1c2cdf",
+      "profileVersion": "1.0.0",
+      "userName": "user1-old",
+      "lastLoginDate": 1751028529966,
+      "registrationDate": 1751028530334
+    },
+    {
+      "oid": "12b56abc3-5355-11f0-867d-a6d40d167b95",
+      "userId": "517bdfb2-e5b0-4c09-8cd9-00c37c1c2cdf",
+      "profileVersion": "1.0.0",
+      "userName": "user1",
+      "lastLoginDate": 1751028529966,
+      "registrationDate": 1751028530334
+    }
+  ]
+}

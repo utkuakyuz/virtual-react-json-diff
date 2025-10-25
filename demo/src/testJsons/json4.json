@@ -1,0 +1,28 @@
+{
+  "userProfiles": [
+    {
+      "oid": "12b56abc-5355-11f0-867d-a6d40d167b95",
+      "userId": "517bdfb2-e5b0-4c09-8cd9-00c37c1c2cdf",
+      "profileVersion": "1.0.0",
+      "userName": "user1",
+      "lastLoginDate": 1751028529966,
+      "registrationDate": 1751028530334
+    },
+    {
+      "oid": "212b56abc-5355-11f0-867d-a6d40d167b95",
+      "userId": "517bdfb2-e5b0-4c09-8cd9-00c37c1c2cdf",
+      "profileVersion": "1.0.0",
+      "userName": "user2",
+      "lastLoginDate": 1751028529966,
+      "registrationDate": 1751028530334
+    },
+    {
+      "oid": "4816f1cdf-535a-11f0-979f-1639190bcaea",
+      "userId": "517bdfb2-e5b0-4c09-8cd9-00c37c1c2cdf",
+      "profileVersion": "0.0.0",
+      "userName": "user3",
+      "lastLoginDate": 1751030863216,
+      "registrationDate": 1751030863216
+    }
+  ]
+}
