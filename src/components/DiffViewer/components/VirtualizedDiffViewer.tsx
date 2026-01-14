@@ -40,8 +40,8 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   showObjectCountStats = false,
 }) => {
   const listRef = useRef<List>(null);
-  const getDiffDataRef = useRef<typeof getDiffData>();
-  const lastSent = useRef<number>();
+  const getDiffDataRef = useRef<typeof getDiffData>(null);
+  const lastSent = useRef<number>(null);
   const viewerRef = useRef<HTMLDivElement>(null);
   const listContainerRef = useRef<HTMLDivElement>(null);
 

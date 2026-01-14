@@ -10,13 +10,14 @@ import getInlineDiff from "./get-inline-diff";
 import syntaxHighlightLine from "./get-inline-syntax-highlight";
 import { mergeSegments } from "./segment-util";
 
-function RowRendererGrid({ index, style, data }:
-ListChildComponentProps<{
-  leftDiff: DiffRowOrCollapsed[];
-  rightDiff: DiffRowOrCollapsed[];
-  onExpand: (segmentIndex: number) => void;
-  inlineDiffOptions?: InlineDiffOptions;
-}>) {
+const RowRendererGrid: React.FC<
+  ListChildComponentProps<{
+    leftDiff: DiffRowOrCollapsed[];
+    rightDiff: DiffRowOrCollapsed[];
+    onExpand: (segmentIndex: number) => void;
+    inlineDiffOptions?: InlineDiffOptions;
+  }>
+> = ({ index, style, data }) => {
   const indentChar = " ";
   const indentSize = 5;
 
@@ -138,6 +139,6 @@ ListChildComponentProps<{
       </div>
     </div>
   );
-}
+};
 
 export default RowRendererGrid;

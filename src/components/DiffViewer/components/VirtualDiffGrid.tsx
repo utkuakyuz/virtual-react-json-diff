@@ -21,15 +21,15 @@ type ListDataType = {
 type VirtualDiffGridProps = {
   leftDiff: DiffRowOrCollapsed[];
   rightDiff: DiffRowOrCollapsed[];
-  listRef: React.RefObject<List<ListDataType>>;
+  listRef: React.RefObject<List<ListDataType> | null>;
   height: number;
   inlineDiffOptions?: InlineDiffOptions;
   className?: string;
   setScrollTop: Dispatch<React.SetStateAction<number>>;
   onExpand: (segmentIndex: number) => void;
   overScanCount?: number;
-  viewerRef?: React.RefObject<HTMLDivElement>;
-  listContainerRef?: React.RefObject<HTMLDivElement>;
+  viewerRef?: React.RefObject<HTMLDivElement | null>;
+  listContainerRef?: React.RefObject<HTMLDivElement | null>;
 };
 
 const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
