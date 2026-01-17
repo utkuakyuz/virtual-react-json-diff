@@ -278,6 +278,54 @@ function Sidebar(props: Props) {
           <p className="form-hint">Whether to preserve key order from input objects</p>
         </div>
       </div>
+
+      <div className="config-section">
+        <h2 className="section-title">Comparison Options</h2>
+
+        <div className="form-group">
+          <label className="form-label">
+            Ignore Paths
+            <input
+              type="text"
+              className="form-input"
+              value={config.ignorePaths}
+              onChange={e => updateConfig("ignorePaths", e.target.value)}
+              placeholder="e.g. meta.updatedAt, user.profile.avatar"
+            />
+          </label>
+          <p className="form-hint">Comma-separated dot-notation paths to ignore during diff</p>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">
+            Ignore Keys
+            <input
+              type="text"
+              className="form-input"
+              value={config.ignoreKeys}
+              onChange={e => updateConfig("ignoreKeys", e.target.value)}
+              placeholder="e.g. updatedAt, __typename"
+            />
+          </label>
+          <p className="form-hint">Comma-separated key names to ignore at any depth</p>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">
+            Compare Strategy
+            <select
+              className="form-select"
+              value={config.compareStrategy}
+              onChange={e => updateConfig("compareStrategy", e.target.value as Config["compareStrategy"])}
+            >
+              <option value="strict">Strict (===)</option>
+              <option value="loose">Loose</option>
+              <option value="type-aware">Type-Aware ("1" === 1)</option>
+            </select>
+          </label>
+          <p className="form-hint">Strategy for comparing values during diff</p>
+        </div>
+      </div>
     </aside>
   );
 }

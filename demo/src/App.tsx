@@ -41,6 +41,9 @@ export default function App() {
     recursiveEqual: false,
     preserveKeyOrder: undefined as DifferOptions["preserveKeyOrder"],
     inlineDiffMode: "word",
+    ignorePaths: "",
+    ignoreKeys: "",
+    compareStrategy: "strict",
   });
 
   // Store initial config for restoration
@@ -60,6 +63,17 @@ export default function App() {
     ignoreCaseForKey: config.ignoreCaseForKey,
     recursiveEqual: config.recursiveEqual,
     ...(config.preserveKeyOrder ? { preserveKeyOrder: config.preserveKeyOrder } : {}),
+  };
+
+  // Build comparison options from config
+  const comparisonOptions = {
+    ignorePaths: config.ignorePaths
+      ? config.ignorePaths.split(",").map(p => p.trim()).filter(p => p.length > 0)
+      : [],
+    ignoreKeys: config.ignoreKeys
+      ? config.ignoreKeys.split(",").map(k => k.trim()).filter(k => k.length > 0)
+      : [],
+    compareStrategy: config.compareStrategy,
   };
 
   const [editorsVisible, setEditorsVisible] = useState(true);
@@ -320,6 +334,7 @@ export default function App() {
                     oldValue={parsedOldValue}
                     newValue={parsedNewValue}
                     differOptions={differOptions}
+                    comparisonOptions={comparisonOptions}
                   />
                 )}
               </div>
@@ -451,6 +466,7 @@ export default function App() {
                     oldValue={parsedExampleOldValue}
                     newValue={parsedExampleNewValue}
                     differOptions={differOptions}
+                    comparisonOptions={comparisonOptions}
                   />
                 )}
               </div>
