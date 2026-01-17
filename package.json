@@ -1,7 +1,7 @@
 {
   "name": "virtual-react-json-diff",
   "type": "module",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Fast, virtualized React component for visually comparing large JSON objects. Includes search, theming, and minimap.",
   "author": {
     "name": "Utku Akyüz"
@@ -50,6 +50,7 @@
     "react": ">=18.0.0"
   },
   "dependencies": {
+    "fast-myers-diff": "^3.2.0",
     "json-diff-kit": "^1.0.32",
     "react-window": "^1.8.11"
   },

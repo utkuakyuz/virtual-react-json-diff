@@ -9,7 +9,7 @@ type Props = {
   hideSearch?: boolean;
 };
 
-function SearchboxHolder({ searchState, handleSearch, navigateMatch, hideSearch }: Props) {
+const SearchboxHolder: React.FC<Props> = function SearchboxHolder({ searchState, handleSearch, navigateMatch, hideSearch }: Props) {
   if (hideSearch)
     return null;
 

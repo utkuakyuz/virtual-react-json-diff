@@ -8,6 +8,7 @@ import type { DiffRowOrCollapsed, LineCountStats, ObjectCountStats, SegmentItem,
 
 import "../styles/JsonDiffCustomTheme.css";
 import { useSearch } from "../hooks/useSearch";
+import { preprocessObjectForDiff } from "../utils/diffComparisonOptions";
 import { fastHash } from "../utils/json-diff/diff-hash";
 import { expandSegment, hasExpandedSegments, hideAllSegments } from "../utils/json-diff/segment-util";
 import { calculateLineCountStats } from "../utils/lineCountUtils";
@@ -38,10 +39,11 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   overScanCount,
   showLineCount = false,
   showObjectCountStats = false,
+  comparisonOptions,
 }) => {
   const listRef = useRef<List>(null);
-  const getDiffDataRef = useRef<typeof getDiffData>();
-  const lastSent = useRef<number>();
+  const getDiffDataRef = useRef<typeof getDiffData>(null);
+  const lastSent = useRef<number>(null);
   const viewerRef = useRef<HTMLDivElement>(null);
   const listContainerRef = useRef<HTMLDivElement>(null);
 
@@ -61,8 +63,17 @@ export const VirtualizedDiffViewer: React.FC<VirtualizedDiffViewerProps> = ({
   const diffData = useMemo(() => {
     if (!oldValue || !newValue)
       return [[], []];
-    return differ.diff(oldValue, newValue);
-  }, [oldValue, newValue, differ]);
+
+    // Apply comparison options if provided
+    const processedOld = comparisonOptions
+      ? preprocessObjectForDiff(oldValue, comparisonOptions)
+      : oldValue;
+    const processedNew = comparisonOptions
+      ? preprocessObjectForDiff(newValue, comparisonOptions)
+      : newValue;
+
+    return differ.diff(processedOld, processedNew);
+  }, [oldValue, newValue, differ, comparisonOptions]);
 
   const lineCountStats = useMemo((): LineCountStats => {
     if (!diffData || (diffData[0].length === 0 && diffData[1].length === 0)) {

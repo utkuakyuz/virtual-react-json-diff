@@ -1,4 +1,5 @@
 import type { DifferOptions } from "json-diff-kit";
+import type { CompareStrategy } from "virtual-react-json-diff";
 
 export type Config = {
   // Main Configuration
@@ -22,4 +23,9 @@ export type Config = {
   recursiveEqual: boolean;
   preserveKeyOrder: DifferOptions["preserveKeyOrder"];
   inlineDiffMode: "word" | "char";
+
+  // Comparison Options
+  ignorePaths: string;
+  ignoreKeys: string;
+  compareStrategy: CompareStrategy;
 };

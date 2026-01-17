@@ -1,5 +1,9 @@
 import type { Differ, DifferOptions, DiffResult, InlineDiffOptions } from "json-diff-kit";
 
+import type { CompareStrategy, DiffComparisonOptions } from "../utils/diffComparisonOptions";
+
+export type { CompareStrategy, DiffComparisonOptions };
+
 export type DiffRow = {
   originalIndex: number;
 } & DiffResult;
@@ -65,6 +69,7 @@ export type VirtualizedDiffViewerProps = {
   overScanCount?: number;
   showLineCount?: boolean;
   showObjectCountStats?: boolean;
+  comparisonOptions?: DiffComparisonOptions;
 };
 
 export type DiffMinimapProps = {
