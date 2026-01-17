@@ -1,4 +1,4 @@
-# 📘 virtual-react-json-diff
+# virtual-react-json-diff
 
 [![NPM version][npm-image]][npm-url]
 [![Downloads][download-badge]][npm-url]
@@ -7,16 +7,57 @@
 
 👉 [Try it now](https://virtual-react-json-diff.netlify.app)
 
-A high-performance React component for visually comparing large JSON objects. Built on top of [json-diff-kit](https://www.npmjs.com/package/json-diff-kit), this viewer supports virtual scrolling, search functionality, dual minimap, and customizable theming.
+A high-performance React JSON diff viewer for **large, real-world JSON data**.
 
-## Features
+Built to handle **tens of thousands of lines without freezing the UI**, it uses virtualized rendering to stay fast and responsive even in production-scale scenarios.
 
-- **Virtualized Rendering** – Efficient DOM updates using `react-window`
-- **Search Highlighting** – Find matches and scroll directly to them
-- **Dual Mini Map** – Scrollable minimap for better navigation
-- **Line Count Statistics** – Display added, removed, and modified line counts
-- **Object Count Statistics** – Count objects when using compare-key method
-- **Customizable Styles** – Add your own class names and themes
+Powered by [json-diff-kit](https://www.npmjs.com/package/json-diff-kit), it supports virtual scrolling, advanced comparison options, search, dual minimaps, and customizable theming.
+
+## Why virtual-react-json-diff exists
+
+Most JSON diff viewers work well for **small examples**, but start breaking down in real-world scenarios:
+
+* Large JSON files cause the UI to freeze or crash
+* Rendering thousands of DOM nodes makes scrolling unusable
+* Array changes are hard to reason about without object-level comparison
+* It’s difficult to understand the *impact* of changes beyond raw diffs
+
+**virtual-react-json-diff** was built to solve these problems.
+
+It is designed for internal dashboards and developer tools that need to compare **large, deeply nested JSON objects** efficiently and interactively.
+
+## Key Features
+
+virtual-react-json-diff is designed for scenarios where traditional diff viewers become unusable due to size or complexity.
+
+### Built for Large JSONs
+
+* **Virtualized rendering** powered by `react-window`
+* Smooth scrolling and interaction even with very large diffs
+
+### Navigate Complex Changes
+
+* **Dual minimap** with visual change indicators
+* Jump directly to changes using **search highlighting**
+* Optional single minimap for compact layouts
+
+### Understand Change Impact
+
+* **Line count statistics** for added, removed, and modified lines
+* **Object-level statistics** when using compare-key array diffs
+* Quickly assess how big or risky a change really is
+
+### Advanced Comparison Control
+
+* Ignore specific keys or paths anywhere in the JSON tree
+* Multiple comparison strategies (`strict`, `loose`, `type-aware`)
+* Fine-grained control over how values are considered equal
+
+### Customizable & Extensible
+
+* Custom class names for theming
+* Inline diff customization
+* Access raw diff data for advanced use cases
 
 ## Demo
 
@@ -55,91 +96,131 @@ export default function App() {
 }
 ```
 
-## Line Count Statistics
+## Understanding Diff Configuration
 
-Enable line-level statistics with `showLineCount={true}`:
+The viewer exposes **two different configuration layers**, each serving a distinct purpose.
+
+### Quick Mental Model
+
+* **`differOptions`** → Controls **how the diff is generated**
+* **`comparisonOptions`** → Controls **what is compared and how values are matched**
+
+### `differOptions` — *How the diff works*
+
+These options are passed directly to the underlying diff engine.
+
+Use them to:
+
+* Choose how arrays are compared (`compare-key`, positional, etc.)
+* Define comparison keys for object arrays
+* Control depth, circular detection, and modification behavior
 
 ```jsx
-<VirtualDiffViewer
-  oldValue={oldData}
-  newValue={newData}
-  showLineCount={true}
-/>;
+differOptions={{
+  arrayDiffMethod: "compare-key",
+  compareKey: "id",
+  maxDepth: 999
+}}
 ```
 
-Displays: `+5 added lines, -3 removed lines, ~2 modified lines, 10 total line changes`
+### `comparisonOptions` — *What is considered equal or ignored*
 
-## Object Count Statistics
+These options affect comparison behavior **without changing the diff structure**.
 
-Enable object-level counting when using compare-key method:
+Use them to:
+
+* Ignore volatile fields (timestamps, metadata)
+* Exclude specific paths
+* Compare values across types
+
+```jsx
+comparisonOptions={{
+  ignoreKeys: ["updatedAt", "__typename"],
+  ignorePaths: ["meta.timestamp"],
+  compareStrategy: "type-aware"
+}}
+```
+
+### Using Both Together
 
 ```jsx
 <VirtualDiffViewer
   oldValue={oldData}
   newValue={newData}
-  showObjectCountStats={true}
   differOptions={{
     arrayDiffMethod: "compare-key",
     compareKey: "id"
   }}
-/>;
+  comparisonOptions={{
+    ignoreKeys: ["updatedAt"],
+    compareStrategy: "type-aware"
+  }}
+/>
 ```
 
-Displays: `+2 added objects, -1 removed objects, ~3 modified objects, 6 total object changes`
-
-**Requirements:** Only works with `arrayDiffMethod: "compare-key"` and requires a valid `compareKey`.
+This separation keeps the diff engine flexible while allowing precise control over comparison behavior.
 
 ## Props
 
-| Prop                   | Type                                               | Default            | Description                                                            |
-| ---------------------- | -------------------------------------------------- | ------------------ | ---------------------------------------------------------------------- |
-| `oldValue`             | `object`                                           | —                  | The original JSON object to compare (left side).                       |
-| `newValue`             | `object`                                           | —                  | The updated JSON object to compare (right side).                       |
-| `height`               | `number`                                           | —                  | Height of the diff viewer in pixels.                                   |
-| `hideSearch`           | `boolean`                                          | `false`            | Hides the search bar if set to `true`.                                 |
-| `searchTerm`           | `string`                                           | `""`               | Initial search keyword to highlight within the diff.                   |
-| `leftTitle`            | `string`                                           | —                  | Optional title to display above the left diff panel.                   |
-| `rightTitle`           | `string`                                           | —                  | Optional title to display above the right diff panel.                  |
-| `onSearchMatch`        | `(index: number) => void`                          | —                  | Callback fired when a search match is found. Receives the match index. |
-| `differOptions`        | `DifferOptions`                                    | `Default config`   | Advanced options passed to the diffing engine.                         |
-| `showSingleMinimap`    | `boolean`                                          | `false`            | If `true`, shows only one minimap instead of two.                      |
-| `className`            | `string`                                           | —                  | Custom CSS class for styling the viewer container.                     |
-| `miniMapWidth`         | `number`                                           | `40`               | Width of each minimap in pixels.                                       |
-| `inlineDiffOptions`    | `InlineDiffOptions`                                | `{'mode': 'char'}` | Options for fine-tuning inline diff rendering.                         |
-| `showLineCount`        | `boolean`                                          | `false`            | Display line count statistics (added, removed, modified lines).        |
-| `showObjectCountStats` | `boolean`                                          | `false`            | Display object count statistics when using compare-key method.         |
-| `getDiffData`          | `(diffData: [DiffResult[], DiffResult[]]) => void` | -                  | Get difference data and make operations                                |
+### Required
 
-## Advanced Usage
+| Prop       | Type     | Description                       |
+| ---------- | -------- | --------------------------------- |
+| `oldValue` | `object` | Original JSON object (left side). |
+| `newValue` | `object` | Updated JSON object (right side). |
 
-### Custom Differ Options
+---
 
-```jsx
-const differOptions = {
-  detectCircular: true,
-  maxDepth: 999,
-  showModifications: true,
-  arrayDiffMethod: "compare-key",
-  compareKey: "userId",
-  ignoreCase: false,
-  recursiveEqual: false,
-};
+### Layout & Display
 
-<VirtualDiffViewer
-  oldValue={oldData}
-  newValue={newData}
-  differOptions={differOptions}
-/>;
-```
+| Prop         | Type     | Default | Description                                     |
+| ------------ | -------- | ------- | ----------------------------------------------- |
+| `height`     | `number` | —       | Height of the diff viewer in pixels.            |
+| `leftTitle`  | `string` | —       | Optional title shown above the left panel.      |
+| `rightTitle` | `string` | —       | Optional title shown above the right panel.     |
+| `className`  | `string` | —       | Custom CSS class applied to the root container. |
 
-### Utility Functions
+---
 
-```jsx
-import { calculateObjectCountStats } from "virtual-react-json-diff";
+### Search & Navigation
 
-const stats = calculateObjectCountStats(oldValue, newValue, "userId");
-// Returns: { added: 2, removed: 1, modified: 3, total: 6 }
-```
+| Prop                | Type                      | Default | Description                                     |
+| ------------------- | ------------------------- | ------- | ----------------------------------------------- |
+| `hideSearch`        | `boolean`                 | `false` | Hides the search bar when set to `true`.        |
+| `searchTerm`        | `string`                  | `""`    | Initial search term to highlight in the diff.   |
+| `onSearchMatch`     | `(index: number) => void` | —       | Callback fired when a search match is found.    |
+| `showSingleMinimap` | `boolean`                 | `false` | Show a single minimap instead of dual minimaps. |
+| `miniMapWidth`      | `number`                  | `40`    | Width of each minimap in pixels.                |
+
+---
+
+### Statistics & Insights
+
+| Prop                   | Type      | Default | Description                                                          |
+| ---------------------- | --------- | ------- | -------------------------------------------------------------------- |
+| `showLineCount`        | `boolean` | `false` | Display added, removed, and modified **line** counts.                |
+| `showObjectCountStats` | `boolean` | `false` | Display **object-level** stats (requires compare-key array diffing). |
+
+> **Note:** `showObjectCountStats` only works when
+> `differOptions.arrayDiffMethod = "compare-key"` and `compareKey` is provided.
+
+---
+
+### Diff Configuration
+
+| Prop                | Type                    | Default            | Description                                                   |
+| ------------------- | ----------------------- | ------------------ | ------------------------------------------------------------- |
+| `differOptions`     | `DifferOptions`         | Engine defaults    | Controls **how the diff is generated** (arrays, depth, keys). |
+| `comparisonOptions` | `DiffComparisonOptions` | —                  | Controls **what is compared and how values match**.           |
+| `inlineDiffOptions` | `InlineDiffOptions`     | `{ mode: "char" }` | Fine-tune inline diff rendering behavior.                     |
+
+---
+
+### Advanced & Utility
+
+| Prop          | Type                                               | Default | Description                                                 |
+| ------------- | -------------------------------------------------- | ------- | ----------------------------------------------------------- |
+| `getDiffData` | `(diffData: [DiffResult[], DiffResult[]]) => void` | —       | Access raw diff results for custom processing or analytics. |
 
 ## Styling
 
@@ -149,11 +230,11 @@ The component exposes a root container with class `diff-viewer-container`. You c
 
 Built on top of the awesome [json-diff-kit](https://www.npmjs.com/package/json-diff-kit).
 
-## 📄 License
+## License
 
 MIT © Utku Akyüz
 
-## 🛠️ Contributing
+## Contributing
 
 Pull requests, suggestions, and issues are welcome!
 
