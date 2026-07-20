@@ -50,6 +50,32 @@ export type ObjectCountStats = {
   total: number;
 };
 
+export type ReviewState = "accepted" | "rejected" | "pending";
+
+export type ChangeBlock = {
+  id: string;
+  type: "add" | "remove" | "modify";
+  startIndex: number;
+  endIndex: number;
+  path: string;
+  leftLines: DiffRow[];
+  rightLines: DiffRow[];
+};
+
+export type VirtualDiffViewerRef = {
+  nextChange: () => ChangeBlock | null;
+  previousChange: () => ChangeBlock | null;
+  scrollToChange: (index: number) => void;
+  scrollToPath: (path: string) => boolean;
+  expandPath: (path: string) => boolean;
+  collapsePath: (path: string) => boolean;
+  expandAll: () => void;
+  collapseAll: () => void;
+  getCurrentChange: () => ChangeBlock | null;
+  acceptAll: () => void;
+  rejectAll: () => void;
+};
+
 export type VirtualizedDiffViewerProps = {
   oldValue: object;
   newValue: object;
@@ -70,6 +96,18 @@ export type VirtualizedDiffViewerProps = {
   showLineCount?: boolean;
   showObjectCountStats?: boolean;
   comparisonOptions?: DiffComparisonOptions;
+  reviewMode?: boolean;
+  onAcceptChange?: (change: ChangeBlock) => void;
+  onRejectChange?: (change: ChangeBlock) => void;
+  onReviewChange?: (reviewState: {
+    reviewStates: Record<string, ReviewState>;
+    mergedJson: any;
+  }) => void;
+  reviewClassNames?: {
+    accepted?: string;
+    rejected?: string;
+    pending?: string;
+  };
 };
 
 export type DiffMinimapProps = {

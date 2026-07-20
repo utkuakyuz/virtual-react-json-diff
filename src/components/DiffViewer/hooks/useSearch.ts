@@ -18,7 +18,7 @@ export function useSearch(
     currentIndex: 0,
   });
 
-  const searchTimeoutRef = useRef<NodeJS.Timeout>(null);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleSearch = useCallback((term: string) => {
     setSearchState(prev => ({ ...prev, term }));

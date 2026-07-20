@@ -1,9 +1,10 @@
 import type { InlineDiffOptions } from "json-diff-kit";
+import type { CSSProperties } from "react";
 import type { ListChildComponentProps } from "react-window";
 
 import { useCallback } from "react";
 
-import type { CollapsedLine, DiffRowOrCollapsed } from "../../types";
+import type { ChangeBlock, CollapsedLine, DiffRow, DiffRowOrCollapsed } from "../../types";
 
 import { equalEmptyLine, isCollapsed } from "../constants";
 import getInlineDiff from "./get-inline-diff";
@@ -16,15 +17,45 @@ const RowRendererGrid: React.FC<
     rightDiff: DiffRowOrCollapsed[];
     onExpand: (segmentIndex: number) => void;
     inlineDiffOptions?: InlineDiffOptions;
+    reviewMode?: boolean;
+    reviewStates?: Record<string, "accepted" | "rejected" | "pending">;
+    changeBlocks?: ChangeBlock[];
+    activeChangeIndex?: number;
+    onAccept?: (changeId: string) => void;
+    onReject?: (changeId: string) => void;
+    reviewClassNames?: {
+      accepted?: string;
+      rejected?: string;
+      pending?: string;
+    };
   }>
 > = ({ index, style, data }) => {
   const indentChar = " ";
   const indentSize = 5;
 
-  const { onExpand, inlineDiffOptions, leftDiff, rightDiff } = data;
+  const {
+    onExpand,
+    inlineDiffOptions,
+    leftDiff,
+    rightDiff,
+    reviewMode,
+    reviewStates,
+    changeBlocks,
+    activeChangeIndex,
+    onAccept,
+    onReject,
+    reviewClassNames,
+  } = data;
 
   const leftPart = leftDiff[index];
   const rightPart = rightDiff[index];
+
+  const gridCols = reviewMode ? "var(--diff-review-gutter-width) 30px 1fr 30px 1fr" : "30px 1fr 30px 1fr";
+  const rowStyle: CSSProperties = {
+    ...(style as CSSProperties),
+    display: "grid",
+    gridTemplateColumns: gridCols,
+  };
 
   // Collapsed special row -> we will render as a grid-row with two expand cells
   if (isCollapsed(leftPart) || isCollapsed(rightPart)) {
@@ -39,14 +70,11 @@ const RowRendererGrid: React.FC<
     return (
       <div
         className="grid-row collapsed-button"
-        style={{
-          ...style,
-          display: "grid",
-          gridTemplateColumns: "30px 1fr 30px 1fr",
-        }}
+        style={rowStyle}
         role="row"
         data-index={index}
       >
+        {reviewMode && <div className="cell review-actions-cell" />}
         <div className="cell line-number" />
         <div className="cell">
           <span className="expand-button-container">
@@ -66,6 +94,14 @@ const RowRendererGrid: React.FC<
       </div>
     );
   }
+
+  // Match ChangeBlocks by raw diff index (originalIndex), not virtual list index —
+  // view index diverges when equal segments are collapsed.
+  const rawIndex = (leftPart as DiffRow).originalIndex;
+  const block = changeBlocks?.find(b => rawIndex >= b.startIndex && rawIndex <= b.endIndex);
+  const status = block ? (reviewStates?.[block.id] || "pending") : null;
+  const isActive = block && changeBlocks && activeChangeIndex !== undefined && changeBlocks[activeChangeIndex]?.id === block.id;
+  const showReviewActions = Boolean(reviewMode && block && rawIndex === block.startIndex);
 
   const [lDiff, rDiff]
     = leftPart.type === "modify" && rightPart.type === "modify"
@@ -105,17 +141,57 @@ const RowRendererGrid: React.FC<
     );
   };
 
+  const rowClasses = [
+    "grid-row",
+    status ? `diff-row-${status}` : "",
+    status && reviewClassNames?.[status] ? reviewClassNames[status] : "",
+    isActive ? "diff-change-active" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <div
-      className="grid-row"
-      style={{
-        ...style,
-        display: "grid",
-        gridTemplateColumns: "30px 1fr 30px 1fr",
-      }}
+      className={rowClasses}
+      style={rowStyle}
       role="row"
       data-index={index}
     >
+      {reviewMode && (
+        <div
+          className={`cell review-actions-cell${showReviewActions ? " has-actions" : ""}${isActive ? " is-active" : ""}`}
+          role="cell"
+        >
+          {showReviewActions && block && (
+            <div className="review-action-buttons" data-status={status || "pending"}>
+              <button
+                type="button"
+                className={`review-btn accept-btn ${status === "accepted" ? "active" : ""}`}
+                onClick={() => onAccept?.(block.id)}
+                title="Accept change"
+                aria-label="Accept change"
+              >
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </button>
+              <button
+                type="button"
+                className={`review-btn reject-btn ${status === "rejected" ? "active" : ""}`}
+                onClick={() => onReject?.(block.id)}
+                title="Reject change"
+                aria-label="Reject change"
+              >
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className={`cell line-${leftPart.type} line-number`} role="cell">
         {leftPart.lineNumber}
       </div>
