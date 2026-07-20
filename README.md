@@ -11,7 +11,7 @@ A high-performance React JSON diff viewer for **large, real-world JSON data**.
 
 Built to handle **tens of thousands of lines without freezing the UI**, it uses virtualized rendering to stay fast and responsive even in production-scale scenarios.
 
-Powered by [json-diff-kit](https://www.npmjs.com/package/json-diff-kit), it supports virtual scrolling, advanced comparison options, search, dual minimaps, and customizable theming.
+Powered by [json-diff-kit](https://www.npmjs.com/package/json-diff-kit), it supports virtual scrolling, collapsed unchanged regions, review/merge mode, advanced comparison options, search, dual minimaps, and customizable theming.
 
 ## Why virtual-react-json-diff exists
 
@@ -34,20 +34,22 @@ virtual-react-json-diff is designed for scenarios where traditional diff viewers
 
 * **Virtualized rendering** powered by `react-window`
 * Smooth scrolling and interaction even with very large diffs
+* **Collapse unchanged regions** by default so you focus on real changes — expand/collapse still works with virtualization (only visible rows stay in the DOM)
 
 ### Navigate Complex Changes
 
 * **Dual minimap** with visual change indicators
 * Jump directly to changes using **search highlighting**
 * Optional single minimap for compact layouts
-* **Programmatic navigation API** via `ref` (`nextChange`, `scrollToPath`, expand/collapse)
+* **Programmatic navigation API** via `ref` (`nextChange`, `scrollToPath`, `expandPath` / `expandAll`, …)
 * Keyboard shortcuts for jumping between change blocks
 
 ### Review & Merge
 
-* **Review mode** to accept or reject change blocks (hunks)
-* Live **merged JSON** generation as review decisions update
-* Customizable accepted / rejected / pending styles
+* Turn on **review mode** to accept or reject each change block (hunk), similar to a selective merge
+* Decisions apply to whole blocks (not single lines), so nested JSON stays syntactically valid
+* Get a live **merged JSON** object as you accept/reject — useful for config reviews, migration tools, and admin UIs
+* Optional custom styles for accepted / rejected / pending rows
 
 ### Understand Change Impact
 
@@ -75,9 +77,21 @@ virtual-react-json-diff is designed for scenarios where traditional diff viewers
 
 ### Review & Merge Mode
 
-Accept or reject change blocks from the left gutter and generate merged JSON in real time.
+Large JSON diffs are hard to *resolve*, not just to *view*. Review mode turns the viewer into a selective merge UI:
+
+1. Enable `reviewMode` — each change block gets accept / reject controls in the left gutter
+2. Accept a block to take the **right (new)** side; reject or leave pending to keep the **left (old)** side
+3. Listen to `onReviewChange` for `{ reviewStates, mergedJson }` and use the merged object in your app
+
+Change blocks are consecutive hunks (for example a whole nested object), not arbitrary single lines — so accepting/rejecting keeps valid JSON structure.
 
 ![Review Mode Screenshot](https://raw.githubusercontent.com/utkuakyuz/virtual-react-json-diff/main/public/image-review-mode.png)
+
+### Expand & collapse (with virtualization)
+
+Unchanged stretches of the tree are collapsed by default so you can scan real edits quickly. Click **Show Hidden Lines** on a collapsed row, or drive expand/collapse from the ref API (`expandPath`, `expandAll`, `collapseAll`).
+
+Because rendering is virtualized, expanding a large equal region does **not** mount the entire JSON into the DOM — only the rows in (and near) the viewport are rendered. That is what keeps expand/collapse usable on tens of thousands of lines.
 
 ## Installation
 
@@ -240,6 +254,8 @@ This separation keeps the diff engine flexible while allowing precise control ov
 
 ### Review & Merge Mode
 
+Review mode is for **resolving** a diff, not only displaying it — think selective merge for JSON configs, CMS payloads, or migration previews.
+
 Accept/reject operates on **change blocks** (consecutive diff hunks), not individual lines. Pending and rejected blocks keep the left (old) side; accepted blocks take the right (new) side. The merged object is rebuilt with trailing-comma normalization so the result stays valid JSON.
 
 | Prop               | Type                                                                                          | Default | Description                                              |
@@ -290,11 +306,11 @@ function ReviewExample({ oldData, newData }) {
 | `nextChange()`      | `ChangeBlock \| null` | Select and scroll to the next change block.     |
 | `previousChange()`  | `ChangeBlock \| null` | Select and scroll to the previous change block. |
 | `scrollToChange(i)` | `void`               | Jump to change block at index `i`.               |
-| `scrollToPath(path)`| `boolean`            | Expand if needed and scroll to a JSON path.      |
-| `expandPath(path)`  | `boolean`            | Expand the equal segment containing `path`.      |
-| `collapsePath(path)`| `boolean`            | Collapse the equal segment containing `path`.    |
-| `expandAll()`       | `void`               | Expand all collapsed equal segments.             |
-| `collapseAll()`     | `void`               | Collapse all equal segments.                     |
+| `scrollToPath(path)`| `boolean`            | Expand collapsed segments if needed, then scroll to a JSON path. |
+| `expandPath(path)`  | `boolean`            | Expand the collapsed equal segment that contains `path`. |
+| `collapsePath(path)`| `boolean`            | Collapse the equal segment that contains `path`.         |
+| `expandAll()`       | `void`               | Expand all collapsed equal segments (still virtualized). |
+| `collapseAll()`     | `void`               | Collapse all equal segments back to compact form.        |
 | `getCurrentChange()`| `ChangeBlock \| null` | Return the currently selected change block.     |
 | `acceptAll()`       | `void`               | Accept every change block (review mode).         |
 | `rejectAll()`       | `void`               | Reject every change block (review mode).         |
