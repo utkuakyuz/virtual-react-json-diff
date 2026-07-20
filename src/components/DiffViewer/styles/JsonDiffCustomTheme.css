@@ -1,6 +1,5 @@
 :root {
   --diff-row-height: 20px;
-  --diff-review-gutter-width: 40px;
 }
 
 .virtual-json-diff-list-container {
@@ -11,6 +10,7 @@
 }
 
 .diff-viewer-container {
+  --diff-review-gutter-width: 40px;
   background-color: #282a36;
   font-size: 12px;
   text-align: left;
@@ -354,7 +354,7 @@
 }
 
 /* Keep minimaps aligned with panes when the left review gutter is present */
-.diff-viewer-container .minimap-overlay.review-mode {
+.diff-viewer-container.review-mode .minimap-overlay {
   padding-left: var(--diff-review-gutter-width);
 }
 
@@ -441,39 +441,40 @@
 }
 
 /* --- Review Mode & Keyboard Navigation Styles --- */
+/* Scoped under .diff-viewer-container to avoid leaking into host apps */
 
-.json-diff-viewer.json-diff-viewer-theme-custom .grid-row.diff-change-active {
+.diff-viewer-container .json-diff-viewer.json-diff-viewer-theme-custom .grid-row.diff-change-active {
   background-color: rgba(0, 122, 204, 0.08);
 }
 
-.json-diff-viewer.json-diff-viewer-theme-custom .grid-row.diff-change-active:hover {
+.diff-viewer-container .json-diff-viewer.json-diff-viewer-theme-custom .grid-row.diff-change-active:hover {
   background-color: rgba(0, 122, 204, 0.12);
 }
 
-.json-diff-viewer.json-diff-viewer-theme-custom .grid-row.diff-row-accepted {
+.diff-viewer-container .json-diff-viewer.json-diff-viewer-theme-custom .grid-row.diff-row-accepted {
   background-color: rgba(46, 160, 67, 0.08);
 }
 
-.json-diff-viewer.json-diff-viewer-theme-custom .grid-row.diff-row-accepted:hover {
+.diff-viewer-container .json-diff-viewer.json-diff-viewer-theme-custom .grid-row.diff-row-accepted:hover {
   background-color: rgba(46, 160, 67, 0.12);
 }
 
-.json-diff-viewer.json-diff-viewer-theme-custom .grid-row.diff-row-rejected {
+.diff-viewer-container .json-diff-viewer.json-diff-viewer-theme-custom .grid-row.diff-row-rejected {
   background-color: rgba(248, 81, 73, 0.08);
   text-decoration: line-through;
   opacity: 0.65;
 }
 
-.json-diff-viewer.json-diff-viewer-theme-custom .grid-row.diff-row-rejected:hover {
+.diff-viewer-container .json-diff-viewer.json-diff-viewer-theme-custom .grid-row.diff-row-rejected:hover {
   background-color: rgba(248, 81, 73, 0.12);
 }
 
-.json-diff-viewer.json-diff-viewer-theme-custom .grid-row.diff-row-pending {
+.diff-viewer-container .json-diff-viewer.json-diff-viewer-theme-custom .grid-row.diff-row-pending {
   /* Neutral default */
 }
 
 /* Left review gutter — kept away from center minimaps */
-.json-diff-viewer.json-diff-viewer-theme-custom .grid-row .cell.review-actions-cell {
+.diff-viewer-container .json-diff-viewer.json-diff-viewer-theme-custom .grid-row .cell.review-actions-cell {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -486,16 +487,16 @@
   z-index: 2;
 }
 
-.json-diff-viewer.json-diff-viewer-theme-custom .grid-row .cell.review-actions-cell.is-active {
+.diff-viewer-container .json-diff-viewer.json-diff-viewer-theme-custom .grid-row .cell.review-actions-cell.is-active {
   box-shadow: inset 3px 0 0 0 #007acc;
   background: rgba(0, 122, 204, 0.16);
 }
 
-.json-diff-viewer.json-diff-viewer-theme-custom .grid-row .cell.review-actions-cell.has-actions {
+.diff-viewer-container .json-diff-viewer.json-diff-viewer-theme-custom .grid-row .cell.review-actions-cell.has-actions {
   z-index: 3;
 }
 
-.review-action-buttons {
+.diff-viewer-container .review-action-buttons {
   display: flex;
   flex-direction: row;
   gap: 2px;
@@ -507,15 +508,15 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.review-action-buttons[data-status="accepted"] {
+.diff-viewer-container .review-action-buttons[data-status="accepted"] {
   border-color: rgba(46, 160, 67, 0.45);
 }
 
-.review-action-buttons[data-status="rejected"] {
+.diff-viewer-container .review-action-buttons[data-status="rejected"] {
   border-color: rgba(248, 81, 73, 0.45);
 }
 
-.review-btn {
+.diff-viewer-container .review-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -527,35 +528,38 @@
   color: #9ca3af;
   cursor: pointer;
   padding: 0;
-  transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
 }
 
-.review-btn.accept-btn {
+.diff-viewer-container .review-btn.accept-btn {
   color: #3fb950;
 }
 
-.review-btn.reject-btn {
+.diff-viewer-container .review-btn.reject-btn {
   color: #f85149;
 }
 
-.review-btn:hover {
+.diff-viewer-container .review-btn:hover {
   transform: scale(1.08);
   color: #fff;
 }
 
-.review-btn:focus-visible {
+.diff-viewer-container .review-btn:focus-visible {
   outline: 2px solid #007acc;
   outline-offset: 1px;
 }
 
-.accept-btn:hover,
-.accept-btn.active {
+.diff-viewer-container .review-btn.accept-btn:hover,
+.diff-viewer-container .review-btn.accept-btn.active {
   background-color: #2ea043;
   color: #fff;
 }
 
-.reject-btn:hover,
-.reject-btn.active {
+.diff-viewer-container .review-btn.reject-btn:hover,
+.diff-viewer-container .review-btn.reject-btn.active {
   background-color: #f85149;
   color: #fff;
 }

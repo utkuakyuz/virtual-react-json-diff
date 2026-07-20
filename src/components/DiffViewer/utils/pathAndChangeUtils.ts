@@ -1,4 +1,5 @@
 import type { DiffResult } from "json-diff-kit";
+
 import type { ChangeBlock, DiffRow } from "../types";
 
 export function computePaths(diff: DiffResult[]): string[] {
@@ -27,7 +28,8 @@ export function computePaths(diff: DiffResult[]): string[] {
       const current = stack[s];
       if (parent.type === "array") {
         pathParts.push(`[${current.key}]`);
-      } else {
+      }
+      else {
         pathParts.push(pathParts.length === 0 ? String(current.key) : `.${current.key}`);
       }
     }
@@ -48,20 +50,22 @@ export function computePaths(diff: DiffResult[]): string[] {
       // Determine what type of item it is
       const isObject = text.startsWith("{");
       const isArray = text.startsWith("[");
-      
+
       stack.push({
         type: isObject ? "object" : isArray ? "array" : "primitive",
         key: itemIndex,
-        index: isArray ? 0 : -1
+        index: isArray ? 0 : -1,
       });
       parent.index++;
-    } else if (isClosing) {
+    }
+    else if (isClosing) {
       // Closing bracket/brace
       paths.push(pathParts.join(""));
-    } else {
+    }
+    else {
       // Inside an object or at root
       // Try to match a key: "name": ...
-      const keyMatch = text.match(/^"([^"]+)"\s*:/);
+      const keyMatch = text.match(/^"((?:[^"\\]|\\.)*)"\s*:/);
       if (keyMatch) {
         currentKey = keyMatch[1];
         const currentPath = [...pathParts, pathParts.length === 0 ? currentKey : `.${currentKey}`].join("");
@@ -74,9 +78,10 @@ export function computePaths(diff: DiffResult[]): string[] {
         stack.push({
           type: isObject ? "object" : isArray ? "array" : "primitive",
           key: currentKey,
-          index: isArray ? 0 : -1
+          index: isArray ? 0 : -1,
         });
-      } else {
+      }
+      else {
         // Root element or other values (like a single primitive value at root)
         if (level === 0) {
           paths.push("");
@@ -85,9 +90,10 @@ export function computePaths(diff: DiffResult[]): string[] {
           stack.push({
             type: isObject ? "object" : isArray ? "array" : "primitive",
             key: "",
-            index: isArray ? 0 : -1
+            index: isArray ? 0 : -1,
           });
-        } else {
+        }
+        else {
           paths.push(pathParts.join(""));
         }
       }
@@ -101,7 +107,7 @@ export function getChangeBlocks(
   left: DiffResult[],
   right: DiffResult[],
   leftPaths: string[],
-  rightPaths: string[]
+  rightPaths: string[],
 ): ChangeBlock[] {
   const blocks: ChangeBlock[] = [];
   let currentBlock: { startIndex: number; endIndex: number } | null = null;
@@ -114,10 +120,12 @@ export function getChangeBlocks(
           startIndex: i,
           endIndex: i,
         };
-      } else {
+      }
+      else {
         currentBlock.endIndex = i;
       }
-    } else {
+    }
+    else {
       if (currentBlock) {
         blocks.push({
           id: `change_${blocks.length}`,
@@ -126,7 +134,7 @@ export function getChangeBlocks(
           endIndex: currentBlock.endIndex,
           path: "", // will compute below
           leftLines: [],
-          rightLines: []
+          rightLines: [],
         });
         currentBlock = null;
       }
@@ -140,15 +148,15 @@ export function getChangeBlocks(
       endIndex: currentBlock.endIndex,
       path: "",
       leftLines: [],
-      rightLines: []
+      rightLines: [],
     });
   }
 
   // Refine each block
-  blocks.forEach(block => {
+  blocks.forEach((block) => {
     let allAdd = true;
     let allRemove = true;
-    
+
     const leftLines: DiffRow[] = [];
     const rightLines: DiffRow[] = [];
 
@@ -169,9 +177,11 @@ export function getChangeBlocks(
 
     if (allAdd) {
       block.type = "add";
-    } else if (allRemove) {
+    }
+    else if (allRemove) {
       block.type = "remove";
-    } else {
+    }
+    else {
       block.type = "modify";
     }
 
@@ -195,19 +205,28 @@ export function generateMergedJson(
   left: DiffResult[],
   right: DiffResult[],
   blocks: ChangeBlock[],
-  reviewStates: Record<string, "accepted" | "rejected" | "pending">
+  reviewStates: Record<string, "accepted" | "rejected" | "pending">,
 ): any {
   const mergedLines: DiffResult[] = [];
+  const lineToBlockMap = Array.from({ length: left.length });
+
+  for (const block of blocks) {
+    for (let i = block.startIndex; i <= block.endIndex; i++) {
+      lineToBlockMap[i] = block;
+    }
+  }
 
   for (let i = 0; i < left.length; i++) {
-    const block = blocks.find(b => i >= b.startIndex && i <= b.endIndex);
+    const block = lineToBlockMap[i];
     if (!block) {
       mergedLines.push(left[i]);
-    } else {
+    }
+    else {
       const state = reviewStates[block.id] || "pending";
       if (state === "accepted") {
         mergedLines.push(right[i]);
-      } else {
+      }
+      else {
         mergedLines.push(left[i]);
       }
     }
@@ -217,7 +236,7 @@ export function generateMergedJson(
   const lines = mergedLines
     .map(line => ({
       text: line.text ? line.text.trim() : "",
-      level: line.level
+      level: line.level,
     }))
     .filter(line => line.text !== "");
 
@@ -238,7 +257,7 @@ export function generateMergedJson(
     let needsComma = false;
     if (next) {
       const nextText = next.text;
-      
+
       const isCurrentOpen = text.endsWith("{") || text.endsWith("[");
       const isNextClose = nextText.startsWith("}") || nextText.startsWith("]");
 
@@ -252,11 +271,13 @@ export function generateMergedJson(
   }
 
   const jsonStr = formattedLines.join("\n");
-  if (!jsonStr.trim()) return {};
-  
+  if (!jsonStr.trim())
+    return {};
+
   try {
     return JSON.parse(jsonStr);
-  } catch (e) {
+  }
+  catch (e) {
     console.warn("Failed to parse merged JSON string:", jsonStr, e);
     return null;
   }

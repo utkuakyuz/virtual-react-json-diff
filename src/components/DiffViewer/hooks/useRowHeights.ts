@@ -14,16 +14,6 @@ function getWrapCount(el: Element) {
   return Math.round(el.scrollHeight / lh);
 }
 
-function heightsEqual(a: number[], b: number[]) {
-  if (a.length !== b.length)
-    return false;
-  for (let i = 0; i < a.length; i++) {
-    if (a[i] !== b[i])
-      return false;
-  }
-  return true;
-}
-
 export function useRowHeights(
   leftView: DiffRowOrCollapsed[],
   viewerRef?: React.RefObject<HTMLDivElement | null>,
@@ -38,22 +28,40 @@ export function useRowHeights(
     if (!viewerRef?.current)
       return;
 
-    const preElements = viewerRef.current.querySelectorAll("pre");
-    if (preElements.length < 2)
+    // react-window only mounts visible rows — map by data-index, keep a sparse cache.
+    const rowElements = viewerRef.current.querySelectorAll(".grid-row");
+    if (rowElements.length === 0)
       return;
 
-    const newHeights: number[] = [];
-    for (let i = 0; i < preElements.length; i += 2) {
-      const left = preElements[i];
-      const right = preElements[i + 1];
-      if (!left || !right)
-        break;
-      const leftWraps = getWrapCount(left);
-      const rightWraps = getWrapCount(right);
-      newHeights.push(Math.max(leftWraps, rightWraps, 1));
-    }
+    const newHeights = [...heightsRef.current];
+    let hasChanges = false;
 
-    if (heightsEqual(heightsRef.current, newHeights))
+    rowElements.forEach((row) => {
+      const indexAttr = row.getAttribute("data-index");
+      if (indexAttr === null)
+        return;
+
+      const index = Number.parseInt(indexAttr, 10);
+      if (Number.isNaN(index))
+        return;
+
+      const preElements = row.querySelectorAll("pre");
+      if (preElements.length < 2)
+        return;
+
+      const height = Math.max(
+        getWrapCount(preElements[0]),
+        getWrapCount(preElements[1]),
+        1,
+      );
+
+      if (newHeights[index] !== height) {
+        newHeights[index] = height;
+        hasChanges = true;
+      }
+    });
+
+    if (!hasChanges)
       return;
 
     heightsRef.current = newHeights;
@@ -68,6 +76,12 @@ export function useRowHeights(
       measureRows();
     });
   }, [measureRows]);
+
+  // Drop stale absolute indices when the virtualized view structure changes.
+  useLayoutEffect(() => {
+    heightsRef.current = [];
+    setRowHeights([]);
+  }, [leftView]);
 
   useLayoutEffect(() => {
     scheduleMeasure();

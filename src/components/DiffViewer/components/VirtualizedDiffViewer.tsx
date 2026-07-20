@@ -476,7 +476,7 @@ export const VirtualizedDiffViewer = forwardRef<VirtualDiffViewerRef, Virtualize
 
   return (
     <div
-      className={`diff-viewer-container${className ? ` ${className}` : ""}`}
+      className={`diff-viewer-container${reviewMode ? " review-mode" : ""}${className ? ` ${className}` : ""}`}
       tabIndex={0}
       onKeyDown={handleKeyDown}
       style={{ outline: "none" }}
@@ -521,7 +521,7 @@ export const VirtualizedDiffViewer = forwardRef<VirtualDiffViewerRef, Virtualize
           reviewClassNames={reviewClassNames}
         />
 
-        <div className={`minimap-overlay${reviewMode ? " review-mode" : ""}`}>
+        <div className="minimap-overlay">
           <div className="half left-map-holder">
             {!showSingleMinimap && (
               <DiffMinimap {...minimapProps} />

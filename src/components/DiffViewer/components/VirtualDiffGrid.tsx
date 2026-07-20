@@ -2,7 +2,7 @@ import type { InlineDiffOptions } from "json-diff-kit";
 import type { Dispatch } from "react";
 import type { ListOnScrollProps } from "react-window";
 
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VariableSizeList as List } from "react-window";
 
 import type { ChangeBlock, DiffRowOrCollapsed } from "../types";
@@ -117,7 +117,9 @@ const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
 
   // ROW HEIGHT CALCULATION
   const ROW_HEIGHT = useMemo(() => getRowHeightFromCSS(), []);
-  const rowHeights = useRowHeights(leftDiff, viewerRef, reviewMode);
+  const [scrollMeasureTick, setScrollMeasureTick] = useState(0);
+  const scrollMeasureRafRef = useRef<number | null>(null);
+  const rowHeights = useRowHeights(leftDiff, viewerRef, `${reviewMode}:${scrollMeasureTick}`);
   const dynamicRowHeights = useCallback(
     (index: number) => {
       const leftLine = leftDiff[index];
@@ -132,6 +134,13 @@ const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
     listRef.current?.resetAfterIndex(0, true);
   }, [rowHeights]);
 
+  useEffect(() => {
+    return () => {
+      if (scrollMeasureRafRef.current != null)
+        cancelAnimationFrame(scrollMeasureRafRef.current);
+    };
+  }, []);
+
   return (
     <div className={classes} ref={viewerRef as React.Ref<HTMLDivElement>}>
       <VirtualList
@@ -145,7 +154,16 @@ const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
         itemSize={dynamicRowHeights}
         overscanCount={overScanCount}
         itemData={listData}
-        onScroll={({ scrollOffset }: ListOnScrollProps) => setScrollTop(scrollOffset)}
+        onScroll={({ scrollOffset }: ListOnScrollProps) => {
+          setScrollTop(scrollOffset);
+          // Remeasure newly mounted virtual rows without clearing the sparse cache.
+          if (scrollMeasureRafRef.current != null)
+            cancelAnimationFrame(scrollMeasureRafRef.current);
+          scrollMeasureRafRef.current = requestAnimationFrame(() => {
+            scrollMeasureRafRef.current = null;
+            setScrollMeasureTick(tick => tick + 1);
+          });
+        }}
       >
         {RowRendererGrid}
       </VirtualList>
