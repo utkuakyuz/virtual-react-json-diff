@@ -3,7 +3,7 @@
 */
 
 import type { DiffResult } from "json-diff-kit";
-import type { HideUnchangedLinesOptions } from "json-diff-kit/typings/viewer";
+import type { HideUnchangedLinesOptions } from "json-diff-kit/viewer";
 
 import type { HiddenUnchangedLinesInfo, SegmentItem } from "../../types";
 

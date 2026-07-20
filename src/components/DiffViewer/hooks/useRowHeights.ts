@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 
 import type { DiffRowOrCollapsed } from "../types";
 
@@ -14,31 +14,73 @@ function getWrapCount(el: Element) {
   return Math.round(el.scrollHeight / lh);
 }
 
-export function useRowHeights(leftView: DiffRowOrCollapsed[], viewerRef?: React.RefObject<HTMLDivElement | null>) {
+function heightsEqual(a: number[], b: number[]) {
+  if (a.length !== b.length)
+    return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i])
+      return false;
+  }
+  return true;
+}
+
+export function useRowHeights(
+  leftView: DiffRowOrCollapsed[],
+  viewerRef?: React.RefObject<HTMLDivElement | null>,
+  remasureKey?: unknown,
+) {
   const [rowHeights, setRowHeights] = useState<number[]>([]);
+  const heightsRef = useRef(rowHeights);
+  heightsRef.current = rowHeights;
+  const frameRef = useRef<number | null>(null);
 
   const measureRows = useCallback(() => {
     if (!viewerRef?.current)
       return;
 
     const preElements = viewerRef.current.querySelectorAll("pre");
+    if (preElements.length < 2)
+      return;
+
     const newHeights: number[] = [];
     for (let i = 0; i < preElements.length; i += 2) {
-      const leftWraps = getWrapCount(preElements[i]);
-      const rightWraps = getWrapCount(preElements[i + 1]);
-      newHeights.push(Math.max(leftWraps, rightWraps));
+      const left = preElements[i];
+      const right = preElements[i + 1];
+      if (!left || !right)
+        break;
+      const leftWraps = getWrapCount(left);
+      const rightWraps = getWrapCount(right);
+      newHeights.push(Math.max(leftWraps, rightWraps, 1));
     }
+
+    if (heightsEqual(heightsRef.current, newHeights))
+      return;
+
+    heightsRef.current = newHeights;
     setRowHeights(newHeights);
   }, [viewerRef]);
 
-  useLayoutEffect(() => {
-    measureRows();
-  }, [leftView, measureRows]);
+  const scheduleMeasure = useCallback(() => {
+    if (frameRef.current != null)
+      cancelAnimationFrame(frameRef.current);
+    frameRef.current = requestAnimationFrame(() => {
+      frameRef.current = null;
+      measureRows();
+    });
+  }, [measureRows]);
 
   useLayoutEffect(() => {
-    window.addEventListener("resize", measureRows);
-    return () => window.removeEventListener("resize", measureRows);
-  }, [measureRows]);
+    scheduleMeasure();
+    return () => {
+      if (frameRef.current != null)
+        cancelAnimationFrame(frameRef.current);
+    };
+  }, [leftView, scheduleMeasure, remasureKey]);
+
+  useLayoutEffect(() => {
+    window.addEventListener("resize", scheduleMeasure);
+    return () => window.removeEventListener("resize", scheduleMeasure);
+  }, [scheduleMeasure]);
 
   return rowHeights;
 }

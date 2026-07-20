@@ -2,19 +2,23 @@
   "compilerOptions": {
     "target": "ESNext",
     "jsx": "react-jsx",
-    "rootDir": ".",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "strict": true,
-    "declaration": true,
-    "declarationDir": "types",
-    "emitDeclarationOnly": true,
-    "outDir": "dist",
-    "sourceMap": true,
+    "noEmit": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
-  }
+    "skipLibCheck": true,
+    "types": ["bun"]
+  },
+  "include": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/**/__tests__/**/*.ts",
+    "src/**/__tests__/**/*.tsx",
+    "happydom.ts"
+  ],
+  "exclude": ["node_modules", "dist", "demo"]
 }

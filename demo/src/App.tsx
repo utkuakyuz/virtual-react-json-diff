@@ -1,6 +1,7 @@
 import type { DifferOptions } from "json-diff-kit";
+import type { ReviewState, VirtualDiffViewerRef } from "virtual-react-json-diff";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AceEditor from "react-ace";
 import { VirtualDiffViewer } from "virtual-react-json-diff";
 import "ace-builds/src-noconflict/mode-json";
@@ -18,6 +19,21 @@ import newValueExample2 from "./testJsons/json4.json";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<"main" | "example">("main");
+  const [reviewMode, setReviewMode] = useState(false);
+  const [reviewStates, setReviewStates] = useState<Record<string, ReviewState>>({});
+  const [mergedJson, setMergedJson] = useState<any>(null);
+  const viewerRef = useRef<VirtualDiffViewerRef>(null);
+
+  const handleReviewChange = useCallback(({
+    reviewStates: nextStates,
+    mergedJson: nextMerged,
+  }: {
+    reviewStates: Record<string, ReviewState>;
+    mergedJson: any;
+  }) => {
+    setReviewStates(nextStates);
+    setMergedJson(nextMerged);
+  }, []);
 
   const [config, setConfig] = useState<Config>({
     // Main Configuration
@@ -53,7 +69,7 @@ export default function App() {
     setConfig(prev => ({ ...prev, [key]: value }));
   };
 
-  const differOptions: DifferOptions = {
+  const differOptions: DifferOptions = useMemo(() => ({
     detectCircular: config.detectCircular,
     maxDepth: config.maxDepth,
     showModifications: config.showModifications,
@@ -63,10 +79,20 @@ export default function App() {
     ignoreCaseForKey: config.ignoreCaseForKey,
     recursiveEqual: config.recursiveEqual,
     ...(config.preserveKeyOrder ? { preserveKeyOrder: config.preserveKeyOrder } : {}),
-  };
+  }), [
+    config.detectCircular,
+    config.maxDepth,
+    config.showModifications,
+    config.arrayDiffMethod,
+    config.compareKey,
+    config.ignoreCase,
+    config.ignoreCaseForKey,
+    config.recursiveEqual,
+    config.preserveKeyOrder,
+  ]);
 
   // Build comparison options from config
-  const comparisonOptions = {
+  const comparisonOptions = useMemo(() => ({
     ignorePaths: config.ignorePaths
       ? config.ignorePaths.split(",").map(p => p.trim()).filter(p => p.length > 0)
       : [],
@@ -74,7 +100,7 @@ export default function App() {
       ? config.ignoreKeys.split(",").map(k => k.trim()).filter(k => k.length > 0)
       : [],
     compareStrategy: config.compareStrategy,
-  };
+  }), [config.ignorePaths, config.ignoreKeys, config.compareStrategy]);
 
   const [editorsVisible, setEditorsVisible] = useState(true);
   const [oldJson, setOldJson] = useState(JSON.stringify(oldValue, null, 2));
@@ -321,21 +347,87 @@ export default function App() {
                 )}
 
                 {isBothJsonValid && (
-                  <VirtualDiffViewer
-                    className={config.className}
-                    leftTitle={config.leftTitle}
-                    rightTitle={config.rightTitle}
-                    height={config.height}
-                    miniMapWidth={config.miniMapWidth}
-                    hideSearch={config.hideSearch}
-                    showLineCount={config.showLineCount}
-                    showObjectCountStats={config.showObjectCountStats}
-                    inlineDiffOptions={{ mode: config.inlineDiffMode }}
-                    oldValue={parsedOldValue}
-                    newValue={parsedNewValue}
-                    differOptions={differOptions}
-                    comparisonOptions={comparisonOptions}
-                  />
+                  <>
+                    <div className="review-toolbar">
+                      <label className="review-toggle">
+                        <input
+                          type="checkbox"
+                          checked={reviewMode}
+                          onChange={e => setReviewMode(e.target.checked)}
+                        />
+                        Review Mode
+                      </label>
+                      <div className="review-nav-buttons">
+                        <button type="button" className="review-toolbar-btn" onClick={() => viewerRef.current?.previousChange()}>
+                          Previous
+                        </button>
+                        <button type="button" className="review-toolbar-btn" onClick={() => viewerRef.current?.nextChange()}>
+                          Next
+                        </button>
+                        <button type="button" className="review-toolbar-btn" onClick={() => viewerRef.current?.expandAll()}>
+                          Expand All
+                        </button>
+                        <button type="button" className="review-toolbar-btn" onClick={() => viewerRef.current?.collapseAll()}>
+                          Collapse All
+                        </button>
+                        {reviewMode && (
+                          <>
+                            <button type="button" className="review-toolbar-btn accept" onClick={() => viewerRef.current?.acceptAll()}>
+                              Accept All
+                            </button>
+                            <button type="button" className="review-toolbar-btn reject" onClick={() => viewerRef.current?.rejectAll()}>
+                              Reject All
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    <VirtualDiffViewer
+                      ref={viewerRef}
+                      className={config.className}
+                      leftTitle={config.leftTitle}
+                      rightTitle={config.rightTitle}
+                      height={config.height}
+                      miniMapWidth={config.miniMapWidth}
+                      hideSearch={config.hideSearch}
+                      showLineCount={config.showLineCount}
+                      showObjectCountStats={config.showObjectCountStats}
+                      inlineDiffOptions={{ mode: config.inlineDiffMode }}
+                      oldValue={parsedOldValue}
+                      newValue={parsedNewValue}
+                      differOptions={differOptions}
+                      comparisonOptions={comparisonOptions}
+                      reviewMode={reviewMode}
+                      onReviewChange={handleReviewChange}
+                    />
+
+                    {reviewMode && (
+                      <div className="merged-json-panel">
+                        <div className="merged-json-header">
+                          <h3>Merged JSON</h3>
+                          <span className="merged-json-meta">
+                            {Object.values(reviewStates).filter(s => s === "accepted").length}
+                            {" "}
+                            accepted /
+                            {" "}
+                            {Object.values(reviewStates).filter(s => s === "rejected").length}
+                            {" "}
+                            rejected /
+                            {" "}
+                            {Object.values(reviewStates).filter(s => s === "pending").length}
+                            {" "}
+                            pending
+                          </span>
+                        </div>
+                        <pre className="merged-json-content">
+                          {mergedJson == null
+                            ? "Unable to generate merged JSON"
+                            : JSON.stringify(mergedJson, null, 2)}
+                        </pre>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </>

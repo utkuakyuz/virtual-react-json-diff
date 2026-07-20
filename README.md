@@ -40,6 +40,14 @@ virtual-react-json-diff is designed for scenarios where traditional diff viewers
 * **Dual minimap** with visual change indicators
 * Jump directly to changes using **search highlighting**
 * Optional single minimap for compact layouts
+* **Programmatic navigation API** via `ref` (`nextChange`, `scrollToPath`, expand/collapse)
+* Keyboard shortcuts for jumping between change blocks
+
+### Review & Merge
+
+* **Review mode** to accept or reject change blocks (hunks)
+* Live **merged JSON** generation as review decisions update
+* Customizable accepted / rejected / pending styles
 
 ### Understand Change Impact
 
@@ -221,6 +229,80 @@ This separation keeps the diff engine flexible while allowing precise control ov
 | Prop          | Type                                               | Default | Description                                                 |
 | ------------- | -------------------------------------------------- | ------- | ----------------------------------------------------------- |
 | `getDiffData` | `(diffData: [DiffResult[], DiffResult[]]) => void` | —       | Access raw diff results for custom processing or analytics. |
+
+---
+
+### Review & Merge Mode
+
+Accept/reject operates on **change blocks** (consecutive diff hunks), not individual lines. Pending and rejected blocks keep the left (old) side; accepted blocks take the right (new) side. The merged object is rebuilt with trailing-comma normalization so the result stays valid JSON.
+
+| Prop               | Type                                                                                          | Default | Description                                              |
+| ------------------ | --------------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------- |
+| `reviewMode`       | `boolean`                                                                                     | `false` | Enables accept/reject UI and review keyboard shortcuts.  |
+| `onAcceptChange`   | `(change: ChangeBlock) => void`                                                               | —       | Fired when a single change block is accepted.            |
+| `onRejectChange`   | `(change: ChangeBlock) => void`                                                               | —       | Fired when a single change block is rejected.            |
+| `onReviewChange`   | `(state: { reviewStates: Record<string, ReviewState>; mergedJson: any }) => void`            | —       | Fired whenever review state or merged JSON updates.      |
+| `reviewClassNames` | `{ accepted?: string; rejected?: string; pending?: string }`                                  | —       | Optional custom class names for review row states.       |
+
+```jsx
+import { useRef, useState } from "react";
+import {
+  VirtualDiffViewer,
+  type VirtualDiffViewerRef,
+} from "virtual-react-json-diff";
+
+function ReviewExample({ oldData, newData }) {
+  const viewerRef = useRef<VirtualDiffViewerRef>(null);
+  const [mergedJson, setMergedJson] = useState(null);
+
+  return (
+    <>
+      <button onClick={() => viewerRef.current?.previousChange()}>Prev</button>
+      <button onClick={() => viewerRef.current?.nextChange()}>Next</button>
+      <button onClick={() => viewerRef.current?.acceptAll()}>Accept all</button>
+      <button onClick={() => viewerRef.current?.rejectAll()}>Reject all</button>
+
+      <VirtualDiffViewer
+        ref={viewerRef}
+        oldValue={oldData}
+        newValue={newData}
+        height={600}
+        reviewMode
+        onReviewChange={({ mergedJson }) => setMergedJson(mergedJson)}
+      />
+
+      <pre>{JSON.stringify(mergedJson, null, 2)}</pre>
+    </>
+  );
+}
+```
+
+#### `VirtualDiffViewerRef` methods
+
+| Method              | Returns              | Description                                      |
+| ------------------- | -------------------- | ------------------------------------------------ |
+| `nextChange()`      | `ChangeBlock \| null` | Select and scroll to the next change block.     |
+| `previousChange()`  | `ChangeBlock \| null` | Select and scroll to the previous change block. |
+| `scrollToChange(i)` | `void`               | Jump to change block at index `i`.               |
+| `scrollToPath(path)`| `boolean`            | Expand if needed and scroll to a JSON path.      |
+| `expandPath(path)`  | `boolean`            | Expand the equal segment containing `path`.      |
+| `collapsePath(path)`| `boolean`            | Collapse the equal segment containing `path`.    |
+| `expandAll()`       | `void`               | Expand all collapsed equal segments.             |
+| `collapseAll()`     | `void`               | Collapse all equal segments.                     |
+| `getCurrentChange()`| `ChangeBlock \| null` | Return the currently selected change block.     |
+| `acceptAll()`       | `void`               | Accept every change block (review mode).         |
+| `rejectAll()`       | `void`               | Reject every change block (review mode).         |
+
+#### Keyboard shortcuts
+
+Focus the viewer container first (`tabIndex` is set on the root).
+
+| Key                         | Action                                      |
+| --------------------------- | ------------------------------------------- |
+| `ArrowDown` / `j`           | Next change                                 |
+| `ArrowUp` / `k`             | Previous change                             |
+| `Enter` / `a` (review mode) | Accept current change                       |
+| `Escape` / `r` (review mode)| Reject current change                       |
 
 ## Styling
 

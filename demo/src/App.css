@@ -393,3 +393,118 @@ body {
     gap: 8px;
   }
 }
+
+/* Review Mode Toolbar & Merged JSON Panel */
+.review-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.review-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  user-select: none;
+}
+
+.review-toggle input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.review-nav-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.review-toolbar-btn {
+  font-size: 12px;
+  padding: 0.4em 0.85em;
+  border: 1px solid #cbd5e1;
+  background: white;
+  color: #334155;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.review-toolbar-btn:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.review-toolbar-btn.accept {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #166534;
+}
+
+.review-toolbar-btn.accept:hover {
+  background: #bbf7d0;
+}
+
+.review-toolbar-btn.reject {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #991b1b;
+}
+
+.review-toolbar-btn.reject:hover {
+  background: #fecaca;
+}
+
+.merged-json-panel {
+  margin-top: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.merged-json-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+}
+
+.merged-json-header h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.merged-json-meta {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.merged-json-content {
+  margin: 0;
+  padding: 14px;
+  max-height: 320px;
+  overflow: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #e2e8f0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+

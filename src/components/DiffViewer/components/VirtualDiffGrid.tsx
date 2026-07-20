@@ -5,7 +5,7 @@ import type { ListOnScrollProps } from "react-window";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { VariableSizeList as List } from "react-window";
 
-import type { DiffRowOrCollapsed } from "../types";
+import type { ChangeBlock, DiffRowOrCollapsed } from "../types";
 
 import { useRowHeights } from "../hooks/useRowHeights";
 import { COLLAPSED_ROW_HEIGHT, getRowHeightFromCSS, isCollapsed } from "../utils/constants";
@@ -16,7 +16,21 @@ type ListDataType = {
   rightDiff: DiffRowOrCollapsed[];
   onExpand: (segmentIndex: number) => void;
   inlineDiffOptions?: InlineDiffOptions;
+  reviewMode?: boolean;
+  reviewStates?: Record<string, "accepted" | "rejected" | "pending">;
+  changeBlocks?: ChangeBlock[];
+  activeChangeIndex?: number;
+  onAccept?: (changeId: string) => void;
+  onReject?: (changeId: string) => void;
+  reviewClassNames?: {
+    accepted?: string;
+    rejected?: string;
+    pending?: string;
+  };
 };
+
+// @types/react-window can disagree with @types/react Component typings across versions.
+const VirtualList = List as any;
 
 type VirtualDiffGridProps = {
   leftDiff: DiffRowOrCollapsed[];
@@ -30,6 +44,17 @@ type VirtualDiffGridProps = {
   overScanCount?: number;
   viewerRef?: React.RefObject<HTMLDivElement | null>;
   listContainerRef?: React.RefObject<HTMLDivElement | null>;
+  reviewMode?: boolean;
+  reviewStates?: Record<string, "accepted" | "rejected" | "pending">;
+  changeBlocks?: ChangeBlock[];
+  activeChangeIndex?: number;
+  onAccept?: (changeId: string) => void;
+  onReject?: (changeId: string) => void;
+  reviewClassNames?: {
+    accepted?: string;
+    rejected?: string;
+    pending?: string;
+  };
 };
 
 const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
@@ -44,6 +69,13 @@ const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
   overScanCount = 10,
   viewerRef,
   listContainerRef,
+  reviewMode,
+  reviewStates,
+  changeBlocks,
+  activeChangeIndex,
+  onAccept,
+  onReject,
+  reviewClassNames,
 }) => {
   // Virtual List Data
   const listData = useMemo(
@@ -52,8 +84,27 @@ const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
       rightDiff,
       onExpand,
       inlineDiffOptions,
+      reviewMode,
+      reviewStates,
+      changeBlocks,
+      activeChangeIndex,
+      onAccept,
+      onReject,
+      reviewClassNames,
     }),
-    [leftDiff, rightDiff, onExpand, inlineDiffOptions],
+    [
+      leftDiff,
+      rightDiff,
+      onExpand,
+      inlineDiffOptions,
+      reviewMode,
+      reviewStates,
+      changeBlocks,
+      activeChangeIndex,
+      onAccept,
+      onReject,
+      reviewClassNames,
+    ],
   );
 
   const classes = [
@@ -66,7 +117,7 @@ const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
 
   // ROW HEIGHT CALCULATION
   const ROW_HEIGHT = useMemo(() => getRowHeightFromCSS(), []);
-  const rowHeights = useRowHeights(leftDiff, viewerRef);
+  const rowHeights = useRowHeights(leftDiff, viewerRef, reviewMode);
   const dynamicRowHeights = useCallback(
     (index: number) => {
       const leftLine = leftDiff[index];
@@ -82,8 +133,8 @@ const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
   }, [rowHeights]);
 
   return (
-    <div className={classes} ref={viewerRef}>
-      <List
+    <div className={classes} ref={viewerRef as React.Ref<HTMLDivElement>}>
+      <VirtualList
         height={height}
         width="100%"
         style={{ alignItems: "start" }}
@@ -97,7 +148,7 @@ const VirtualDiffGrid: React.FC<VirtualDiffGridProps> = ({
         onScroll={({ scrollOffset }: ListOnScrollProps) => setScrollTop(scrollOffset)}
       >
         {RowRendererGrid}
-      </List>
+      </VirtualList>
     </div>
   );
 };
