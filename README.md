@@ -73,6 +73,12 @@ virtual-react-json-diff is designed for scenarios where traditional diff viewers
 
 ![Example Screenshot](https://raw.githubusercontent.com/utkuakyuz/virtual-react-json-diff/main/public/image-1.0.15.png)
 
+### Review & Merge Mode
+
+Accept or reject change blocks from the left gutter and generate merged JSON in real time.
+
+![Review Mode Screenshot](https://raw.githubusercontent.com/utkuakyuz/virtual-react-json-diff/main/public/image-review-mode.png)
+
 ## Installation
 
 ```bash
