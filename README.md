@@ -223,16 +223,6 @@ Focus the viewer first.
 
 Root class: `diff-viewer-container`. Pass `className` for theming.
 
-## Releases
-
-Publishing is automated on `main`:
-
-1. Bump the **root** `package.json` `version` and merge to `main`
-2. CI publishes to npm when that version changes
-3. CI then updates `demo/package.json` and pushes a `[skip ci]` commit (does not republish)
-
-Requires the `NPM_TOKEN` GitHub Actions secret (npm **Automation** token recommended).
-
 ## Acknowledgements
 
 Built on [json-diff-kit](https://www.npmjs.com/package/json-diff-kit).
