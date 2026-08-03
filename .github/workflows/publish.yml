@@ -127,5 +127,6 @@ jobs:
           fi
 
           git add demo/package.json
-          git commit -m "chore(demo): bump virtual-react-json-diff to ${VERSION} [skip ci]"
+          # Bot-only version bump; skip local developer hooks (pnpm/husky not in this job).
+          git commit --no-verify -m "chore(demo): bump virtual-react-json-diff to ${VERSION} [skip ci]"
           git push
