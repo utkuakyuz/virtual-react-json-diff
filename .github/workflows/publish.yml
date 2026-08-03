@@ -3,6 +3,7 @@ name: Publish
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: publish-main
@@ -16,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,7 +25,7 @@ jobs:
           fetch-depth: 2
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Detect root package version change
+      - name: Detect whether publish is needed
         id: version
         run: |
           set -euo pipefail
@@ -33,23 +35,27 @@ jobs:
           else
             BEFORE=""
           fi
+
+          ON_NPM="$(npm view "virtual-react-json-diff@${AFTER}" version 2>/dev/null || true)"
+
           {
             echo "before=$BEFORE"
             echo "after=$AFTER"
           } >> "$GITHUB_OUTPUT"
-          if [ "$BEFORE" = "$AFTER" ]; then
+
+          if [ "$BEFORE" = "$AFTER" ] && [ "$ON_NPM" = "$AFTER" ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "Root package version unchanged ($AFTER). Skipping publish."
+            echo "Root package version unchanged and already on npm ($AFTER). Skipping publish."
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "Root package version changed: ${BEFORE:-none} → $AFTER"
+            echo "Publish needed: git ${BEFORE:-none} → $AFTER (npm has: ${ON_NPM:-none})"
           fi
 
       - name: Setup Node
         if: steps.version.outputs.changed == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
           registry-url: "https://registry.npmjs.org"
 
       - name: Setup Bun
@@ -74,9 +80,9 @@ jobs:
 
       - name: Publish to npm
         if: steps.version.outputs.changed == 'true'
+        # Trusted Publishing (OIDC): no NODE_AUTH_TOKEN. Requires npm Trusted Publisher
+        # for utkuakyuz/virtual-react-json-diff → publish.yml and id-token: write.
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Verify package is on npm
         if: steps.version.outputs.changed == 'true'
