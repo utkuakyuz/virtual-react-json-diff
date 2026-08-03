@@ -61,19 +61,19 @@ Built for internal tools, config review UIs, CMS/migration previews, and any pla
 
 How this sits next to common options (honest, feature-level — not a benchmark):
 
-| | **virtual-react-json-diff** | **json-diff-kit** `Viewer` | **Text diff viewers** (e.g. `react-diff-viewer`) |
-| --- | :---: | :---: | :---: |
-| Built for structured JSON | ✅ | ✅ | ❌ (line/text oriented) |
-| Virtualized scrolling | ✅ | ✅ | ❌ / rare |
-| Collapse unchanged regions | ✅ | ❌ | ❌ |
-| Dual minimap | ✅ | ❌ | ❌ |
-| Search + jump | ✅ | ❌ | varies |
-| Accept / reject → merged JSON | ✅ | ❌ | ❌ |
-| Ignore keys / paths | ✅ | via differ config | ❌ |
-| Object-key array matching | ✅ | ✅ | ❌ |
-| Extra editor weight (Monaco, etc.) | ❌ | ❌ | ❌ |
+| | **virtual-react-json-diff** | **json-diff-kit** `Viewer` | **jsondiffpatch** | **react-diff-viewer-continued** |
+| --- | :---: | :---: | :---: | :---: |
+| Built for structured JSON | ✅ | ✅ | ✅ | ❌ (line/text oriented) |
+| Virtualized scrolling | ✅ | ✅ | ❌ | ❌ |
+| Collapse unchanged regions | ✅ | ❌ | ❌ | ❌ |
+| Dual minimap | ✅ | ❌ | ❌ | ❌ |
+| Search + jump | ✅ | ❌ | ❌ | ❌ |
+| Accept / reject → merged JSON | ✅ | ❌ | patch API only | ❌ |
+| Ignore keys / paths | ✅ | via differ config | via filters | ❌ |
+| Object-key array matching | ✅ | ✅ | ✅ (`objectHash`) | ❌ |
+| Extra editor weight (Monaco, etc.) | ❌ | ❌ | ❌ | ❌ |
 
-If you only need a small side-by-side preview, `json-diff-kit` alone is often enough. If you need **GitHub-style review + selective merge on large JSON**, this package fills that gap.
+`jsondiffpatch` is excellent for deltas/patches; `react-diff-viewer-continued` is great for text/file diffs. `json-diff-kit` alone covers small JSON side-by-side previews. If you need **GitHub-style review + selective merge on large JSON**, this package fills that gap.
 
 ## Advanced features
 
