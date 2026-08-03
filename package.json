@@ -1,7 +1,7 @@
 {
   "name": "virtual-react-json-diff",
   "type": "module",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "GitHub-style JSON review for React — virtualized compare, accept/reject, and selective merge for large JSON objects.",
   "author": {
     "name": "Utku Akyüz"
