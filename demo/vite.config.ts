@@ -11,18 +11,21 @@ const demoRoot = path.dirname(fileURLToPath(import.meta.url));
  * the demo app uses React 19 — Vite then mixes two React copies and crashes.
  * Force a single React from demo/node_modules.
  */
+const reactRoot = path.resolve(demoRoot, "node_modules/react");
+const reactDomRoot = path.resolve(demoRoot, "node_modules/react-dom");
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
     dedupe: ["react", "react-dom"],
     alias: {
-      react: path.resolve(demoRoot, "node_modules/react"),
-      "react-dom": path.resolve(demoRoot, "node_modules/react-dom"),
-      "react/jsx-runtime": path.resolve(demoRoot, "node_modules/react/jsx-runtime.js"),
-      "react/jsx-dev-runtime": path.resolve(
-        demoRoot,
-        "node_modules/react/jsx-dev-runtime.js",
-      ),
+      react: reactRoot,
+      "react-dom": reactDomRoot,
+      "react/jsx-runtime": path.resolve(reactRoot, "jsx-runtime.js"),
+      "react/jsx-dev-runtime": path.resolve(reactRoot, "jsx-dev-runtime.js"),
     },
+  },
+  optimizeDeps: {
+    include: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
   },
 });

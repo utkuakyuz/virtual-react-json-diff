@@ -75,6 +75,10 @@ virtual-react-json-diff is designed for scenarios where traditional diff viewers
 
 ![Example Screenshot](https://raw.githubusercontent.com/utkuakyuz/virtual-react-json-diff/main/public/image-1.0.15.png)
 
+![Feature walkthrough](https://raw.githubusercontent.com/utkuakyuz/virtual-react-json-diff/main/public/features-demo.gif)
+
+Walkthrough GIF covers virtualized scrolling, expand/collapse, **compare-key** (diff by object) with object count stats, and **review mode** (accept/reject + merged JSON).
+
 ### Review & Merge Mode
 
 Large JSON diffs are hard to *resolve*, not just to *view*. Review mode turns the viewer into a selective merge UI:

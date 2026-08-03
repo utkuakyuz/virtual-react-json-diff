@@ -68,4 +68,29 @@ describe("pathAndChangeUtils", () => {
     const pending = generateMergedJson(left, right, blocks, {});
     expect(pending).toEqual(oldValue);
   });
+
+  test("getChangeBlocks respects semantic, line, and block ReviewGroupingMode", () => {
+    const oldValue = {
+      categoryType: "Electronics",
+      label: "Smartphone X100",
+    };
+    const newValue = {
+      label: "Smartphone X200 Pro",
+    };
+    const [left, right] = buildDiff(oldValue, newValue);
+    const leftPaths = computePaths(left);
+    const rightPaths = computePaths(right);
+
+    // 1. Semantic mode (default) -> categoryType (delete) and label (modify) should be 2 separate blocks!
+    const semanticBlocks = getChangeBlocks(left, right, leftPaths, rightPaths, "semantic");
+    expect(semanticBlocks.length).toBe(2);
+
+    // 2. Block mode -> should group into 1 single block
+    const hunkBlocks = getChangeBlocks(left, right, leftPaths, rightPaths, "block");
+    expect(hunkBlocks.length).toBe(1);
+
+    // 3. Line mode -> 2 separate line blocks
+    const lineBlocks = getChangeBlocks(left, right, leftPaths, rightPaths, "line");
+    expect(lineBlocks.length).toBe(2);
+  });
 });

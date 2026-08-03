@@ -1,5 +1,5 @@
 import type { DifferOptions } from "json-diff-kit";
-import type { ReviewState, VirtualDiffViewerRef } from "virtual-react-json-diff";
+import type { ReviewGroupingMode, ReviewState, VirtualDiffViewerRef } from "virtual-react-json-diff";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AceEditor from "react-ace";
@@ -20,6 +20,7 @@ import newValueExample2 from "./testJsons/json4.json";
 export default function App() {
   const [activeTab, setActiveTab] = useState<"main" | "example">("main");
   const [reviewMode, setReviewMode] = useState(false);
+  const [reviewGroupingMode, setReviewGroupingMode] = useState<ReviewGroupingMode>("semantic");
   const [reviewStates, setReviewStates] = useState<Record<string, ReviewState>>({});
   const [mergedJson, setMergedJson] = useState<any>(null);
   const viewerRef = useRef<VirtualDiffViewerRef>(null);
@@ -357,6 +358,18 @@ export default function App() {
                         />
                         Review Mode
                       </label>
+                      <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#ccc" }}>
+                        Grouping:
+                        <select
+                          value={reviewGroupingMode}
+                          onChange={e => setReviewGroupingMode(e.target.value as ReviewGroupingMode)}
+                          style={{ background: "#222", color: "#fff", border: "1px solid #444", borderRadius: "4px", padding: "2px 6px" }}
+                        >
+                          <option value="semantic">Semantic (Smart)</option>
+                          <option value="line">Line by Line</option>
+                          <option value="block">Block (Hunk)</option>
+                        </select>
+                      </label>
                       <div className="review-nav-buttons">
                         <button type="button" className="review-toolbar-btn" onClick={() => viewerRef.current?.previousChange()}>
                           Previous
@@ -399,6 +412,7 @@ export default function App() {
                       differOptions={differOptions}
                       comparisonOptions={comparisonOptions}
                       reviewMode={reviewMode}
+                      reviewGroupingMode={reviewGroupingMode}
                       onReviewChange={handleReviewChange}
                     />
 

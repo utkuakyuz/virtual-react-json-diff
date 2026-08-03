@@ -3,6 +3,7 @@ export type {
   ChangeBlock,
   CompareStrategy,
   DiffComparisonOptions,
+  ReviewGroupingMode,
   ReviewState,
   VirtualDiffViewerRef,
 } from "./components/DiffViewer/types";
