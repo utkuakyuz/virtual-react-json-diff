@@ -64,16 +64,16 @@ How this sits next to common options (honest, feature-level — not a benchmark)
 | | **virtual-react-json-diff** | **json-diff-kit** `Viewer` | **Text diff viewers** (e.g. `react-diff-viewer`) |
 | --- | :---: | :---: | :---: |
 | Built for structured JSON | ✅ | ✅ | ❌ (line/text oriented) |
-| Virtualized for large files | ✅ | ❌ / limited | ❌ / rare |
+| Virtualized scrolling | ✅ | ✅ | ❌ / rare |
 | Collapse unchanged regions | ✅ | ❌ | ❌ |
 | Dual minimap | ✅ | ❌ | ❌ |
 | Search + jump | ✅ | ❌ | varies |
 | Accept / reject → merged JSON | ✅ | ❌ | ❌ |
-| Ignore keys / paths | ✅ | via differ | ❌ |
+| Ignore keys / paths | ✅ | via differ config | ❌ |
 | Object-key array matching | ✅ | ✅ | ❌ |
 | Extra editor weight (Monaco, etc.) | ❌ | ❌ | ❌ |
 
-If you only need a small side-by-side preview, `json-diff-kit` alone is enough. If you need **GitHub-style review + selective merge on large JSON**, this package is the gap filler.
+If you only need a small side-by-side preview, `json-diff-kit` alone is often enough. If you need **GitHub-style review + selective merge on large JSON**, this package fills that gap.
 
 ## Advanced features
 
