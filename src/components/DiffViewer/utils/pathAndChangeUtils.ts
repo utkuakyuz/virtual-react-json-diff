@@ -1,6 +1,6 @@
 import type { DiffResult } from "json-diff-kit";
 
-import type { ChangeBlock, DiffRow } from "../types";
+import type { ChangeBlock, DiffRow, ReviewGroupingMode } from "../types";
 
 export function computePaths(diff: DiffResult[]): string[] {
   const paths: string[] = [];
@@ -103,11 +103,75 @@ export function computePaths(diff: DiffResult[]): string[] {
   return paths;
 }
 
+function getParentPath(path: string): string {
+  if (!path) return "";
+  const arrayMatch = path.match(/^(.*)\[\d+\]$/);
+  if (arrayMatch) return arrayMatch[1];
+  const lastDot = path.lastIndexOf(".");
+  if (lastDot !== -1) return path.slice(0, lastDot);
+  return "";
+}
+
+function shouldCombineLines(
+  left: DiffResult[],
+  right: DiffResult[],
+  leftPaths: string[],
+  rightPaths: string[],
+  blockStart: number,
+  currIndex: number,
+  mode: ReviewGroupingMode,
+): boolean {
+  if (mode === "block") {
+    return true;
+  }
+  if (mode === "line") {
+    return false;
+  }
+
+  // mode === "semantic"
+  const startPath = leftPaths[blockStart] || rightPaths[blockStart] || "";
+  const currPath = leftPaths[currIndex] || rightPaths[currIndex] || "";
+
+  // 1. Exact same non-empty path
+  if (startPath !== "" && currPath !== "" && startPath === currPath) {
+    return true;
+  }
+
+  // Check if operations from blockStart to currIndex are uniform (all add or all remove)
+  let allAdd = true;
+  let allRemove = true;
+  for (let k = blockStart; k <= currIndex; k++) {
+    if (left[k].type !== "equal" || right[k].type !== "add") allAdd = false;
+    if (right[k].type !== "equal" || left[k].type !== "remove") allRemove = false;
+  }
+
+  // 2. Hierarchical child under blockStart path (e.g. inserting/deleting whole object/array)
+  if (allAdd || allRemove) {
+    if (startPath !== "" && (currPath.startsWith(`${startPath}.`) || currPath.startsWith(`${startPath}[`))) {
+      return true;
+    }
+    const startLevel = left[blockStart].level ?? right[blockStart].level ?? 0;
+    const currLevel = left[currIndex].level ?? right[currIndex].level ?? 0;
+    if (currLevel > startLevel) {
+      return true;
+    }
+    // Same parent array (e.g. adding multiple array items)
+    const parentStart = getParentPath(startPath);
+    const parentCurr = getParentPath(currPath);
+    if (parentStart !== "" && parentStart === parentCurr) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export function getChangeBlocks(
   left: DiffResult[],
   right: DiffResult[],
   leftPaths: string[],
   rightPaths: string[],
+  groupingMode: ReviewGroupingMode = "semantic",
 ): ChangeBlock[] {
   const blocks: ChangeBlock[] = [];
   let currentBlock: { startIndex: number; endIndex: number } | null = null;
@@ -122,7 +186,24 @@ export function getChangeBlocks(
         };
       }
       else {
-        currentBlock.endIndex = i;
+        if (shouldCombineLines(left, right, leftPaths, rightPaths, currentBlock.startIndex, i, groupingMode)) {
+          currentBlock.endIndex = i;
+        }
+        else {
+          blocks.push({
+            id: `change_${blocks.length}`,
+            type: "modify",
+            startIndex: currentBlock.startIndex,
+            endIndex: currentBlock.endIndex,
+            path: "",
+            leftLines: [],
+            rightLines: [],
+          });
+          currentBlock = {
+            startIndex: i,
+            endIndex: i,
+          };
+        }
       }
     }
     else {
@@ -208,7 +289,7 @@ export function generateMergedJson(
   reviewStates: Record<string, "accepted" | "rejected" | "pending">,
 ): any {
   const mergedLines: DiffResult[] = [];
-  const lineToBlockMap = Array.from({ length: left.length });
+  const lineToBlockMap: (ChangeBlock | undefined)[] = new Array(left.length);
 
   for (const block of blocks) {
     for (let i = block.startIndex; i <= block.endIndex; i++) {

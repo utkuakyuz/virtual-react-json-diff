@@ -5,276 +5,170 @@
 ![bundle size](https://badgen.net/bundlephobia/minzip/virtual-react-json-diff)
 [![BuyMeACoffee](https://raw.githubusercontent.com/pachadotdev/buymeacoffee-badges/main/bmc-yellow.svg)](https://www.buymeacoffee.com/utkuakyuz)
 
-👉 [Try it now](https://virtual-react-json-diff.netlify.app)
+**GitHub-style JSON review with selective merge.**
 
-A high-performance React JSON diff viewer for **large, real-world JSON data**.
+A virtualized React component for comparing, reviewing, and selectively merging large JSON objects — accept/reject change blocks like a pull request, get a live merged result, and stay fast on tens of thousands of lines.
 
-Built to handle **tens of thousands of lines without freezing the UI**, it uses virtualized rendering to stay fast and responsive even in production-scale scenarios.
+👉 [Live demo](https://virtual-react-json-diff.netlify.app)
 
-Powered by [json-diff-kit](https://www.npmjs.com/package/json-diff-kit), it supports virtual scrolling, collapsed unchanged regions, review/merge mode, advanced comparison options, search, dual minimaps, and customizable theming.
-
-## Why virtual-react-json-diff exists
-
-Most JSON diff viewers work well for **small examples**, but start breaking down in real-world scenarios:
-
-* Large JSON files cause the UI to freeze or crash
-* Rendering thousands of DOM nodes makes scrolling unusable
-* Array changes are hard to reason about without object-level comparison
-* It’s difficult to understand the *impact* of changes beyond raw diffs
-
-**virtual-react-json-diff** was built to solve these problems.
-
-It is designed for internal dashboards and developer tools that need to compare **large, deeply nested JSON objects** efficiently and interactively.
-
-## Key Features
-
-virtual-react-json-diff is designed for scenarios where traditional diff viewers become unusable due to size or complexity.
-
-### Built for Large JSONs
-
-* **Virtualized rendering** powered by `react-window`
-* Smooth scrolling and interaction even with very large diffs
-* **Collapse unchanged regions** by default so you focus on real changes — expand/collapse still works with virtualization (only visible rows stay in the DOM)
-
-### Navigate Complex Changes
-
-* **Dual minimap** with visual change indicators
-* Jump directly to changes using **search highlighting**
-* Optional single minimap for compact layouts
-* **Programmatic navigation API** via `ref` (`nextChange`, `scrollToPath`, `expandPath` / `expandAll`, …)
-* Keyboard shortcuts for jumping between change blocks
-
-### Review & Merge
-
-* Turn on **review mode** to accept or reject each change block (hunk), similar to a selective merge
-* Decisions apply to whole blocks (not single lines), so nested JSON stays syntactically valid
-* Get a live **merged JSON** object as you accept/reject — useful for config reviews, migration tools, and admin UIs
-* Optional custom styles for accepted / rejected / pending rows
-
-### Understand Change Impact
-
-* **Line count statistics** for added, removed, and modified lines
-* **Object-level statistics** when using compare-key array diffs
-* Quickly assess how big or risky a change really is
-
-### Advanced Comparison Control
-
-* Ignore specific keys or paths anywhere in the JSON tree
-* Multiple comparison strategies (`strict`, `loose`, `type-aware`)
-* Fine-grained control over how values are considered equal
-
-### Customizable & Extensible
-
-* Custom class names for theming
-* Inline diff customization
-* Access raw diff data for advanced use cases
-
-## Demo
-
-👉 [Try it now](https://virtual-react-json-diff.netlify.app) - Interactive demo with live examples
-
-![Example Screenshot](https://raw.githubusercontent.com/utkuakyuz/virtual-react-json-diff/main/public/image-1.0.15.png)
-
-### Review & Merge Mode
-
-Large JSON diffs are hard to *resolve*, not just to *view*. Review mode turns the viewer into a selective merge UI:
-
-1. Enable `reviewMode` — each change block gets accept / reject controls in the left gutter
-2. Accept a block to take the **right (new)** side; reject or leave pending to keep the **left (old)** side
-3. Listen to `onReviewChange` for `{ reviewStates, mergedJson }` and use the merged object in your app
-
-Change blocks are consecutive hunks (for example a whole nested object), not arbitrary single lines — so accepting/rejecting keeps valid JSON structure.
-
-![Review Mode Screenshot](https://raw.githubusercontent.com/utkuakyuz/virtual-react-json-diff/main/public/image-review-mode.png)
-
-### Expand & collapse (with virtualization)
-
-Unchanged stretches of the tree are collapsed by default so you can scan real edits quickly. Click **Show Hidden Lines** on a collapsed row, or drive expand/collapse from the ref API (`expandPath`, `expandAll`, `collapseAll`).
-
-Because rendering is virtualized, expanding a large equal region does **not** mount the entire JSON into the DOM — only the rows in (and near) the viewport are rendered. That is what keeps expand/collapse usable on tens of thousands of lines.
+![Feature walkthrough](https://raw.githubusercontent.com/utkuakyuz/virtual-react-json-diff/main/public/features-demo.gif)
 
 ## Installation
 
 ```bash
 npm install virtual-react-json-diff
-# or
-yarn add virtual-react-json-diff
-# or
-pnpm add virtual-react-json-diff
 ```
 
-## Usage
+## Quick start
 
 ```jsx
 import { VirtualDiffViewer } from "virtual-react-json-diff";
 
-const oldData = { name: "Alice", age: 25 };
-const newData = { name: "Alice", age: 26, city: "NYC" };
-
-export default function App() {
-  return (
-    <VirtualDiffViewer
-      oldValue={oldData}
-      newValue={newData}
-      height={600}
-      showLineCount={true}
-      showObjectCountStats={false}
-    />
-  );
-}
+<VirtualDiffViewer
+  oldValue={oldData}
+  newValue={newData}
+  height={600}
+  reviewMode
+  onReviewChange={({ mergedJson }) => console.log(mergedJson)}
+/>
 ```
 
-## Understanding Diff Configuration
+## Features
 
-The viewer exposes **two different configuration layers**, each serving a distinct purpose.
+* **Review & merge** — accept/reject change blocks; receive live `mergedJson`
+* **Virtualized** — smooth scrolling for huge diffs via `react-window`
+* **Collapse unchanged regions** — scan real edits first; expand without mounting the whole tree
+* **Dual minimap** — jump across the file with visual change markers
+* **Search** — highlight and navigate matches
+* **Programmatic API** — `ref` methods for next/prev change, paths, expand/collapse, accept/reject all
+* **Object-aware diffs** — `compare-key` array matching + object-level stats
+* **Comparison controls** — ignore keys/paths, `strict` / `loose` / `type-aware` strategies
 
-### Quick Mental Model
+## Why this library?
 
-* **`differOptions`** → Controls **how the diff is generated**
-* **`comparisonOptions`** → Controls **what is compared and how values are matched**
+Most JSON diff viewers are fine for small snippets and fall apart in production dashboards:
 
-### `differOptions` — *How the diff works*
+| Pain | What usually happens | Here |
+| ---- | -------------------- | ---- |
+| Large payloads | UI freezes / huge DOM | Virtualized rows stay responsive |
+| Hard to *resolve* | You can only look, not merge | GitHub-style accept/reject → merged JSON |
+| Dense unchanged noise | You scroll forever | Unchanged regions collapse by default |
+| Array reshuffles | Noisy line diffs | Optional object-key matching + object stats |
 
-These options are passed directly to the underlying diff engine.
+Built for internal tools, config review UIs, CMS/migration previews, and any place you need **GitHub for JSON**.
 
-Use them to:
+## Comparison
 
-* Choose how arrays are compared (`compare-key`, positional, etc.)
-* Define comparison keys for object arrays
-* Control depth, circular detection, and modification behavior
+How this sits next to common options (honest, feature-level — not a benchmark):
 
-```jsx
-differOptions={{
-  arrayDiffMethod: "compare-key",
-  compareKey: "id",
-  maxDepth: 999
-}}
-```
+| | **virtual-react-json-diff** | **json-diff-kit** `Viewer` | **jsondiffpatch** | **react-diff-viewer-continued** |
+| --- | :---: | :---: | :---: | :---: |
+| Built for structured JSON | ✅ | ✅ | ✅ | ❌ (line/text oriented) |
+| Virtualized scrolling | ✅ | ✅ | ❌ | ❌ |
+| Collapse unchanged regions | ✅ | ❌ | ❌ | ❌ |
+| Dual minimap | ✅ | ❌ | ❌ | ❌ |
+| Search + jump | ✅ | ❌ | ❌ | ❌ |
+| Accept / reject → merged JSON | ✅ | ❌ | patch API only | ❌ |
+| Ignore keys / paths | ✅ | via differ config | via filters | ❌ |
+| Object-key array matching | ✅ | ✅ | ✅ (`objectHash`) | ❌ |
+| Extra editor weight (Monaco, etc.) | ❌ | ❌ | ❌ | ❌ |
 
-### `comparisonOptions` — *What is considered equal or ignored*
+`jsondiffpatch` is excellent for deltas/patches; `react-diff-viewer-continued` is great for text/file diffs. `json-diff-kit` alone covers small JSON side-by-side previews. If you need **GitHub-style review + selective merge on large JSON**, this package fills that gap.
 
-These options affect comparison behavior **without changing the diff structure**.
+## Advanced features
 
-Use them to:
+### Review & merge mode
 
-* Ignore volatile fields (timestamps, metadata)
-* Exclude specific paths
-* Compare values across types
+![Review Mode Screenshot](https://raw.githubusercontent.com/utkuakyuz/virtual-react-json-diff/main/public/image-review-mode.png)
 
-```jsx
-comparisonOptions={{
-  ignoreKeys: ["updatedAt", "__typename"],
-  ignorePaths: ["meta.timestamp"],
-  compareStrategy: "type-aware"
-}}
-```
+1. Enable `reviewMode` — each change block gets accept / reject controls
+2. Accept → take the **right (new)** side; reject/pending → keep the **left (old)** side
+3. Listen to `onReviewChange` for `{ reviewStates, mergedJson }`
 
-### Using Both Together
+Change blocks are hunks (for example a nested object), not arbitrary single lines — so decisions keep valid JSON structure.
+
+Optional `reviewGroupingMode`: `"semantic"` (default), `"line"`, or `"block"`.
+
+### Expand & collapse (with virtualization)
+
+Unchanged stretches collapse by default. Use **Show Hidden Lines**, or the ref API (`expandPath`, `expandAll`, `collapseAll`). Expanding does **not** mount the entire JSON into the DOM — only near-viewport rows render.
+
+### Diff configuration layers
+
+* **`differOptions`** — how the diff is generated (arrays, depth, keys) → passed to [json-diff-kit](https://www.npmjs.com/package/json-diff-kit)
+* **`comparisonOptions`** — what is ignored / how values match (`ignoreKeys`, `ignorePaths`, `compareStrategy`)
 
 ```jsx
 <VirtualDiffViewer
   oldValue={oldData}
   newValue={newData}
-  differOptions={{
-    arrayDiffMethod: "compare-key",
-    compareKey: "id"
-  }}
-  comparisonOptions={{
-    ignoreKeys: ["updatedAt"],
-    compareStrategy: "type-aware"
-  }}
+  height={600}
+  differOptions={{ arrayDiffMethod: "compare-key", compareKey: "id" }}
+  comparisonOptions={{ ignoreKeys: ["updatedAt"], compareStrategy: "type-aware" }}
 />
 ```
 
-This separation keeps the diff engine flexible while allowing precise control over comparison behavior.
+## API
 
-## Props
-
-### Required
+### Required props
 
 | Prop       | Type     | Description                       |
 | ---------- | -------- | --------------------------------- |
 | `oldValue` | `object` | Original JSON object (left side). |
 | `newValue` | `object` | Updated JSON object (right side). |
 
----
-
-### Layout & Display
+### Layout & display
 
 | Prop         | Type     | Default | Description                                     |
 | ------------ | -------- | ------- | ----------------------------------------------- |
 | `height`     | `number` | —       | Height of the diff viewer in pixels.            |
-| `leftTitle`  | `string` | —       | Optional title shown above the left panel.      |
-| `rightTitle` | `string` | —       | Optional title shown above the right panel.     |
-| `className`  | `string` | —       | Custom CSS class applied to the root container. |
+| `leftTitle`  | `string` | —       | Optional title above the left panel.            |
+| `rightTitle` | `string` | —       | Optional title above the right panel.           |
+| `className`  | `string` | —       | Custom CSS class on the root container.         |
 
----
-
-### Search & Navigation
+### Search & navigation
 
 | Prop                | Type                      | Default | Description                                     |
 | ------------------- | ------------------------- | ------- | ----------------------------------------------- |
-| `hideSearch`        | `boolean`                 | `false` | Hides the search bar when set to `true`.        |
-| `searchTerm`        | `string`                  | `""`    | Initial search term to highlight in the diff.   |
-| `onSearchMatch`     | `(index: number) => void` | —       | Callback fired when a search match is found.    |
-| `showSingleMinimap` | `boolean`                 | `false` | Show a single minimap instead of dual minimaps. |
+| `hideSearch`        | `boolean`                 | `false` | Hide the search bar.                            |
+| `searchTerm`        | `string`                  | `""`    | Initial search term.                            |
+| `onSearchMatch`     | `(index: number) => void` | —       | Fired when a search match is selected.          |
+| `showSingleMinimap` | `boolean`                 | `false` | Single minimap instead of dual.                 |
 | `miniMapWidth`      | `number`                  | `40`    | Width of each minimap in pixels.                |
 
----
-
-### Statistics & Insights
+### Statistics
 
 | Prop                   | Type      | Default | Description                                                          |
 | ---------------------- | --------- | ------- | -------------------------------------------------------------------- |
-| `showLineCount`        | `boolean` | `false` | Display added, removed, and modified **line** counts.                |
-| `showObjectCountStats` | `boolean` | `false` | Display **object-level** stats (requires compare-key array diffing). |
+| `showLineCount`        | `boolean` | `false` | Show added / removed / modified **line** counts.                     |
+| `showObjectCountStats` | `boolean` | `false` | Object-level stats (needs `arrayDiffMethod: "compare-key"` + key).   |
 
-> **Note:** `showObjectCountStats` only works when
-> `differOptions.arrayDiffMethod = "compare-key"` and `compareKey` is provided.
+### Diff configuration
 
----
+| Prop                | Type                    | Default            | Description                                        |
+| ------------------- | ----------------------- | ------------------ | -------------------------------------------------- |
+| `differOptions`     | `DifferOptions`         | Engine defaults    | How the diff is generated.                         |
+| `comparisonOptions` | `DiffComparisonOptions` | —                  | What is compared / ignored.                        |
+| `inlineDiffOptions` | `InlineDiffOptions`     | `{ mode: "char" }` | Inline diff rendering.                             |
+| `getDiffData`       | `(diff) => void`        | —                  | Raw `[DiffResult[], DiffResult[]]` callback.       |
 
-### Diff Configuration
+### Review & merge
 
-| Prop                | Type                    | Default            | Description                                                   |
-| ------------------- | ----------------------- | ------------------ | ------------------------------------------------------------- |
-| `differOptions`     | `DifferOptions`         | Engine defaults    | Controls **how the diff is generated** (arrays, depth, keys). |
-| `comparisonOptions` | `DiffComparisonOptions` | —                  | Controls **what is compared and how values match**.           |
-| `inlineDiffOptions` | `InlineDiffOptions`     | `{ mode: "char" }` | Fine-tune inline diff rendering behavior.                     |
-
----
-
-### Advanced & Utility
-
-| Prop          | Type                                               | Default | Description                                                 |
-| ------------- | -------------------------------------------------- | ------- | ----------------------------------------------------------- |
-| `getDiffData` | `(diffData: [DiffResult[], DiffResult[]]) => void` | —       | Access raw diff results for custom processing or analytics. |
-
----
-
-### Review & Merge Mode
-
-Review mode is for **resolving** a diff, not only displaying it — think selective merge for JSON configs, CMS payloads, or migration previews.
-
-Accept/reject operates on **change blocks** (consecutive diff hunks), not individual lines. Pending and rejected blocks keep the left (old) side; accepted blocks take the right (new) side. The merged object is rebuilt with trailing-comma normalization so the result stays valid JSON.
-
-| Prop               | Type                                                                                          | Default | Description                                              |
-| ------------------ | --------------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------- |
-| `reviewMode`       | `boolean`                                                                                     | `false` | Enables accept/reject UI and review keyboard shortcuts.  |
-| `onAcceptChange`   | `(change: ChangeBlock) => void`                                                               | —       | Fired when a single change block is accepted.            |
-| `onRejectChange`   | `(change: ChangeBlock) => void`                                                               | —       | Fired when a single change block is rejected.            |
-| `onReviewChange`   | `(state: { reviewStates: Record<string, ReviewState>; mergedJson: any }) => void`            | —       | Fired whenever review state or merged JSON updates.      |
-| `reviewClassNames` | `{ accepted?: string; rejected?: string; pending?: string }`                                  | —       | Optional custom class names for review row states.       |
+| Prop                 | Type                                                                 | Default      | Description                                         |
+| -------------------- | -------------------------------------------------------------------- | ------------ | --------------------------------------------------- |
+| `reviewMode`         | `boolean`                                                            | `false`      | Enable accept/reject UI + review shortcuts.         |
+| `reviewGroupingMode` | `"semantic" \| "line" \| "block"`                                    | `"semantic"` | How change blocks are grouped.                      |
+| `onAcceptChange`     | `(change: ChangeBlock) => void`                                      | —            | Fired when a block is accepted.                     |
+| `onRejectChange`     | `(change: ChangeBlock) => void`                                      | —            | Fired when a block is rejected.                     |
+| `onReviewChange`     | `(state: { reviewStates; mergedJson }) => void`                      | —            | Fired when review state or merged JSON updates.     |
+| `reviewClassNames`   | `{ accepted?; rejected?; pending? }`                                 | —            | Optional row class names.                           |
 
 ```jsx
 import { useRef, useState } from "react";
-import {
-  VirtualDiffViewer,
-  type VirtualDiffViewerRef,
-} from "virtual-react-json-diff";
+import { VirtualDiffViewer, type VirtualDiffViewerRef } from "virtual-react-json-diff";
 
 function ReviewExample({ oldData, newData }) {
-  const viewerRef = useRef<VirtualDiffViewerRef>(null);
+  const viewerRef = useRef(null);
   const [mergedJson, setMergedJson] = useState(null);
 
   return (
@@ -282,7 +176,6 @@ function ReviewExample({ oldData, newData }) {
       <button onClick={() => viewerRef.current?.previousChange()}>Prev</button>
       <button onClick={() => viewerRef.current?.nextChange()}>Next</button>
       <button onClick={() => viewerRef.current?.acceptAll()}>Accept all</button>
-      <button onClick={() => viewerRef.current?.rejectAll()}>Reject all</button>
 
       <VirtualDiffViewer
         ref={viewerRef}
@@ -299,40 +192,40 @@ function ReviewExample({ oldData, newData }) {
 }
 ```
 
-#### `VirtualDiffViewerRef` methods
+#### `VirtualDiffViewerRef`
 
-| Method              | Returns              | Description                                      |
-| ------------------- | -------------------- | ------------------------------------------------ |
-| `nextChange()`      | `ChangeBlock \| null` | Select and scroll to the next change block.     |
-| `previousChange()`  | `ChangeBlock \| null` | Select and scroll to the previous change block. |
-| `scrollToChange(i)` | `void`               | Jump to change block at index `i`.               |
-| `scrollToPath(path)`| `boolean`            | Expand collapsed segments if needed, then scroll to a JSON path. |
-| `expandPath(path)`  | `boolean`            | Expand the collapsed equal segment that contains `path`. |
-| `collapsePath(path)`| `boolean`            | Collapse the equal segment that contains `path`.         |
-| `expandAll()`       | `void`               | Expand all collapsed equal segments (still virtualized). |
-| `collapseAll()`     | `void`               | Collapse all equal segments back to compact form.        |
-| `getCurrentChange()`| `ChangeBlock \| null` | Return the currently selected change block.     |
-| `acceptAll()`       | `void`               | Accept every change block (review mode).         |
-| `rejectAll()`       | `void`               | Reject every change block (review mode).         |
+| Method               | Returns               | Description                                      |
+| -------------------- | --------------------- | ------------------------------------------------ |
+| `nextChange()`       | `ChangeBlock \| null` | Next change block.                               |
+| `previousChange()`   | `ChangeBlock \| null` | Previous change block.                           |
+| `scrollToChange(i)`  | `void`                | Jump to change index `i`.                        |
+| `scrollToPath(path)` | `boolean`             | Expand if needed, scroll to JSON path.           |
+| `expandPath(path)`   | `boolean`             | Expand collapsed segment containing `path`.      |
+| `collapsePath(path)` | `boolean`             | Collapse equal segment containing `path`.        |
+| `expandAll()`        | `void`                | Expand all equal segments (still virtualized).   |
+| `collapseAll()`      | `void`                | Collapse equal segments again.                   |
+| `getCurrentChange()` | `ChangeBlock \| null` | Currently selected change.                       |
+| `acceptAll()`        | `void`                | Accept every change (review mode).               |
+| `rejectAll()`        | `void`                | Reject every change (review mode).               |
 
 #### Keyboard shortcuts
 
-Focus the viewer container first (`tabIndex` is set on the root).
+Focus the viewer first.
 
-| Key                         | Action                                      |
-| --------------------------- | ------------------------------------------- |
-| `ArrowDown` / `j`           | Next change                                 |
-| `ArrowUp` / `k`             | Previous change                             |
-| `Enter` / `a` (review mode) | Accept current change                       |
-| `Escape` / `r` (review mode)| Reject current change                       |
+| Key                          | Action                |
+| ---------------------------- | --------------------- |
+| `ArrowDown` / `j`            | Next change           |
+| `ArrowUp` / `k`              | Previous change       |
+| `Enter` / `a` (review mode)  | Accept current change |
+| `Escape` / `r` (review mode) | Reject current change |
 
 ## Styling
 
-The component exposes a root container with class `diff-viewer-container`. You can pass your own class name via the `className` prop to apply custom themes.
+Root class: `diff-viewer-container`. Pass `className` for theming.
 
-## 🙌 Acknowledgements
+## Acknowledgements
 
-Built on top of the awesome [json-diff-kit](https://www.npmjs.com/package/json-diff-kit).
+Built on [json-diff-kit](https://www.npmjs.com/package/json-diff-kit).
 
 ## License
 

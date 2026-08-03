@@ -1,8 +1,8 @@
 {
   "name": "virtual-react-json-diff",
   "type": "module",
-  "version": "1.0.17",
-  "description": "Fast, virtualized React component for visually comparing large JSON objects. Includes search, theming, and minimap.",
+  "version": "1.0.18",
+  "description": "GitHub-style JSON review for React — virtualized compare, accept/reject, and selective merge for large JSON objects.",
   "author": {
     "name": "Utku Akyüz"
   },
@@ -22,6 +22,10 @@
     "json diff",
     "json compare",
     "diff viewer",
+    "json review",
+    "json merge",
+    "review merge",
+    "github-style",
     "react json diff",
     "json visualizer",
     "json viewer",

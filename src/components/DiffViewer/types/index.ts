@@ -52,6 +52,8 @@ export type ObjectCountStats = {
 
 export type ReviewState = "accepted" | "rejected" | "pending";
 
+export type ReviewGroupingMode = "semantic" | "line" | "block";
+
 export type ChangeBlock = {
   id: string;
   type: "add" | "remove" | "modify";
@@ -97,6 +99,7 @@ export type VirtualizedDiffViewerProps = {
   showObjectCountStats?: boolean;
   comparisonOptions?: DiffComparisonOptions;
   reviewMode?: boolean;
+  reviewGroupingMode?: ReviewGroupingMode;
   onAcceptChange?: (change: ChangeBlock) => void;
   onRejectChange?: (change: ChangeBlock) => void;
   onReviewChange?: (reviewState: {

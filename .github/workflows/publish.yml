@@ -1,0 +1,125 @@
+name: Publish
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: publish-main
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish to npm + bump demo
+    # Demo bump commits use [skip ci] so they never re-enter this job.
+    if: ${{ !contains(github.event.head_commit.message || '', '[skip ci]') && github.actor != 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Detect root package version change
+        id: version
+        run: |
+          set -euo pipefail
+          AFTER="$(node -p "require('./package.json').version")"
+          if git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
+            BEFORE="$(git show HEAD~1:package.json | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version")"
+          else
+            BEFORE=""
+          fi
+          {
+            echo "before=$BEFORE"
+            echo "after=$AFTER"
+          } >> "$GITHUB_OUTPUT"
+          if [ "$BEFORE" = "$AFTER" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Root package version unchanged ($AFTER). Skipping publish."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Root package version changed: ${BEFORE:-none} → $AFTER"
+          fi
+
+      - name: Setup Node
+        if: steps.version.outputs.changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Setup Bun
+        if: steps.version.outputs.changed == 'true'
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        if: steps.version.outputs.changed == 'true'
+        run: bun install
+
+      - name: Test
+        if: steps.version.outputs.changed == 'true'
+        run: bun test
+
+      - name: Typecheck
+        if: steps.version.outputs.changed == 'true'
+        run: bun run typecheck
+
+      - name: Build
+        if: steps.version.outputs.changed == 'true'
+        run: bun run build
+
+      - name: Publish to npm
+        if: steps.version.outputs.changed == 'true'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Verify package is on npm
+        if: steps.version.outputs.changed == 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.after }}
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 12); do
+            PUBLISHED="$(npm view "virtual-react-json-diff@${VERSION}" version 2>/dev/null || true)"
+            if [ "$PUBLISHED" = "$VERSION" ]; then
+              echo "Verified virtual-react-json-diff@${VERSION} on npm"
+              exit 0
+            fi
+            echo "Waiting for npm registry (attempt ${i}/12)..."
+            sleep 5
+          done
+          echo "Timed out waiting for npm to show ${VERSION}"
+          exit 1
+
+      - name: Bump demo dependency and push
+        if: steps.version.outputs.changed == 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.after }}
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require("node:fs");
+          const version = process.env.VERSION;
+          const path = "demo/package.json";
+          const pkg = JSON.parse(fs.readFileSync(path, "utf8"));
+          pkg.dependencies["virtual-react-json-diff"] = `^${version}`;
+          fs.writeFileSync(path, `${JSON.stringify(pkg, null, 2)}\n`);
+          console.log(`demo/package.json → ^${version}`);
+          NODE
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet -- demo/package.json; then
+            echo "Demo already pins ^${VERSION}; nothing to commit."
+            exit 0
+          fi
+
+          git add demo/package.json
+          git commit -m "chore(demo): bump virtual-react-json-diff to ${VERSION} [skip ci]"
+          git push
