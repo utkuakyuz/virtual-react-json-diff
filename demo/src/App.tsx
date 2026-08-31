@@ -46,6 +46,7 @@ export default function App() {
     height: 380,
     showLineCount: true,
     showObjectCountStats: false,
+    theme: "default",
 
     // Differ Configuration
     detectCircular: true,
@@ -406,6 +407,7 @@ export default function App() {
                       hideSearch={config.hideSearch}
                       showLineCount={config.showLineCount}
                       showObjectCountStats={config.showObjectCountStats}
+                      theme={config.theme}
                       inlineDiffOptions={{ mode: config.inlineDiffMode }}
                       oldValue={parsedOldValue}
                       newValue={parsedNewValue}
@@ -568,6 +570,7 @@ export default function App() {
                     hideSearch={config.hideSearch}
                     showLineCount={config.showLineCount}
                     showObjectCountStats={config.showObjectCountStats}
+                    theme={config.theme}
                     inlineDiffOptions={{ mode: config.inlineDiffMode }}
                     oldValue={parsedExampleOldValue}
                     newValue={parsedExampleNewValue}

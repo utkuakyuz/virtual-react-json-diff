@@ -4,7 +4,7 @@ import { act, cleanup, fireEvent, render, waitFor } from "@testing-library/react
 import { afterEach, describe, expect, mock, test } from "bun:test";
 import React, { createRef } from "react";
 
-import type { ChangeBlock, DiffRowOrCollapsed, VirtualDiffViewerRef } from "../types";
+import type { ChangeBlock, DiffRowOrCollapsed, DiffTheme, VirtualDiffViewerRef } from "../types";
 
 type ReviewPayload = {
   reviewStates: Record<string, string>;
@@ -225,5 +225,62 @@ describe("VirtualizedDiffViewer navigation & review", () => {
       fireEvent.keyDown(root, { key: "k" });
     });
     expect(ref.current!.getCurrentChange()).not.toBeNull();
+  });
+});
+
+describe("VirtualizedDiffViewer theme", () => {
+  test("defaults data-theme to default when theme prop is omitted", () => {
+    const { container } = render(
+      <VirtualDiffViewer
+        oldValue={oldValue}
+        newValue={newValue}
+        height={400}
+      />,
+    );
+
+    const root = container.querySelector(".diff-viewer-container");
+    expect(root).toBeTruthy();
+    expect(root?.getAttribute("data-theme")).toBe("default");
+  });
+
+  test("applies data-theme from the theme prop", () => {
+    const { container } = render(
+      <VirtualDiffViewer
+        oldValue={oldValue}
+        newValue={newValue}
+        height={400}
+        theme="github-light"
+      />,
+    );
+
+    const root = container.querySelector(".diff-viewer-container");
+    expect(root?.getAttribute("data-theme")).toBe("github-light");
+  });
+
+  test("applies tokyo-night data-theme", () => {
+    const { container } = render(
+      <VirtualDiffViewer
+        oldValue={oldValue}
+        newValue={newValue}
+        height={400}
+        theme="tokyo-night"
+      />,
+    );
+
+    expect(container.querySelector(".diff-viewer-container")?.getAttribute("data-theme")).toBe("tokyo-night");
+  });
+
+  test("falls back to default for unknown theme values", () => {
+    const { container } = render(
+      <VirtualDiffViewer
+        oldValue={oldValue}
+        newValue={newValue}
+        height={400}
+        theme={"solarized" as DiffTheme}
+      />,
+    );
+
+    const root = container.querySelector(".diff-viewer-container");
+    expect(root?.getAttribute("data-theme")).toBe("default");
   });
 });

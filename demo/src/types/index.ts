@@ -1,5 +1,5 @@
 import type { DifferOptions } from "json-diff-kit";
-import type { CompareStrategy } from "virtual-react-json-diff";
+import type { CompareStrategy, DiffTheme } from "virtual-react-json-diff";
 
 export type Config = {
   // Main Configuration
@@ -11,6 +11,7 @@ export type Config = {
   height: number;
   showLineCount: boolean;
   showObjectCountStats: boolean;
+  theme: DiffTheme;
 
   // Differ Configuration
   detectCircular: boolean;

@@ -50,6 +50,8 @@ export type ObjectCountStats = {
   total: number;
 };
 
+export type DiffTheme = "default" | "github-dark" | "github-light" | "nord" | "tokyo-night" | "solarized-light";
+
 export type ReviewState = "accepted" | "rejected" | "pending";
 
 export type ReviewGroupingMode = "semantic" | "line" | "block";
@@ -92,6 +94,7 @@ export type VirtualizedDiffViewerProps = {
   customDiffer?: Differ;
   showSingleMinimap?: boolean;
   className?: string;
+  theme?: DiffTheme;
   miniMapWidth?: number;
   inlineDiffOptions?: InlineDiffOptions;
   overScanCount?: number;
@@ -122,4 +125,5 @@ export type DiffMinimapProps = {
   searchResults?: number[];
   currentMatchIndex?: number;
   miniMapWidth?: number;
+  theme?: DiffTheme;
 };

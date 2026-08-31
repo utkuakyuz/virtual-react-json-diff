@@ -54,6 +54,25 @@ function Sidebar(props: Props) {
 
         <div className="form-group">
           <label className="form-label">
+            Theme
+            <select
+              className="form-input"
+              value={config.theme}
+              onChange={e => updateConfig("theme", e.target.value as Config["theme"])}
+            >
+              <option value="default">Default</option>
+              <option value="github-dark">GitHub Dark</option>
+              <option value="github-light">GitHub Light</option>
+              <option value="nord">Nord</option>
+              <option value="tokyo-night">Tokyo Night</option>
+              <option value="solarized-light">Solarized Light</option>
+            </select>
+          </label>
+          <p className="form-hint">Built-in JSON diff palette</p>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">
             Height (px)
             <input
               type="number"

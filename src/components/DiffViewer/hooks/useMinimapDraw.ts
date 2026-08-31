@@ -1,15 +1,8 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import type { DiffRowOrCollapsed } from "../types";
+import type { DiffRowOrCollapsed, DiffTheme } from "../types";
 
-const SEARCH_HIGHLIGHT_COLOR = "#ffd700";
-const CURRENT_MATCH_COLOR = "#ff4500";
-const EQUAL_LINE_COLOR = "#363743";
-const ADD_LINE_COLOR = "#4CAF50";
-const REMOVE_LINE_COLOR = "#F44336";
-const MODIFY_LINE_COLOR = "#FFC107";
-const MINIMAP_HOVER_SCROLL_COLOR = "#7B7B7Bcc";
-const MINIMAP_SCROLL_COLOR = "#7B7B7B80";
+import { readMinimapColors } from "../utils/minimapColors";
 
 type Props = {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
@@ -25,6 +18,7 @@ type Props = {
   totalLines: number;
   ROW_HEIGHT: number;
   viewportHeight: number;
+  theme?: DiffTheme;
 };
 
 export function useMinimapDraw({
@@ -41,30 +35,41 @@ export function useMinimapDraw({
   totalLines,
   ROW_HEIGHT,
   viewportHeight,
+  theme,
 }: Props) {
-  // Memoize the drawLine function since it's used in a loop
+  const [paintToken, setPaintToken] = useState(0);
+
+  useEffect(() => {
+    setPaintToken(n => n + 1);
+  }, [theme]);
+
+  const colors = useMemo(
+    () => readMinimapColors(containerRef.current),
+    [theme, paintToken, containerRef],
+  );
+
   const drawLine = useCallback((ctx: CanvasRenderingContext2D, line: DiffRowOrCollapsed, y: number, x: number, width: number) => {
     if (line.type === "collapsed") {
-      ctx.fillStyle = EQUAL_LINE_COLOR;
+      ctx.fillStyle = colors.equal;
     }
     else {
       switch (line.type) {
         case "equal":
-          ctx.fillStyle = EQUAL_LINE_COLOR;
+          ctx.fillStyle = colors.equal;
           break;
         case "add":
-          ctx.fillStyle = ADD_LINE_COLOR;
+          ctx.fillStyle = colors.add;
           break;
         case "remove":
-          ctx.fillStyle = REMOVE_LINE_COLOR;
+          ctx.fillStyle = colors.remove;
           break;
         case "modify":
-          ctx.fillStyle = MODIFY_LINE_COLOR;
+          ctx.fillStyle = colors.modify;
           break;
       }
     }
     ctx.fillRect(x, y, width, ROW_HEIGHT);
-  }, [ROW_HEIGHT]);
+  }, [ROW_HEIGHT, colors]);
 
   const diffCanvas = useMemo(() => {
     const offscreen = document.createElement("canvas");
@@ -76,56 +81,49 @@ export function useMinimapDraw({
 
     const scale = height / totalLines;
 
-    // left diff
     leftDiff.forEach((line, index) => {
       const y = index * scale;
       drawLine(ctx, line, y, 0, miniMapWidth / 2);
     });
 
-    // right diff
     rightDiff.forEach((line, index) => {
       const y = index * scale;
       drawLine(ctx, line, y, miniMapWidth / 2, miniMapWidth / 2);
     });
 
-    // search highlights
     searchResults.forEach((index) => {
       const y = index * scale;
       const lineHeight = Math.max(1, scale);
-      ctx.fillStyle = SEARCH_HIGHLIGHT_COLOR;
+      ctx.fillStyle = colors.search;
       ctx.fillRect(0, y, miniMapWidth, lineHeight);
     });
 
     return offscreen;
-  }, [leftDiff, rightDiff, searchResults, height, totalLines, miniMapWidth, drawLine]);
+  }, [leftDiff, rightDiff, searchResults, height, totalLines, miniMapWidth, drawLine, colors]);
 
-  // Draw the scroll box and also differences in minimapo
   const drawScrollBox = useCallback(
     (ctx: CanvasRenderingContext2D, color: string) => {
       if (!diffCanvas)
         return;
 
-      // Copy pre-rendered diff
       ctx.clearRect(0, 0, miniMapWidth, height);
       ctx.drawImage(diffCanvas, 0, 0);
 
-      // Draw scroll box
       const totalContentHeight = totalLines * ROW_HEIGHT;
       const viewportTop = (currentScrollTop / totalContentHeight) * height;
 
       ctx.fillStyle = color;
       ctx.fillRect(0, viewportTop, miniMapWidth, viewportHeight);
 
-      // Draw current match highlight (optional)
       if (currentMatchIndex >= 0 && searchResults[currentMatchIndex] !== undefined) {
         const scale = height / totalLines;
         const y = searchResults[currentMatchIndex] * scale;
         const lineHeight = Math.max(1, scale);
-        ctx.fillStyle = CURRENT_MATCH_COLOR;
+        ctx.fillStyle = colors.currentMatch;
         ctx.fillRect(0, y, miniMapWidth, lineHeight);
       }
     },
-    [diffCanvas, currentScrollTop, totalLines, ROW_HEIGHT, height, miniMapWidth, viewportHeight, currentMatchIndex, searchResults],
+    [diffCanvas, currentScrollTop, totalLines, ROW_HEIGHT, height, miniMapWidth, viewportHeight, currentMatchIndex, searchResults, colors],
   );
 
   const drawMinimap = useCallback(() => {
@@ -143,19 +141,19 @@ export function useMinimapDraw({
       if (containerRef.current) {
         containerRef.current.style.opacity = "0.65";
       }
-      drawScrollBox(ctx, MINIMAP_SCROLL_COLOR);
+      drawScrollBox(ctx, colors.scroll);
     }
     else {
       if (containerRef.current) {
         containerRef.current.style.opacity = "0.85";
       }
-      drawScrollBox(ctx, MINIMAP_HOVER_SCROLL_COLOR);
+      drawScrollBox(ctx, colors.scrollHover);
     }
-  }, [drawScrollBox]);
+  }, [drawScrollBox, colors, canvasRef, containerRef, isDragging]);
 
   useEffect(() => {
     drawMinimap();
   }, [drawMinimap]);
 
-  return { drawScrollBox, drawMinimap };
+  return { drawScrollBox, drawMinimap, scrollHoverColor: colors.scrollHover };
 }
