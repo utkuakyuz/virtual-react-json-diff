@@ -1,5 +1,7 @@
 import type { DiffRow } from "../types";
 
+import { readCssVar } from "./cssVars";
+
 export const DIFF_VIEWER_CLASS = "json-diff-viewer-theme-custom";
 
 export const DEFAULT_ROW_HEIGHT = 20; // safe fallback
@@ -13,15 +15,8 @@ export function getRowHeightFromCSS(): number {
     return DEFAULT_ROW_HEIGHT;
   }
 
-  try {
-    const root = document.documentElement;
-    const value = getComputedStyle(root).getPropertyValue("--diff-row-height");
-    const parsed = Number.parseInt(value, 10);
-    return Number.isNaN(parsed) ? DEFAULT_ROW_HEIGHT : parsed;
-  }
-  catch {
-    return DEFAULT_ROW_HEIGHT;
-  }
+  const parsed = Number.parseInt(readCssVar(document.documentElement, "--diff-row-height", ""), 10);
+  return Number.isNaN(parsed) ? DEFAULT_ROW_HEIGHT : parsed;
 }
 
 export const COLLAPSED_ROW_HEIGHT = 20;
