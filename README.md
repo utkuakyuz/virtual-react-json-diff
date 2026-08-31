@@ -43,6 +43,7 @@ import { VirtualDiffViewer } from "virtual-react-json-diff";
 * **Search** — highlight and navigate matches
 * **Programmatic API** — `ref` methods for next/prev change, paths, expand/collapse, accept/reject all
 * **Object-aware diffs** — `compare-key` array matching + object-level stats
+* **Built-in themes (1.0.20+)** — `theme` prop; omit it for the original dark palette
 * **Comparison controls** — ignore keys/paths, `strict` / `loose` / `type-aware` strategies
 
 ## Why this library?
@@ -126,7 +127,7 @@ Unchanged stretches collapse by default. Use **Show Hidden Lines**, or the ref A
 | `leftTitle`  | `string` | —         | Optional title above the left panel.            |
 | `rightTitle` | `string` | —         | Optional title above the right panel.           |
 | `className`  | `string` | —         | Custom CSS class on the root container.         |
-| `theme`      | `DiffTheme` | `"default"` | Built-in palette: `default`, `github-dark`, `github-light`, `nord`, `tokyo-night`, `solarized-light`. |
+| `theme`      | `DiffTheme` | `"default"` | Built-in palette (**1.0.20+**). See [Themes](#themes). |
 
 ### Search & navigation
 
@@ -221,9 +222,20 @@ Focus the viewer first.
 | `Enter` / `a` (review mode)  | Accept current change |
 | `Escape` / `r` (review mode) | Reject current change |
 
-## Styling
+## Themes
 
-Root class: `diff-viewer-container`. Pass `theme` (`default`, `github-dark`, `github-light`, `nord`, `tokyo-night`, `solarized-light`) for a built-in palette. Unknown values fall back to `default`. Override `--diff-*` CSS variables via `className` if you need a custom look.
+`theme` is available in **1.0.20+**. Omit it (or pass an unknown value) and you get `default` — the original dark palette.
+
+| Value | Look |
+| --- | --- |
+| `default` | Original dark (Dracula-like) |
+| `github-dark` | GitHub Primer dark |
+| `github-light` | GitHub Primer light |
+| `nord` | Nord polar night |
+| `tokyo-night` | Tokyo Night |
+| `solarized-light` | Solarized Light |
+
+Root class: `diff-viewer-container`. Override `--diff-*` CSS variables via `className` if you need a custom look.
 
 ## Acknowledgements
 
