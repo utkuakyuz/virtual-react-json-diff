@@ -6,8 +6,6 @@ import { useDragScroll } from "../hooks/useDragScroll";
 import { useMinimapDraw } from "../hooks/useMinimapDraw";
 import { DEFAULT_HEIGHT, DEFAULT_MINIMAP_WIDTH, getRowHeightFromCSS } from "../utils/constants";
 
-const MINIMAP_HOVER_SCROLL_COLOR = "#7B7B7Bcc";
-
 export const DiffMinimap: React.FC<DiffMinimapProps> = ({
   leftDiff,
   rightDiff,
@@ -17,6 +15,7 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
   currentScrollTop,
   searchResults = [],
   currentMatchIndex = -1,
+  theme,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -45,7 +44,7 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
     containerRef,
   });
 
-  const { drawMinimap, drawScrollBox } = useMinimapDraw({
+  const { drawMinimap, drawScrollBox, scrollHoverColor } = useMinimapDraw({
     canvasRef,
     containerRef,
     height: height || DEFAULT_HEIGHT,
@@ -59,6 +58,7 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
     totalLines,
     ROW_HEIGHT,
     viewportHeight,
+    theme,
   });
 
   useEffect(() => {
@@ -80,7 +80,7 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
       const scrollSquareTop = (currentScrollTop / totalContentHeight) * height;
 
       const isHovering
-      = relativeY > scrollSquareTop && relativeY < scrollSquareTop + viewportHeight;
+        = relativeY > scrollSquareTop && relativeY < scrollSquareTop + viewportHeight;
 
       drawMinimap();
 
@@ -90,10 +90,10 @@ export const DiffMinimap: React.FC<DiffMinimapProps> = ({
         if (!ctx)
           return;
         if (isHovering)
-          drawScrollBox(ctx, MINIMAP_HOVER_SCROLL_COLOR);
+          drawScrollBox(ctx, scrollHoverColor);
       }
     },
-    [height, totalLines, viewportHeight, currentScrollTop, drawMinimap],
+    [height, totalLines, viewportHeight, currentScrollTop, drawMinimap, drawScrollBox, scrollHoverColor, ROW_HEIGHT],
   );
 
   return (

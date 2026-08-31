@@ -28,6 +28,7 @@ import { VirtualDiffViewer } from "virtual-react-json-diff";
   oldValue={oldData}
   newValue={newData}
   height={600}
+  theme="github-light"
   reviewMode
   onReviewChange={({ mergedJson }) => console.log(mergedJson)}
 />
@@ -121,10 +122,11 @@ Unchanged stretches collapse by default. Use **Show Hidden Lines**, or the ref A
 
 | Prop         | Type     | Default | Description                                     |
 | ------------ | -------- | ------- | ----------------------------------------------- |
-| `height`     | `number` | —       | Height of the diff viewer in pixels.            |
-| `leftTitle`  | `string` | —       | Optional title above the left panel.            |
-| `rightTitle` | `string` | —       | Optional title above the right panel.           |
-| `className`  | `string` | —       | Custom CSS class on the root container.         |
+| `height`     | `number` | —         | Height of the diff viewer in pixels.            |
+| `leftTitle`  | `string` | —         | Optional title above the left panel.            |
+| `rightTitle` | `string` | —         | Optional title above the right panel.           |
+| `className`  | `string` | —         | Custom CSS class on the root container.         |
+| `theme`      | `DiffTheme` | `"default"` | Built-in palette: `default`, `github-dark`, `github-light`, `nord`, `tokyo-night`, `solarized-light`. |
 
 ### Search & navigation
 
@@ -221,7 +223,7 @@ Focus the viewer first.
 
 ## Styling
 
-Root class: `diff-viewer-container`. Pass `className` for theming.
+Root class: `diff-viewer-container`. Pass `theme` (`default`, `github-dark`, `github-light`, `nord`, `tokyo-night`, `solarized-light`) for a built-in palette. Unknown values fall back to `default`. Override `--diff-*` CSS variables via `className` if you need a custom look.
 
 ## Acknowledgements
 

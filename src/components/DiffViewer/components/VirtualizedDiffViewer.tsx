@@ -8,6 +8,7 @@ import type { DiffRowOrCollapsed, LineCountStats, ObjectCountStats, SegmentItem,
 
 import { useReviewMode } from "../hooks/useReviewMode";
 import { useSearch } from "../hooks/useSearch";
+import "../styles/JsonDiffThemes.css";
 import "../styles/JsonDiffCustomTheme.css";
 import { isCollapsed } from "../utils/constants";
 import { preprocessObjectForDiff } from "../utils/diffComparisonOptions";
@@ -16,6 +17,7 @@ import { expandSegment, hasExpandedSegments, hideAllSegments } from "../utils/js
 import { calculateLineCountStats } from "../utils/lineCountUtils";
 import { calculateObjectCountStats } from "../utils/objectCountUtils";
 import { buildViewFromSegments, generateSegments } from "../utils/preprocessDiff";
+import { resolveDiffTheme } from "../utils/themes";
 import { DiffMinimap } from "./DiffMinimap";
 import LineCountDisplay from "./LineCountDisplay";
 import ObjectCountDisplay from "./ObjectCountDisplay";
@@ -36,6 +38,7 @@ export const VirtualizedDiffViewer = forwardRef<VirtualDiffViewerRef, Virtualize
   onSearchMatch,
   differOptions,
   className,
+  theme,
   miniMapWidth,
   inlineDiffOptions,
   overScanCount,
@@ -140,6 +143,7 @@ export const VirtualizedDiffViewer = forwardRef<VirtualDiffViewerRef, Virtualize
   );
 
   const hasExpanded = useMemo(() => hasExpandedSegments(segments), [segments]);
+  const resolvedTheme = resolveDiffTheme(theme);
 
   const minimapProps = {
     leftDiff: leftView,
@@ -150,6 +154,7 @@ export const VirtualizedDiffViewer = forwardRef<VirtualDiffViewerRef, Virtualize
     searchResults: searchState.results,
     currentMatchIndex: searchState.currentIndex,
     onScroll: (scrollTop: number) => listRef.current?.scrollTo(scrollTop),
+    theme: resolvedTheme,
   };
 
   useEffect(() => {
@@ -305,6 +310,7 @@ export const VirtualizedDiffViewer = forwardRef<VirtualDiffViewerRef, Virtualize
   return (
     <div
       className={`diff-viewer-container${reviewMode ? " review-mode" : ""}${className ? ` ${className}` : ""}`}
+      data-theme={resolvedTheme}
       tabIndex={0}
       onKeyDown={handleKeyDown}
       style={{ outline: "none" }}
